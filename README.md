@@ -5,6 +5,7 @@ Club Penguin Server Emulator - AS2 Protocol
 <details> 
 <summary>Modules List</summary>
 <ul>
+  <li>curb</li>
   <li>log4r</li>
   <li>time</li>
   <li>nokogiri</li>
