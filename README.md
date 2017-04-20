@@ -4,15 +4,18 @@ Club Penguin Server Emulator - AS2 Protocol
 
 <details> 
 <summary>Modules List</summary>
-- log4r
-- time
-- nokogiri
-- mysql2-cs-bind
-- json
-- digest
-- bcrypt
-- date
-- socket
-- to_bool
-- typhoeus
+<ul>
+  <li>log4r</li>
+  <li>time</li>
+  <li>nokogiri</li>
+  <li>mysql2</li>
+  <li>mysql2-cs-bind</li>
+  <li>json</li>
+  <li>digest</li>
+  <li>bcrypt</li>
+  <li>date</li>
+  <li>socket</li>
+  <li>to_bool</li>
+  <li>typhoeus</li>
+</ul> 
 </details>
