@@ -36,7 +36,7 @@ class ClubPenguin
 		puts "#    #  #     # #     # #      \n"   
 		puts "#     # ######   #####  #######\n\r"
 		@logger.info('Thanks for using RBSE! The most comprehensive CPSE :-)')
-		@logger.info('Created by: Kai')
+		@logger.info('Created by: Lynx')
 		@logger.info('Protocol: Actionscript 2.0')
 		@logger.info("LICENSE: MIT\n")
 	end
