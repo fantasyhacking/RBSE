@@ -38,7 +38,7 @@ class ClubPenguin
 		@logger.info('Thanks for using RBSE! The most comprehensive CPSE :-)')
 		@logger.info('Created by: Kai')
 		@logger.info('Protocol: Actionscript 2.0')
-		@logger.info("LICENSE: BSD-2 Clause\n")
+		@logger.info("LICENSE: MIT\n")
 	end
 	
 	def parseXML(data)
