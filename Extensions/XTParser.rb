@@ -1,11 +1,3 @@
-class String
-
-	def is_integer?
-		self.to_i.to_s == self
-	end
-	
-end
-
 class XTParser
 
 	XTPACKETS = Hash[
@@ -203,7 +195,7 @@ class XTParser
 					type = XTPACKETS[packets[1]][0][packets[2]][0][gamePacket][0]['type'][pack_index]
 					item = realArgs[pack_index]
 					item_type = ''
-					if item.is_integer? == true
+					if @parent.is_num?(item) == true
 						item_type = 'Fixnum'
 						item = item.to_i
 					else
