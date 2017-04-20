@@ -152,7 +152,7 @@ class XTParser
 		]
 	]
 	
-	def parseData(data) #add a check to see if 
+	def parseData(data)
 		if data.respond_to?(:to_str)
 			packets = data.split('%')
 			if XTPACKETS.has_key?(packets[1]) != true
