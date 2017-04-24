@@ -47,17 +47,17 @@ class CPUser
 	end
 	
 	def sendData(data)
-		if @sock.closed? != true
+		if @sock.present?
 			data = data.concat(0)
-			@sock.send(data, 0)
+			@sock.write(data)
 			@parent.logger.debug('Outgoing Data: ' + data)
 		end
 	end
 	
 	def sendRoom(data)
-		@parent.sock.clients.each do |oclient|
-			if oclient.room == @room
-				oclient.sendData(data)
+		@parent.sock.clients.each_with_index do |client, key|
+			if @parent.sock.clients[key].room == @room
+				@parent.sock.clients[key].sendData(data)
 			end
 		end
 	end
@@ -141,42 +141,43 @@ class CPUser
 	
 	def buildRoomString
 		room_string = self.buildClientString + '%'
-		@parent.sock.clients.each do |client|
-			if client.room == @room && client.ID != @ID && client.username != ''
-				room_string.concat(client.buildClientString + '%')
+		@parent.sock.clients.each_with_index do |client, key|
+			if @parent.sock.clients[key].room == @room && client.ID != @ID 
+					room_string << @parent.sock.clients[key].buildClientString + '%'
 			end
 		end
 		return room_string
 	end
 	
-	def joinRoom(room = 100, xaxis = 0, yaxis = 0)
+	def joinRoom(roomID = 100, xpos = 0, ypos = 0)
 		self.removePlayerFromRoom
 		@frame = 0
 		if room == 999
-			@room = room
-			@xaxis = xaxis
-			@yaxis = yaxis
-			return self.sendData('%xt%jx%-1%' + room.to_s + '%')
+			@room = roomID
+			@xaxis = xpos
+			@yaxis = ypos
+			return self.sendData('%xt%jx%-1%' + roomID.to_s + '%')
 		end
-		if @parent.crumbs.game_room_crumbs.has_key?(room) == true
-			@room = room
-			return self.sendData('%xt%jg%-1%' + room.to_s + '%')
-		elsif @parent.crumbs.room_crumbs.has_key?(room) == true || room > 1000
-			@room = room
-			@xaxis = xaxis
-			@yaxis = yaxis
-			if room < 899 && self.getCurrentRoomCount >= @parent.crumbs.room_crumbs[room][0]['max']
+		if @parent.crumbs.game_room_crumbs.has_key?(roomID) == true
+			@room = roomID
+			self.sendRoom('%xt%ap%-1%' + self.buildClientString + '%')
+			return self.sendData('%xt%jg%-1%' + roomID.to_s + '%')
+		elsif @parent.crumbs.room_crumbs.has_key?(roomID) == true || roomID > 1000
+			@room = roomID
+			@xaxis = xpos
+			@yaxis = ypos
+			if roomID < 899 && self.getCurrentRoomCount >= @parent.crumbs.room_crumbs[roomID][0]['max']
 				return self.sendError(210)
 			end
-			self.sendData('%xt%jr%-1%'  + room.to_s + '%' + self.buildRoomString)  
+			self.sendData('%xt%jr%-1%'  + @room.to_s + '%' + self.buildRoomString)  
 			self.sendRoom('%xt%ap%-1%' + self.buildClientString + '%')
 		end
 	end
 	
 	def getCurrentRoomCount
 		count = 0
-		@parent.sock.clients.each do |client|
-			if client.room = @room
+		@parent.sock.clients.each_with_index do |client, key|
+			if @parent.sock.clients[key].room == @room
 				count += 1
 			end
 		end
