@@ -7,12 +7,12 @@ class TCP
 
 	def initialize(main_class)
 		@parent = main_class
-		@clients = []
+		@clients = Array.new
 		@server
 	end
 	
 	def connectServer
-		@server = TCPServer.open(0, @parent.server_config['server_port'])
+		@server = TCPServer.open(@parent.server_config['server_port'])
 		if @server != nil
 			@parent.logger.info('Successfully connected to the Game server')
 		else
@@ -22,12 +22,13 @@ class TCP
 	
 	def listenServer
 		Thread.new(@server.accept) do |connection|
+			@parent.logger.info("Accepting connection from #{connection.peeraddr[2]}")
 			client = CPUser.new(@parent, connection)
-			@clients.push(client)
+			@clients << client
 			begin
 				while true
 				data = connection.recv(65536)
-				if data.length == 0
+				if data.empty?
 					break
 				end
 				self.handleIncomingData(data, client)	
@@ -86,7 +87,7 @@ class TCP
 	
 	def handleRemoveClient(socket)
 		@clients.each_with_index do |client, key|
-			if client.sock == socket
+			if @clients[key].sock == socket
 				socket.close
 				@clients.delete(key)
 				@parent.logger.debug('A client disconnected from the server')
