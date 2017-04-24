@@ -124,5 +124,13 @@ class Game < XTParser
 	def handleUserHeartbeat(gameHandlerArgs, client)
 		client.sendData('%xt%h%-1%')
 	end
+	
+	def handleSendPosition(gameHandlerArgs, client)
+		xpos = gameHandlerArgs[0]
+		ypos = gameHandlerArgs[1]
+		client.sendRoom('%xt%sp%-1%' + client.ID.to_s + '%' + xpos.to_s + '%' + ypos.to_s + '%')
+		client.xaxis = xpos
+		client.yaxis = ypos
+	end
 
 end
