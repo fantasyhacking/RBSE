@@ -136,6 +136,13 @@ class XTParser
 					'type' => [],
 					'length' => 0,
 					'hasException' => false
+				],
+				'u#sp' => [
+					'method' => 'handleSendPosition',
+					'args' => ['xaxis', 'yaxis'],
+					'type' => ['Fixnum', 'Fixnum'],
+					'length' => 1,
+					'hasException' => false
 				]
 			],
 			'z' => [
@@ -185,7 +192,7 @@ class XTParser
 				return false
 			end
 			if XTPACKETS[packets[1]][0][packets[2]][0][gamePacket][0]['length'] <= 0
-				handlingInfo = ['handler' => XTPACKETS[packets[1]][0][packets[2]][0][gamePacket][0]['method'], 'arguments' => realArgs]
+				handlingInfo = ['handler' => XTPACKETS[packets[1]][0][packets[2]][0][gamePacket][0]['method'], 'arguments' => []]
 				return handlingInfo
 			elsif XTPACKETS[packets[1]][0][packets[2]][0][gamePacket][0]['length'] >= 1
 				packLength = XTPACKETS[packets[1]][0][packets[2]][0][gamePacket][0]['length']
