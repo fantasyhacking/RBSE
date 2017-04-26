@@ -15,7 +15,7 @@ class XTParser
 					'method' => 'handleJoinPlayer', 
 					'args' => ['room_id'], 
 					'type' => ['Fixnum'], 
-					'length' => 1, 
+					'length' => 0, 
 					'hasException' => false
 				],
 				'j#jg' => [
@@ -29,7 +29,7 @@ class XTParser
 					'method' => 'handleGetRoomSynced', 
 					'args' => [], 
 					'type' => [],
-					'length' => 0, 
+					'length' => -1, 
 					'hasException' => false
 				],
 				'j#jr' => [
@@ -43,28 +43,28 @@ class XTParser
 					'method' => 'handleGetInventory', 
 					'args' => [], 
 					'type' => [],
-					'length' => 0, 
+					'length' => -1, 
 					'hasException' => false
 				],
 				'f#epfgf' => [
 					'method' => 'handleEPFGetField', 
 					'args' => [], 
 					'type' => [], 
-					'length' => 0, 
+					'length' => -1, 
 					'hasException' => false
 				],
 				'g#ur' => [
 					'method' => 'handleGetFurnitureRevision', 
 					'args' => [], 
 					'type' => [], 
-					'length' => 0, 
+					'length' => -1, 
 					'hasException' => true
 				],
 				'm#sm' => [
 					'method' => 'handleSendMessage', 
 					'args' => ['message'], 
 					'type' => ['String'], 
-					'length' => 1, 
+					'length' => 0, 
 					'hasException' => true
 				],
 				'st#ssbcd' => [
@@ -78,63 +78,63 @@ class XTParser
 					'method' => 'handleGetBuddies',
 					'args' => [],
 					'type' => [],
-					'length' => 0,
+					'length' => -1,
 					'hasException' => false
 				],
 				'n#gn' => [
 					'method' => 'handleGetIgnored',
 					'args' => [],
 					'type' => [],
-					'length' => 0,
+					'length' => -1,
 					'hasException' => false
 				],
 				'l#mst' => [
 					'method' => 'handleMailStart',
 					'args' => [],
 					'type' => [],
-					'length' => 0,
+					'length' => -1,
 					'hasException' => false
 				],
 				'l#mg' => [
 					'method' => 'handleMailGet',
 					'args' => [],
 					'type' => [],
-					'length' => 0,
+					'length' => -1,
 					'hasException' => false
 				],
 				'p#pgu' => [
 					'method' => 'handlePuffleGetUser',
 					'args' => [],
 					'type' => [],
-					'length' => 0,
+					'length' => -1,
 					'hasException' => false
 				],
 				'u#glr' => [
 					'method' => 'handleGetLatestRevision',
 					'args' => [],
 					'type' => [],
-					'length' => 0,
+					'length' => -1,
 					'hasException' => false
 				],
 				'f#efpga' => [
 					'method' => 'handleEPFGetAgent',
 					'args' => [],
 					'type' => [],
-					'length' => 0,
+					'length' => -1,
 					'hasException' => false
 				],
 				'f#efpgr' => [
 					'method' => 'handleEPFGetRevision',
 					'args' => [],
 					'type' => [],
-					'length' => 0,
+					'length' => -1,
 					'hasException' => false
 				],
 				'u#h' => [
 					'method' => 'handleUserHeartbeat',
 					'args' => [],
 					'type' => [],
-					'length' => 0,
+					'length' => -1,
 					'hasException' => false
 				],
 				'u#sp' => [
@@ -142,6 +142,13 @@ class XTParser
 					'args' => ['xaxis', 'yaxis'],
 					'type' => ['Fixnum', 'Fixnum'],
 					'length' => 1,
+					'hasException' => false
+				],
+				'u#sf' => [
+					'method' => 'handleSendFrame',
+					'args' => ['frame'],
+					'type' => ['Fixnum'],
+					'length' => 0,
 					'hasException' => false
 				]
 			],
@@ -151,7 +158,7 @@ class XTParser
 						'handleJoinWaddle', 
 						'args' => ['waddle_id'], 
 						'type' => ['Fixnum'], 
-						'length' => 1, 
+						'length' => 0, 
 						'hasException' => false
 					]
 				]
@@ -187,14 +194,14 @@ class XTParser
 				end
 			end
 			realArgs = packets.drop(5)
-			if realArgs.length < (XTPACKETS[packets[1]][0][packets[2]][0][gamePacket][0]['length'] - 1)
+			if realArgs.empty? != true && realArgs.count < (XTPACKETS[packets[1]][0][packets[2]][0][gamePacket][0]['length'] - 1)
 				@parent.logger.warn('Client is sending invalid amount of Arguments')
 				return false
 			end
-			if XTPACKETS[packets[1]][0][packets[2]][0][gamePacket][0]['length'] <= 0
+			if XTPACKETS[packets[1]][0][packets[2]][0][gamePacket][0]['length'] < 0
 				handlingInfo = ['handler' => XTPACKETS[packets[1]][0][packets[2]][0][gamePacket][0]['method'], 'arguments' => []]
 				return handlingInfo
-			elsif XTPACKETS[packets[1]][0][packets[2]][0][gamePacket][0]['length'] >= 1
+			elsif XTPACKETS[packets[1]][0][packets[2]][0][gamePacket][0]['length'] >= 0
 				packLength = XTPACKETS[packets[1]][0][packets[2]][0][gamePacket][0]['length']
 				newArgs = Array.new
 				(0..packLength).each do |pack_index|
