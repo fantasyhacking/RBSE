@@ -5,6 +5,8 @@ class Game < XTParser
 
 	def initialize(main_class)
 		@parent = main_class
+		@xtPackets = {}
+		self.handleLoadPackets
 	end
 	
 	def handleData(data, client)
@@ -64,29 +66,35 @@ class Game < XTParser
 		client.joinRoom(room, room_x, room_y)
 	end
 	
-	def handleEPFGetField(gameHandlerArgs, client)
-		client.sendData('%xt%epfgf%-1%1%')
-	end
-	
 	def handleGetInventory(gameHandlerArgs, client)
 		items = client.inventory.join('%')
 		client.sendData('%xt%gi%-1%' + items.to_s + '%')
-	end
-	
-	def handleEPFGetField(gameHandlerArgs, client)
-	
-	end
-	
-	def handleGetFurnitureRevision(gameHandlerArgs, client)
-	
 	end
 	
 	def handleSendMessage(gameHandlerArgs, client)
 	
 	end
 	
-	def handleSetStampBookCoverDetails(gameHandlerArgs, client)
+	def handleGetLatestRevision(gameHandlerArgs, client)
 	
+	end
+	
+	def handleUserHeartbeat(gameHandlerArgs, client)
+		client.sendData('%xt%h%-1%')
+	end
+	
+	def handleSendPosition(gameHandlerArgs, client)
+		xpos = gameHandlerArgs[0]
+		ypos = gameHandlerArgs[1]
+		client.sendRoom('%xt%sp%-1%' + client.ID.to_s + '%' + xpos.to_s + '%' + ypos.to_s + '%')
+		client.xaxis = xpos
+		client.yaxis = ypos
+	end
+	
+	def handleSendFrame(gameHandlerArgs, client)
+		frameID = gameHandlerArgs[0]
+		client.sendRoom('%xt%sf%-1%' + client.ID.to_s + '%' + frameID.to_s + '%')
+		client.frame = frameID 
 	end
 	
 	def handleGetBuddies(gameHandlerArgs, client)
@@ -109,28 +117,28 @@ class Game < XTParser
 	
 	end
 	
-	def handleGetLatestRevision(gameHandlerArgs, client)
-	
-	end
-	
 	def handleEPFGetAgent(gameHandlerArgs, client)
 	
 	end
 	
-	def handleEPFGetRevision(gameHandlerArgs, client)
+	def handleEPFGetRevisions(gameHandlerArgs, client)
 	
 	end
 	
-	def handleUserHeartbeat(gameHandlerArgs, client)
-		client.sendData('%xt%h%-1%')
+	def handleEPFGetField(gameHandlerArgs, client)
+	
 	end
 	
-	def handleSendPosition(gameHandlerArgs, client)
-		xpos = gameHandlerArgs[0]
-		ypos = gameHandlerArgs[1]
-		client.sendRoom('%xt%sp%-1%' + client.ID.to_s + '%' + xpos.to_s + '%' + ypos.to_s + '%')
-		client.xaxis = xpos
-		client.yaxis = ypos
+	def handleSetStampBookCoverDetails(gameHandlerArgs, client)
+	
+	end
+	
+	def handleSetStampbookEnums(gameHandlerArgs, client)
+	
+	end
+	
+	def handleGetFurnitureRevision(gameHandlerArgs, client)
+	
 	end
 
 end
