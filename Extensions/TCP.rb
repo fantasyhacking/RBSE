@@ -39,7 +39,6 @@ class TCP
 			rescue Exception => e
 				@parent.logger.error("#{e} (#{e.class}) - #{e.backtrace.join("\n\t")}")
 			ensure
-				client.saveClientInformation
 				client.removePlayerFromRoom
 				self.handleRemoveClient(connection)
 			end
