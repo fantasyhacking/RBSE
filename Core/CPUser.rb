@@ -30,7 +30,7 @@ class CPUser
 			'isMed' => 0,
 			'isMod' => 0,
 			'isAdmin' => 0,
-			'rank' => 1
+			'rank' => 0
 		}
 		@astatus = {
 			'isBanned' => '',
@@ -47,9 +47,9 @@ class CPUser
 	end
 	
 	def sendData(data)
-		if @sock.present?
+		if @sock.closed? != true
 			data = data.concat(0)
-			@sock.write(data)
+			@sock.send(data, 0)
 			@parent.logger.debug('Outgoing Data: ' + data)
 		end
 	end
@@ -91,23 +91,23 @@ class CPUser
 					when 'moderation'
 						if value != ''
 							modData = JSON.parse(value)
-								modData.each do |modType, modValue|
-										self.instance_variable_set("@astatus#{modType}", modValue)
-								end
+							modData.each do |modType, modValue|
+								@astatus[modType] = modValue
+							end
 						end
 					when 'ranking'
 						if value != ''
 							rankData = JSON.parse(value)
-								rankData.each do |rankType, rankValue|
-										self.instance_variable_set("@ranking#{rankType}", rankValue)
-								end
+							rankData.each do |rankType, rankValue|
+								@ranking[rankType] = rankValue
+							end
 						end
 					when 'clothing'
 						if value != ''
 							clothingData = JSON.parse(value)
-								clothingData.each do |itemType, itemValue|
-										self.instance_variable_set("@clothing#{itemType}", itemValue)
-								end
+							clothingData.each do |itemType, itemValue|
+								@clothes[itemType] = itemValue
+							end
 						end
 					when 'joindate'
 						@joindate = (Time.now.to_date - value.to_date).to_i
@@ -134,7 +134,7 @@ class CPUser
 			@xaxis,
 			@yaxis,
 			@frame, 1,
-			(@ranking['rank'] * 146)		
+			(@ranking['rank'].to_i * 146)		
 		]
 		return clientInfo.join('|')
 	end
@@ -182,6 +182,49 @@ class CPUser
 			end
 		end
 		return count
+	end
+	
+	def getClientByID(userID)
+		@parent.sock.clients.each_with_index do |client, key|
+			if @parent.sock.clients[key].ID == userID
+				return client
+			end
+		end
+	end
+	
+	def saveClientInformation			
+		self.updateCurrentInventory
+		self.updateCurrentClothing
+		self.updateCurrentModStatus
+	end
+	
+	def updateCurrentClothing
+		newClothing = @clothes.to_json
+		@parent.mysql.updatePenguinClothing(newClothing, @ID)
+	end
+	
+	def updateCurrentModeratingStatus
+		newModStatus = @astatus.to_json
+		@parent.mysql.updatePenguinModStatus(newModStatus, @ID)
+	end
+	
+	def updateCurrentInventory
+		newInventory = @inventory.join('%')
+		@parent.mysql.updatePenguinInventory(newInventory, @ID)
+	end
+	
+	def addCoins(amount)
+		newAmount = (@coins + amount)
+		@parent.mysql.updateCurrentCoins(newAmount, @ID)
+		@coins = newAmount
+		self.loadUserInfo
+	end
+	
+	def deductCoins(amount)
+		newAmount = (@coins - amount)
+		@parent.mysql.updateCurrentCoins(newAmount, @ID)
+		@coins = newAmount
+		self.loadUserInfo
 	end
 
 	def removePlayerFromRoom
