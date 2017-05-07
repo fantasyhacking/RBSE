@@ -28,15 +28,18 @@ class TCP
 			begin
 				while true
 				data = connection.recv(65536)
-				if data.empty?
+				if data.empty? == true
+					client.removePlayerFromRoom
+					self.handleRemoveClient(connection)
 					break
 				end
 				self.handleIncomingData(data, client)	
+				connection.flush
 			end
 			rescue Exception => e
-				@parent.logger.error("#{ e } (#{ e.class })")
-				raise
+				@parent.logger.error("#{e} (#{e.class}) - #{e.backtrace.join("\n\t")}")
 			ensure
+				client.saveClientInformation
 				client.removePlayerFromRoom
 				self.handleRemoveClient(connection)
 			end
@@ -88,8 +91,8 @@ class TCP
 	def handleRemoveClient(socket)
 		@clients.each_with_index do |client, key|
 			if @clients[key].sock == socket
-				socket.close
-				@clients.delete(key)
+				@clients[key].sock.close
+				@clients.delete(client)
 				@parent.logger.debug('A client disconnected from the server')
 			end
 		end
