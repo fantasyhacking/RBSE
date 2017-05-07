@@ -54,6 +54,22 @@ class Database
 		@connection.xquery("UPDATE users SET lkey = ? WHERE username = ?", key, username)
 	end
 	
+	def updatePenguinClothing(newClothing, userID)
+		@connection.xquery("UPDATE users SET clothing = ? WHERE ID = ?", newClothing, userID)
+	end
+	
+	def updatePenguinInventory(newInventory, userID)
+		@connection.xquery("UPDATE users SET inventory = ? WHERE ID = ?", newInventory, userID)
+	end
+	
+	def updateCurrentCoins(newCoins, userID)
+		@connection.xquery("UPDATE users SET coins = ? WHERE ID = ?", newCoins, userID)
+	end
+	
+	def updatePenguinModStatus(newModStatus, userID)
+		@connection.xquery("UPDATE users SET moderation = ? WHERE ID = ?", newModStatus, userID)
+	end
+	
 	def getLoginKey(username)
 		results = @connection.xquery("SELECT * FROM users WHERE username = ?", username)
 		results.each do |result|
@@ -71,6 +87,31 @@ class Database
 	def getUserDetails(userID)
 		results = @connection.xquery("SELECT * FROM users WHERE ID = ?", userID)
 		return results
+	end
+	
+	def getPlayerString(userID)
+		userDetails = self.getUserDetails(userID)
+		userDetails.each do |detail|
+			username = detail['username']
+			clothing = JSON.parse(detail['clothing'])
+			ranking = JSON.parse(detail['ranking'])
+			requiredDetails = [
+				userID,
+				username, 1,
+				clothing['color'],
+				clothing['head'],
+				clothing['face'],
+				clothing['neck'],
+				clothing['body'],
+				clothing['hand'],
+				clothing['feet'],
+				clothing['flag'],
+				clothing['photo'], 0, 0, 0,
+				(ranking['rank'].to_i * 146)
+			]
+			userString = requiredDetails.join('|')
+			return userString
+		end
 	end
 
 end
