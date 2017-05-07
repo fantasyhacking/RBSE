@@ -135,30 +135,35 @@ class Game < XTParser
 		itemID = gameHandlerArgs[0]
 		client.sendRoom('%xt%upc%-1%' + client.ID.to_s + '%' + itemID.to_s + '%')
 		client.clothes['color'] = itemID
+		client.updateCurrentClothing
 	end
 	
 	def handleUpdatePlayerHead(gameHandlerArgs, client)
 		itemID = gameHandlerArgs[0]
 		client.sendRoom('%xt%uph%-1%' + client.ID.to_s + '%' + itemID.to_s + '%')
 		client.clothes['head'] = itemID
+		client.updateCurrentClothing
 	end
 	
 	def handleUpdatePlayerFace(gameHandlerArgs, client)
 		itemID = gameHandlerArgs[0]
 		client.sendRoom('%xt%upf%-1%' + client.ID.to_s + '%' + itemID.to_s + '%')
 		client.clothes['face'] = itemID
+		client.updateCurrentClothing
 	end
 	
 	def handleUpdatePlayerNeck(gameHandlerArgs, client)
 		itemID = gameHandlerArgs[0]
 		client.sendRoom('%xt%upn%-1%' + client.ID.to_s + '%' + itemID.to_s + '%')
 		client.clothes['neck'] = itemID
+		client.updateCurrentClothing
 	end
 	
 	def handleUpdatePlayerBody(gameHandlerArgs, client)
 		itemID = gameHandlerArgs[0]
 		client.sendRoom('%xt%upb%-1%' + client.ID.to_s + '%' + itemID.to_s + '%')
 		client.clothes['body'] = itemID
+		client.updateCurrentClothing
 	end
 	
 	def handleUpdatePlayerHand(gameHandlerArgs, client)
@@ -171,18 +176,21 @@ class Game < XTParser
 		itemID = gameHandlerArgs[0]
 		client.sendRoom('%xt%upe%-1%' + client.ID.to_s + '%' + itemID.to_s + '%')
 		client.clothes['feet'] = itemID
+		client.updateCurrentClothing
 	end
 	
 	def handleUpdatePlayerPhoto(gameHandlerArgs, client)
 		itemID = gameHandlerArgs[0]
 		client.sendRoom('%xt%upp%-1%' + client.ID.to_s + '%' + itemID.to_s + '%')
 		client.clothes['photo'] = itemID
+		client.updateCurrentClothing
 	end
 	
 	def handleUpdatePlayerPin(gameHandlerArgs, client)
 		itemID = gameHandlerArgs[0]
 		client.sendRoom('%xt%upl%-1%' + client.ID.to_s + '%' + itemID.to_s + '%')
 		client.clothes['flag'] = itemID
+		client.updateCurrentClothing
 	end
 	
 	def handleAddToy(gameHandlerArgs, client)
@@ -212,6 +220,7 @@ class Game < XTParser
 		client.inventory.push(itemID)
 		client.deductCoins(@parent.crumbs.item_crumbs[itemID][0]['price'])
 		client.sendData('%xt%ai%-1%' + itemID.to_s + '%' + client.coins.to_s + '%')
+		client.updateCurrentInventory
 	end
 	
 	def handleQueryPlayerPins(gameHandlerArgs, client)
@@ -290,6 +299,7 @@ class Game < XTParser
 				oclient.astatus['isMuted'] = 0
 				@parent.logger.warn("Staff: #{client.username} has unmuted #{oclient.username}")
 			end
+			oclient.updateCurrentModStatus
 		end
 	end
 	
@@ -304,6 +314,7 @@ class Game < XTParser
 		if client.ranking['isStaff'].to_bool == true
 			if oclient.astatus['isBanned'].to_i == 0
 				oclient.astatus['isBanned'] = 'PERMABANNED'
+				oclient.updateCurrentModStatus
 				oclient.sendError("610%#{userReason}")
 			end
 		end
