@@ -192,18 +192,12 @@ class CPUser
 		end
 	end
 	
-	def saveClientInformation			
-		self.updateCurrentInventory
-		self.updateCurrentClothing
-		self.updateCurrentModStatus
-	end
-	
 	def updateCurrentClothing
 		newClothing = @clothes.to_json
 		@parent.mysql.updatePenguinClothing(newClothing, @ID)
 	end
 	
-	def updateCurrentModeratingStatus
+	def updateCurrentModStatus
 		newModStatus = @astatus.to_json
 		@parent.mysql.updatePenguinModStatus(newModStatus, @ID)
 	end
