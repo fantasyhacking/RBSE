@@ -178,20 +178,163 @@
 
               ],
               "length":-1,
-              "hasException":true
+              "hasException":false
+            }
+          ],
+          "g#af":[
+            {
+              "method":"handleAddFurniture",
+              "args":[
+				"furnID"
+              ],
+              "type":[
+				"Fixnum"
+              ],
+              "length": 0,
+              "hasException":false
+            }
+          ],
+          "g#ao":[
+            {
+              "method":"handleUpdateIgloo",
+              "args":[
+				"iglooID"
+              ],
+              "type":[
+				"Fixnum"
+              ],
+              "length": 0,
+              "hasException":false
+            }
+          ],
+          "g#au":[
+            {
+              "method":"handleAddIgloo",
+              "args":[
+				"iglooID"
+              ],
+              "type":[
+				"Fixnum"
+              ],
+              "length": 0,
+              "hasException":false
+            }
+          ],
+          "g#ag":[
+            {
+              "method":"handleUpdateFloor",
+              "args":[
+				"floorID"
+              ],
+              "type":[
+				"Fixnum"
+              ],
+              "length": 0,
+              "hasException":false
+            }
+          ],
+          "g#gm":[
+            {
+              "method":"handleGetIglooDetails",
+              "args":[
+				"pengID"
+              ],
+              "type":[
+				"Fixnum"
+              ],
+              "length": 0,
+              "hasException":false
+            }
+          ],
+          "g#um":[
+            {
+              "method":"handleUpdateMusic",
+              "args":[
+				"musicID"
+              ],
+              "type":[
+				"Fixnum"
+              ],
+              "length":0,
+              "hasException":false
+            }
+          ],
+          "g#go":[
+            {
+              "method":"handleGetOwnedIgloos",
+              "args":[
+              
+              ],
+              "type":[
+
+              ],
+              "length": -1,
+              "hasException":false
+            }
+          ],
+          "g#or":[
+            {
+              "method":"handleOpenIgloo",
+              "args":[
+              
+              ],
+              "type":[
+
+              ],
+              "length": -1,
+              "hasException":false
+            }
+          ],
+		  "g#cr":[
+            {
+              "method":"handleCloseIgloo",
+              "args":[
+              
+              ],
+              "type":[
+
+              ],
+              "length": -1,
+              "hasException":false
+            }
+          ],
+		  "g#gf":[
+            {
+              "method":"handleGetOwnedFurniture",
+              "args":[
+              
+              ],
+              "type":[
+
+              ],
+              "length": -1,
+              "hasException":false
             }
           ],
           "g#ur":[
             {
               "method":"handleGetFurnitureRevision",
               "args":[
-
+              
               ],
               "type":[
 
               ],
-              "length":-1,
+              "length": -1,
               "hasException":true
+            }
+          ],
+          "g#gr":[
+            {
+              "method":"handleGetOpenedIgloos",
+              "args":[
+              
+              ],
+              "type":[
+
+              ],
+              "length": -1,
+              "hasException":false
             }
           ],
           "m#sm":[
@@ -219,7 +362,7 @@
 				"Fixnum"
               ],
               "length":0,
-              "hasException":true
+              "hasException":false
             }
           ],
           "o#m":[
@@ -232,7 +375,7 @@
 				"Fixnum"
               ],
               "length":0,
-              "hasException":true
+              "hasException":false
             }
           ],
           "o#b":[
@@ -247,7 +390,7 @@
 				"String"
               ],
               "length":1,
-              "hasException":true
+              "hasException":false
             }
           ],
           "st#ssbcd":[
