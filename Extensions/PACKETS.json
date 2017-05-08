@@ -211,7 +211,7 @@
             {
               "method":"handleAddIgloo",
               "args":[
-				"iglooID"
+				"igloo"
               ],
               "type":[
 				"Fixnum"
@@ -224,7 +224,7 @@
             {
               "method":"handleUpdateFloor",
               "args":[
-				"floorID"
+				"floor"
               ],
               "type":[
 				"Fixnum"
@@ -461,6 +461,19 @@
           "p#pgu":[
             {
               "method":"handlePuffleGetUser",
+              "args":[
+
+              ],
+              "type":[
+
+              ],
+              "length":-1,
+              "hasException":false
+            }
+          ],
+          "p#pg":[
+            {
+              "method":"handlePuffleGet",
               "args":[
 
               ],
