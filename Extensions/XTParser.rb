@@ -42,7 +42,7 @@ class XTParser
 				return false
 			end
 			if @xtPackets[packets[1]][0][packets[2]][0][gamePacket][0]['length'] < 0	
-				if realArgs.any? { |text| text.include? "|" } == true	#this is for packets like igloo furniture revision
+				if gamePacket == 'st#ssbcd' || gamePacket == 'g#ur' || gamePacket == 'm#sm' #because stampbook cover is a pain
 					handlingInfo = ['handler' => @xtPackets[packets[1]][0][packets[2]][0][gamePacket][0]['method'], 'arguments' => realArgs]
 					return handlingInfo
 				end
