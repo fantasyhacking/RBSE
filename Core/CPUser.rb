@@ -5,6 +5,7 @@ require 'json'
 class CPUser
 
 	attr_accessor :sock, :ID, :username, :lkey, :coins, :joindate, :clothes, :ranking, :astatus, :clothes, :ranking, :inventory, :buddies, :ignored, :buddyRequests, :room, :xaxis, :yaxis, :frame
+	attr_accessor :igloo, :floor, :music, :furniture, :ownedFurns, :ownedIgloos
 
 	def initialize(main_class, socket)
 		@parent = main_class
@@ -40,6 +41,12 @@ class CPUser
 		@xaxis = 0
 		@yaxis = 0
 		@frame = 0
+		@igloo = 0
+		@floor = 0
+		@music = 0
+		@furniture = 0
+		@ownedFurns = Hash.new
+		@ownedIgloos = Array.new
 		@inventory = Array.new
 		@buddies = Hash.new
 		@ignored = Hash.new
@@ -50,7 +57,7 @@ class CPUser
 		if @sock.closed? != true
 			data = data.concat(0)
 			@sock.send(data, 0)
-			@parent.logger.debug('Outgoing Data: ' + data)
+			@parent.logger.debug('Outgoing data: ' + data)
 		end
 	end
 	
@@ -111,6 +118,31 @@ class CPUser
 						end
 					when 'joindate'
 						@joindate = (Time.now.to_date - value.to_date).to_i
+					else
+						self.instance_variable_set("@#{key}", value)
+				end
+			end
+		end
+	end
+	
+	def loadIglooInfo
+		iglooInfo = @parent.mysql.getIglooDetails(@ID)
+		iglooInfo.each do |info|
+			info.each do |key, value|
+				case key
+					when 'ownedIgloos'
+						igloos = value.split('|')
+						igloos.each do |igloo|
+							@ownedIgloos.push(igloo)
+						end
+					when 'ownedFurns'
+						furnitures = value.split(',')
+						furnitures.each do |furniture|
+							furnDetails = furniture.split('|')
+							furnQuantity = furnDetails[0]
+							furnID = furnDetails[1]
+							@ownedFurns[furnID] = furnQuantity
+						end
 					else
 						self.instance_variable_set("@#{key}", value)
 				end
@@ -205,6 +237,19 @@ class CPUser
 	def updateCurrentInventory
 		newInventory = @inventory.join('%')
 		@parent.mysql.updatePenguinInventory(newInventory, @ID)
+	end
+	
+	def updateCurrentFurnInventory
+		furnitures = ''
+		@ownedFurns.each do |furnitureQuantity, furnitureID|
+			furnitures << furnitureID.to_s + '|' + furnitureQuantity.to_s + ','
+		end
+		@parent.mysql.updateFurnitureInventory(furnitures, @ID)
+	end
+	
+	def updateCurrentIglooInventory
+		newInventory = @ownedIgloos.join('|')
+		@parent.mysql.updateIglooInventory(newInventory, @ID)
 	end
 	
 	def addCoins(amount)
