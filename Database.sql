@@ -89,13 +89,13 @@ DROP TABLE IF EXISTS `stamps`;
 CREATE TABLE `stamps` (
   `ID` int(11) NOT NULL,
   `stamps` longtext NOT NULL,
-  `cover` longtext NOT NULL,
+  `stampbook_cover` longtext NOT NULL,
   `restamps` longtext NOT NULL,
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 INSERT INTO `stamps` (`ID`, `stamps`, `cover`, `restamps`) VALUES
-(1,	'201|200|199|198|197|14',	'',	''),
+(1,	'201|200|199|198|197',	'',	''),
 (2,	'201|200|199|198|197',	'',	'');
 
 DROP TABLE IF EXISTS `users`;
