@@ -65,6 +65,8 @@ class Login
 		client.ID = clientID
 		client.lkey = encryptedRandKey
 		client.loadUserInfo
+		client.loadIglooInfo
+		client.loadStampsInfo
 	end
 
 end
