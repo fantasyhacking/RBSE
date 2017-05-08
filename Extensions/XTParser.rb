@@ -41,7 +41,11 @@ class XTParser
 				@parent.logger.warn('Client is sending invalid amount of Arguments')
 				return false
 			end
-			if @xtPackets[packets[1]][0][packets[2]][0][gamePacket][0]['length'] < 0
+			if @xtPackets[packets[1]][0][packets[2]][0][gamePacket][0]['length'] < 0	
+				if realArgs.any? { |text| text.include? "|" } == true	#this is for packets like igloo furniture revision
+					handlingInfo = ['handler' => @xtPackets[packets[1]][0][packets[2]][0][gamePacket][0]['method'], 'arguments' => realArgs]
+					return handlingInfo
+				end
 				handlingInfo = ['handler' => @xtPackets[packets[1]][0][packets[2]][0][gamePacket][0]['method'], 'arguments' => []]
 				return handlingInfo
 			elsif @xtPackets[packets[1]][0][packets[2]][0][gamePacket][0]['length'] >= 0
