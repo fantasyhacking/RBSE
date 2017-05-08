@@ -7,8 +7,17 @@ class Game < XTParser
 
 	def initialize(main_class)
 		@parent = main_class
-		@xtPackets = {}
+		@xtPackets = Hash.new
+		@iglooMap = Hash.new
 		self.handleLoadPackets
+	end
+	
+	def loadIglooMap
+		igloo_map = ''
+		@iglooMap.each do |userID, username|
+			igloo_map << userID.to_s + '|' + username + '%'
+		end
+		return igloo_map
 	end
 	
 	def handleData(data, client)
@@ -40,7 +49,7 @@ class Game < XTParser
 		client.sendData('%xt%js%-1%0%1%' + client.ranking['isStaff'].to_s + '%0%')
 		client.sendData('%xt%lp%-1%' + client.buildClientString + '%' + client.coins.to_s + '%0%1440%100%' + client.joindate.to_s + '%4%' + client.joindate.to_s + '%%7%')
 		@parent.mysql.updateLoginKey("", client.username)
-		client.joinRoom(111)
+		client.joinRoom(100)
 	end
 	
 	def handleJoinPlayer(gameHandlerArgs, client)
@@ -75,7 +84,7 @@ class Game < XTParser
 	end
 	
 	def handleGetLatestRevision(gameHandlerArgs, client)
-		client.sendData('%xt%glr%-1%3555')
+		client.sendData('%xt%glr%-1%3555%')
 	end
 	
 	def handleUserHeartbeat(gameHandlerArgs, client)
@@ -219,8 +228,8 @@ class Game < XTParser
 		end
 		client.inventory.push(itemID)
 		client.deductCoins(@parent.crumbs.item_crumbs[itemID][0]['price'])
-		client.sendData('%xt%ai%-1%' + itemID.to_s + '%' + client.coins.to_s + '%')
 		client.updateCurrentInventory
+		client.sendData('%xt%ai%-1%' + itemID.to_s + '%' + client.coins.to_s + '%')
 	end
 	
 	def handleQueryPlayerPins(gameHandlerArgs, client)
@@ -360,8 +369,137 @@ class Game < XTParser
 	
 	end
 	
-	def handleGetFurnitureRevision(gameHandlerArgs, client)
+	def handleAddFurniture(gameHandlerArgs, client)
+		furnID = gameHandlerArgs[0]
+		if @parent.crumbs.furniture_crumbs.has_key?(furnID) != true
+			return client.sendError(402)
+		elsif @parent.crumbs.furniture_crumbs[furnID][0]['price'] > client.coins
+			return client.sendError(401)
+		end
+		furnQuantity = 1
+		if client.ownedFurns.has_key?(furnID) != false
+			furnQuantity += client.ownedFurns[furnID]
+		end
+		if furnQuantity >= 900
+			return client.sendError(403)
+		end
+		client.ownedFurns[furnID] = furnQuantity
+		client.updateCurrentFurnInventory
+		client.deductCoins(@parent.crumbs.furniture_crumbs[furnID][0]['price'])
+		client.sendData('%xt%af%-1%' + furnID.to_s + '%' + client.coins.to_s + '%')
+	end
 	
+	def handleUpdateIgloo(gameHandlerArgs, client)
+		iglooID = gameHandlerArgs[0]
+		client.igloo = iglooID
+		@parent.mysql.updateIglooType(iglooID, client.ID)
+		@parent.mysql.updateFloorType(0, client.ID)
+		@parent.mysql.updateIglooFurniture('', client.ID)
+		client.sendData('%xt%ao%-1%' + iglooID.to_s + '%' + client.coins.to_s + '%')
+	end
+	
+	def handleAddIgloo(gameHandlerArgs, client)
+		iglooID = gameHandlerArgs[0]
+		if @parent.crumbs.igloo_crumbs.has_key?(iglooID) != true
+			return client.sendError(402)
+		elsif client.ownedIgloos.include?(iglooID) != false
+			return client.sendError(400)
+		elsif @parent.crumbs.igloo_crumbs[iglooID][0]['price'] > client.coins
+			return client.sendError(401)
+		end
+		client.ownedIgloos.push(iglooID)
+		client.deductCoins(@parent.crumbs.igloo_crumbs[iglooID][0]['price'])
+		client.updateCurrentIglooInventory
+		client.sendData('%xt%au%-1%' + iglooID.to_s + '%' + client.coins.to_s + '%')
+	end
+	
+	def handleUpdateFloor(gameHandlerArgs, client)
+		floorID = gameHandlerArgs[0]
+		if @parent.crumbs.floors_crumbs.has_key?(floorID) != true
+			return client.sendError(402)
+		elsif @parent.crumbs.floors_crumbs[floorID][0]['price'] > client.coins
+			return client.sendError(401)
+		end
+		client.floor = floorID
+		@parent.mysql.updateFloorType(floorID, client.ID)
+		client.deductCoins(@parent.crumbs.floors_crumbs[floorID][0]['price'])
+		client.sendData('%xt%ag%-1%' + floorID.to_s + '%' + client.coins.to_s + '%')
+	end
+	
+	def handleUpdateMusic(gameHandlerArgs, client)
+		musicID = gameHandlerArgs[0]
+		client.music = musicID
+		@parent.mysql.updateIglooMusic(musicID, client.ID)
+		client.sendData('%xt%um%-1%' + musicID.to_s + '%')
+	end
+	
+	def handleGetIglooDetails(gameHandlerArgs, client)
+		userID = gameHandlerArgs[0]
+		iglooID = ''
+		musicID = ''
+		floorID = ''
+		furniture = ''
+		iglooData = @parent.mysql.getIglooDetails(client.ID)
+		iglooData.each do |iglooInfo|
+			iglooID = iglooInfo['igloo'].to_s
+			musicID = iglooInfo['music'].to_s
+			floorID = iglooInfo['floor'].to_s
+			furniture = iglooInfo['furniture'].to_s
+		end
+		client.sendData('%xt%gm%-1%' + client.ID.to_s + '%' + (iglooID ? iglooID : 1) + '%' + (musicID ? musicID : 0) + '%' + (floorID ? floorID : 0) + '%' +  (furniture ? furniture : '') + '%')
+	end
+	
+	def handlePuffleGet(gameHandlerArgs, client)
+		client.sendData('%xt%pg%-1%%')
+	end
+	
+	def handleGetOwnedIgloos(gameHandlerArgs, client)
+		igloos = client.ownedIgloos.join('|')
+		igloos ? client.sendData('%xt%go%-1%' + igloos + '%') : client.sendData('%xt%go%-1%1%')
+	end
+	
+	def handleOpenIgloo(gameHandlerArgs, client)
+		@iglooMap.store(client.ID.to_i, client.username)
+	end
+	
+	def handleCloseIgloo(gameHandlerArgs, client)
+		@iglooMap.delete(client.ID.to_i)
+	end
+	
+	def handleGetOwnedFurniture(gameHandlerArgs, client)
+		furnitures = ''
+		client.ownedFurns.each do |furnQuantity, furnID|
+			furnitures << furnQuantity.to_s + '|' + furnID.to_s + '%'
+		end
+		client.sendData('%xt%gf%-1%' + furnitures + '%')
+	end
+	
+	def handleGetFurnitureRevision(gameHandlerArgs, client)
+		furnitures = ''
+		gameHandlerArgs.each do |furniture|
+			furnitureInfo = furniture.split('|')
+			if furnitureInfo.count > 5
+				@parent.logger.warn('Client is trying to send invalid furniture arguments')
+				return false
+			end
+			furnitureInfo.each do |info|
+				if @parent.is_num?(info) != true
+					@parent.logger.warn('Client is trying to send an invalid Furniture')
+					return false
+				end
+			end
+			furnitures << ',' + furniture
+		end
+		@parent.mysql.updateIglooFurniture(furnitures, client.ID)
+	end
+	
+	def handleGetOpenedIgloos(gameHandlerArgs, client)
+		igloos = self.loadIglooMap;
+		if igloos != ''
+			client.sendData('%xt%gr%-1%' + igloos)
+		else 
+			client.sendData('%xt%gr%-1%')
+		end
 	end
 
 end
