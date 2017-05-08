@@ -5,6 +5,8 @@ require 'to_bool'
 
 class Game < XTParser
 
+	attr_accessor :iglooMap
+
 	def initialize(main_class)
 		@parent = main_class
 		@xtPackets = Hash.new
