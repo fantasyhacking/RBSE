@@ -29,6 +29,9 @@ class TCP
 				while true
 				data = connection.recv(65536)
 				if data.empty? == true
+					if @parent.game_sys.iglooMap.has_key?(client.ID)
+						@parent.game_sys.iglooMap.delete(client.ID)
+					end
 					client.removePlayerFromRoom
 					self.handleRemoveClient(connection)
 					break
@@ -39,6 +42,9 @@ class TCP
 			rescue Exception => e
 				@parent.logger.error("#{e} (#{e.class}) - #{e.backtrace.join("\n\t")}")
 			ensure
+				if @parent.game_sys.iglooMap.has_key?(client.ID)
+						@parent.game_sys.iglooMap.delete(client.ID)
+				end
 				client.removePlayerFromRoom
 				self.handleRemoveClient(connection)
 			end
