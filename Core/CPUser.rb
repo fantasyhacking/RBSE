@@ -6,6 +6,7 @@ class CPUser
 
 	attr_accessor :sock, :ID, :username, :lkey, :coins, :joindate, :clothes, :ranking, :astatus, :clothes, :ranking, :inventory, :buddies, :ignored, :buddyRequests, :room, :xaxis, :yaxis, :frame
 	attr_accessor :igloo, :floor, :music, :furniture, :ownedFurns, :ownedIgloos
+	attr_accessor :stamps, :restamps, :stampbook_cover
 
 	def initialize(main_class, socket)
 		@parent = main_class
@@ -51,6 +52,9 @@ class CPUser
 		@buddies = Hash.new
 		@ignored = Hash.new
 		@buddyRequests = Array.new
+		@stamps = Array.new
+		@restamps = Array.new
+		@stampbook_cover = ''
 	end
 	
 	def sendData(data)
@@ -142,6 +146,28 @@ class CPUser
 							furnQuantity = furnDetails[0]
 							furnID = furnDetails[1]
 							@ownedFurns[furnID] = furnQuantity
+						end
+					else
+						self.instance_variable_set("@#{key}", value)
+				end
+			end
+		end
+	end
+	
+	def loadStampsInfo
+		stampsInfo = @parent.mysql.getStampsInfo(@ID)
+		stampsInfo.each do |info|
+			info.each do |key, value|
+				case key
+					when 'stamps'
+						stamps = value.split('|')
+						stamps.each do |stamp|
+							@stamps.push(stamp)
+						end
+					when 'restamps'
+						restamps = value.split('|')
+						restamps.each do |stamp|
+							@restamps.push(stamp)
 						end
 					else
 						self.instance_variable_set("@#{key}", value)
@@ -250,6 +276,12 @@ class CPUser
 	def updateCurrentIglooInventory
 		newInventory = @ownedIgloos.join('|')
 		@parent.mysql.updateIglooInventory(newInventory, @ID)
+	end
+	
+	def updateCurrentStamps
+		newStamps = @stamps.join('|')
+		newRestamps = @restamps.join('|')
+		@parent.mysql.updatePenguinStamps(newStamps, newRestamps, @ID)
 	end
 	
 	def addCoins(amount)
