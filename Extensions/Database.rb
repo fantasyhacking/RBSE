@@ -94,6 +94,35 @@ class Database
 		@connection.xquery("UPDATE igloos SET music = ? WHERE ID = ?", musicID, userID)
 	end
 	
+	def updatePenguinStamps(stamps, restamps, userID)
+		@connection.xquery("UPDATE stamps SET stamps = ?, restamps = ? WHERE ID = ?", stamps, restamps, userID)
+	end
+	
+	def updateStampbookCover(cover, userID)
+		@connection.xquery("UPDATE stamps SET stampbook_cover = ? WHERE ID = ?", cover, userID)
+	end
+	
+	def getPenguinInventoryByID(userID)
+		results = @connection.xquery("SELECT * FROM users WHERE ID = ?", userID)
+		results.each do |result|
+			return result['inventory']
+		end
+	end
+	
+	def getStampsByID(userID)
+		results = @connection.xquery("SELECT * FROM stamps WHERE ID = ?", userID)
+		results.each do |result|
+			return result['stamps']
+		end
+	end
+	
+	def getStampbookCoverByID(userID)
+		results = @connection.xquery("SELECT * FROM stamps WHERE ID = ?", userID)
+		results.each do |result|
+			return result['stampbook_cover']
+		end
+	end
+	
 	def getLoginKey(username)
 		results = @connection.xquery("SELECT * FROM users WHERE username = ?", username)
 		results.each do |result|
@@ -115,6 +144,11 @@ class Database
 	
 	def getIglooDetails(userID)
 		results = @connection.xquery("SELECT * FROM igloos WHERE ID = ?", userID)
+		return results
+	end
+	
+	def getStampsInfo(userID)
+		results = @connection.xquery("SELECT * FROM stamps WHERE ID = ?", userID)
 		return results
 	end
 	
