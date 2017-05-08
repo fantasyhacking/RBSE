@@ -70,6 +70,30 @@ class Database
 		@connection.xquery("UPDATE users SET moderation = ? WHERE ID = ?", newModStatus, userID)
 	end
 	
+	def updateFurnitureInventory(newInventory, userID)
+		@connection.xquery("UPDATE igloos SET ownedFurns = ? WHERE ID = ?", newInventory, userID)
+	end
+	
+	def updateIglooInventory(newInventory, userID)
+		@connection.xquery("UPDATE igloos SET ownedIgloos = ? WHERE ID = ?", newInventory, userID)
+	end
+	
+	def updateIglooType(iglooID, userID)
+		@connection.xquery("UPDATE igloos SET igloo = ? WHERE ID = ?", iglooID, userID)
+	end
+	
+	def updateFloorType(floorID, userID)
+		@connection.xquery("UPDATE igloos SET floor = ? WHERE ID = ?", floorID, userID)
+	end
+	
+	def updateIglooFurniture(furniture, userID)
+		@connection.xquery("UPDATE igloos SET furniture = ? WHERE ID = ?", furniture, userID)
+	end
+	
+	def updateIglooMusic(musicID, userID)
+		@connection.xquery("UPDATE igloos SET music = ? WHERE ID = ?", musicID, userID)
+	end
+	
 	def getLoginKey(username)
 		results = @connection.xquery("SELECT * FROM users WHERE username = ?", username)
 		results.each do |result|
@@ -86,6 +110,11 @@ class Database
 	
 	def getUserDetails(userID)
 		results = @connection.xquery("SELECT * FROM users WHERE ID = ?", userID)
+		return results
+	end
+	
+	def getIglooDetails(userID)
+		results = @connection.xquery("SELECT * FROM igloos WHERE ID = ?", userID)
 		return results
 	end
 	
