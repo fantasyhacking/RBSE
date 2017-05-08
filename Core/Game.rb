@@ -50,6 +50,7 @@ class Game < XTParser
 		end
 		client.sendData('%xt%js%-1%0%1%' + client.ranking['isStaff'].to_s + '%0%')
 		client.sendData('%xt%lp%-1%' + client.buildClientString + '%' + client.coins.to_s + '%0%1440%100%' + client.joindate.to_s + '%4%' + client.joindate.to_s + '%%7%')
+		client.sendData('%xt%gps%-1%' + client.ID.to_s + '%' + client.stamps.join('|') + '%')
 		@parent.mysql.updateLoginKey("", client.username)
 		client.joinRoom(100)
 	end
@@ -237,33 +238,42 @@ class Game < XTParser
 	def handleQueryPlayerPins(gameHandlerArgs, client)
 		userID = gameHandlerArgs[0]
 		userPins = Array.new
-		userDetails = @parent.mysql.getUserDetails(userID)
+		userDetails = @parent.mysql.getPenguinInventoryByID(userID)
 		userItems = userDetails.split('%')
-		@parent.crumbs.item_crumbs.all? { |item| 
-			if @parent.crumbs.item_crumbs[item]['type'] == 'flag'
-				if userItems.include?(item) != false
-					userPins.push(item)
-				end
+		userItems.each do |item|
+			item = item.to_i
+			if @parent.crumbs.item_crumbs.has_key?(item) == true && @parent.crumbs.item_crumbs[item][0]['type'] == 'flag'
+				userPins.push(item)
 			end
-		}
-		pins = userPins.join('|') + Time.now.to_i + '|0'
-		client.sendData('%xt%qpp%-1%' + client.ID.to_s + '%' + pins + '%')
+		end
+		pins = ''
+		if userPins.count > 0
+			userPins.each do |pin|
+				pins << pin.to_s + '|' + (Time.now.to_i).to_s + '%'
+			end
+		else
+			pins = ''
+		end
+		if pins != ''
+			client.sendData('%xt%qpp%-1%' + pins.to_s + '%')
+		else
+			client.sendData('%xt%qpp%-1%')
+		end
 	end
 	
 	def handleQueryPlayerAwards(gameHandlerArgs, client)
 		userID = gameHandlerArgs[0]
 		userAwards = Array.new
-		userDetails = @parent.mysql.getUserDetails(userID)
+		userDetails = @parent.mysql.getPenguinInventoryByID(userID)
 		userItems = userDetails.split('%')
-		@parent.crumbs.item_crumbs.all? { |item| 
-			if @parent.crumbs.item_crumbs[item]['type'] == 'other'
-				if userItems.include?(item) != false
-					userAwards.push(item)
-				end
+		userItems.each do |item|
+			item = item.to_i
+			if @parent.crumbs.item_crumbs.has_key?(item) && @parent.crumbs.item_crumbs[item][0]['type'] == 'other'
+				userAwards.push(item)
 			end
-		}
+		end
 		awards = userAwards.join('|')
-		client.sendData('%xt%qpa%-1%' + client.ID.to_s + '%' + awards + '%')
+		client.sendData('%xt%qpa%-1%' + client.ID.to_s + '%' + awards.to_s + '%')
 	end
 	
 	def handleCoinsDigUpdate(gameHandlerArgs, client)
@@ -360,14 +370,6 @@ class Game < XTParser
 	end
 	
 	def handleEPFGetField(gameHandlerArgs, client)
-	
-	end
-	
-	def handleSetStampBookCoverDetails(gameHandlerArgs, client)
-	
-	end
-	
-	def handleSetStampbookEnums(gameHandlerArgs, client)
 	
 	end
 	
@@ -502,6 +504,50 @@ class Game < XTParser
 		else 
 			client.sendData('%xt%gr%-1%')
 		end
+	end
+	
+	def handleSendStampEarned(gameHandlerArgs, client)
+		stampID = gameHandlerArgs[0]
+		if @parent.crumbs.stamps_crumbs.has_key?(stampID) != true
+			@parent.logger.warn("#{client.username} is trying to send an invalid stamp")
+			return false
+		end
+		if client.stamps.include?(stampID) != false
+			@parent.logger.warn("#{client.username} is trying to add an existing stamp")
+			return false
+		end
+		client.stamps.push(stampID)
+		client.restamps.push(stampID)
+		client.updateCurrentStamps
+		client.sendData('%xt%aabs%-1%' + stampID.to_s + '%')
+	end
+	
+	def handleGetPlayersStamps(gameHandlerArgs, client)
+		userID = gameHandlerArgs[0]
+		userStamps = @parent.mysql.getStampsByID(userID)
+		client.sendData('%xt%gps%-1%' + userID.to_s + '%' + userStamps + '%')
+	end
+	
+	def handleGetMyRecentlyEarnedStamps(gameHandlerArgs, client)
+		currstamps = client.stamps.join('|')
+		currrestamps = client.restamps.join('|')
+		client.sendData('%xt%gmres%-1%' + currrestamps + '%')
+		@parent.mysql.updatePenguinStamps(currstamps, '', client.ID)
+	end
+	
+	def handleGetStampBookCoverDetails(gameHandlerArgs, client)
+		stampbook_cover = @parent.mysql.getStampbookCoverByID(client.ID)
+		if stampbook_cover != ''
+			client.sendData('%xt%gsbcd%-1%' + stampbook_cover + '%')
+		else
+			client.sendData('%xt%gsbcd%-1%1%1%1%1%')
+		end
+	end
+	
+	def handleSetStampBookCoverDetails(gameHandlerArgs, client)
+		stampbook_cover = gameHandlerArgs.join('%')
+		@parent.mysql.updateStampbookCover(stampbook_cover, client.ID)
+		client.sendData('%xt%ssbcd%-1%' + (stampbook_cover ? stampbook_cover : '%'))
 	end
 
 end
