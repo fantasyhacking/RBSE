@@ -763,7 +763,7 @@
           ],
           "st#sse":[
             {
-              "method":"handleSetStampbookEnums",
+              "method":"handleSendStampEarned",
               "args":[
                 "stamp"
               ],
@@ -772,6 +772,58 @@
               ],
               "length":0,
               "hasException":false
+            }
+          ],
+		  "st#gps":[
+            {
+              "method":"handleGetPlayersStamps",
+              "args":[
+                "pengID"
+              ],
+              "type":[
+                "Fixnum"
+              ],
+              "length":0,
+              "hasException":false
+            }
+          ],
+          "st#gmres":[
+            {
+              "method":"handleGetMyRecentlyEarnedStamps",
+              "args":[
+              
+              ],
+              "type":[
+
+              ],
+              "length":-1,
+              "hasException":false
+            }
+          ],
+          "st#gsbcd":[
+            {
+              "method":"handleGetStampBookCoverDetails",
+              "args":[
+                "pengID"
+              ],
+              "type":[
+                "Fixnum"
+              ],
+              "length":0,
+              "hasException":false
+            }
+          ],
+          "st#ssbcd":[
+            {
+              "method":"handleSetStampBookCoverDetails",
+              "args":[
+              
+              ],
+              "type":[
+
+              ],
+              "length":-1,
+              "hasException":true
             }
           ],
           "f#epfga":[
