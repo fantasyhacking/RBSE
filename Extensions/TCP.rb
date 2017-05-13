@@ -98,7 +98,7 @@ class TCP
 			if @clients[key].sock == socket
 				@clients[key].sock.close
 				@clients.delete(client)
-				@parent.logger.debug('A client disconnected from the server')
+				@parent.logger.info('A client disconnected from the server')
 			end
 		end
 	end
