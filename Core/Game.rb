@@ -25,7 +25,7 @@ class Game < XTParser
 	def handleData(data, client)
 		handlingInfo = self.parseData(data)
 		if handlingInfo == false
-			return
+			return @parent.sock.handleRemoveClient(client.sock)
 		end
 		gameHandler = handlingInfo[0]['handler']
 		gameHandlerArgs = handlingInfo[0]['arguments']
