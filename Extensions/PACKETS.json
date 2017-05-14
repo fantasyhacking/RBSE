@@ -419,6 +419,58 @@
               "hasException":false
             }
           ],
+          "b#br":[
+            {
+              "method":"handleBuddyRequest",
+              "args":[
+				"buddyID"
+              ],
+              "type":[
+				"Fixnum"
+              ],
+              "length":0,
+              "hasException":false
+            }
+          ],
+          "b#ba":[
+            {
+              "method":"handleBuddyAccept",
+              "args":[
+				"buddyID"
+              ],
+              "type":[
+				"Fixnum"
+              ],
+              "length":0,
+              "hasException":false
+            }
+          ],
+          "b#rb":[
+            {
+              "method":"handleRemoveBuddy",
+              "args":[
+				"buddyID"
+              ],
+              "type":[
+				"Fixnum"
+              ],
+              "length":0,
+              "hasException":false
+            }
+          ],
+          "b#bf":[
+            {
+              "method":"handleBuddyFind",
+              "args":[
+				"buddyID"
+              ],
+              "type":[
+				"Fixnum"
+              ],
+              "length":0,
+              "hasException":false
+            }
+          ],
           "n#gn":[
             {
               "method":"handleGetIgnored",
@@ -429,6 +481,32 @@
 
               ],
               "length":-1,
+              "hasException":false
+            }
+          ],
+          "n#an":[
+            {
+              "method":"handleAddIgnore",
+              "args":[
+				"buddyID"
+              ],
+              "type":[
+				"Fixnum"
+              ],
+              "length":0,
+              "hasException":false
+            }
+          ],
+          "n#rn":[
+            {
+              "method":"handleRemoveIgnore",
+              "args":[
+				"buddyID"
+              ],
+              "type":[
+				"Fixnum"
+              ],
+              "length":0,
               "hasException":false
             }
           ],
