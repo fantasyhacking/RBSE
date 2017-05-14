@@ -102,6 +102,14 @@ class Database
 		@connection.xquery("UPDATE stamps SET stampbook_cover = ? WHERE ID = ?", cover, userID)
 	end
 	
+	def updateBuddies(buddies, userID)
+		@connection.xquery("UPDATE users SET buddies = ? WHERE ID = ?", buddies, userID)
+	end
+	
+	def updateIgnoredBuddies(ignored, userID)
+		@connection.xquery("UPDATE users SET ignored = ? WHERE ID = ?", ignored, userID)
+	end
+	
 	def getPenguinInventoryByID(userID)
 		results = @connection.xquery("SELECT * FROM users WHERE ID = ?", userID)
 		results.each do |result|
@@ -134,6 +142,13 @@ class Database
 		results = @connection.xquery("SELECT * FROM users WHERE username = ?", username)
 		results.each do |result|
 			return result['ID']
+		end
+	end
+	
+	def getClientBuddiesByID(userID)
+		results = @connection.xquery("SELECT * FROM users WHERE ID = ?", userID)
+		results.each do |result|
+			return result['buddies']
 		end
 	end
 	
