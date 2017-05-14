@@ -32,12 +32,12 @@ class TCP
 					if @parent.game_sys.iglooMap.has_key?(client.ID)
 						@parent.game_sys.iglooMap.delete(client.ID)
 					end
+					client.handleBuddyOffline
 					client.removePlayerFromRoom
 					self.handleRemoveClient(connection)
 					break
 				end
 				self.handleIncomingData(data, client)	
-				connection.flush
 			end
 			rescue Exception => e
 				@parent.logger.error("#{e} (#{e.class}) - #{e.backtrace.join("\n\t")}")
