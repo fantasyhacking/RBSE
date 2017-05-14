@@ -4,7 +4,7 @@ require 'json'
 
 class CPUser
 
-	attr_accessor :sock, :ID, :username, :lkey, :coins, :joindate, :clothes, :ranking, :astatus, :clothes, :ranking, :inventory, :buddies, :ignored, :buddyRequests, :room, :xaxis, :yaxis, :frame
+	attr_accessor :sock, :ID, :username, :lkey, :coins, :joindate, :clothes, :ranking, :astatus, :clothes, :ranking, :inventory, :buddies, :ignored, :room, :xaxis, :yaxis, :frame
 	attr_accessor :igloo, :floor, :music, :furniture, :ownedFurns, :ownedIgloos
 	attr_accessor :stamps, :restamps, :stampbook_cover
 
