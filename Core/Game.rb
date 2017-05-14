@@ -341,14 +341,6 @@ class Game < XTParser
 		end
 	end
 	
-	def handleGetBuddies(gameHandlerArgs, client)
-	
-	end
-	
-	def handleGetIgnored(gameHandlerArgs, client)
-	
-	end
-	
 	def handleMailStart(gameHandlerArgs, client)
 	
 	end
@@ -547,7 +539,116 @@ class Game < XTParser
 	def handleSetStampBookCoverDetails(gameHandlerArgs, client)
 		stampbook_cover = gameHandlerArgs.join('%')
 		@parent.mysql.updateStampbookCover(stampbook_cover, client.ID)
-		client.sendData('%xt%ssbcd%-1%' + (stampbook_cover ? stampbook_cover : '%'))
+		client.sendData('%xt%ssbcd%-1%' + (stampbook_cover ? stampbook_cover : '1%1%1%1%'))
+	end
+	
+	def handleBuddyRequest(gameHandlerArgs, client)
+		buddyID = gameHandlerArgs[0]
+		oclient = client.getClientByID(buddyID)
+		oclient.sendData('%xt%br%-1%' + client.ID.to_s + '%' + client.username + '%')
+	end
+	
+	def handleGetBuddies(gameHandlerArgs, client)
+		buddyString = ''
+		client.buddies.each do |buddyID, buddyName|
+			buddyString << buddyID.to_s + '|' + buddyName + '|' + client.getOnline(buddyID).to_s + '%'
+		end
+		if buddyString != ''
+			client.sendData('%xt%gb%-1%' + buddyString + '%')
+		else
+			client.sendData('%xt%gb%-1%%')
+		end
+	end
+	
+	def handleBuddyAccept(gameHandlerArgs, client)
+		buddyID = gameHandlerArgs[0]
+		if buddyID == client.ID.to_i
+			return @parent.logger.warn("#{client.username} is trying to add themselves, wtf?")
+		end
+		if client.buddies.has_key?(buddyID) != false
+			return @parent.logger.warn("#{client.username} is trying to add a buddy that already exists!")
+		end
+		oclient = client.getClientByID(buddyID)
+		client.buddies[buddyID] = oclient.username
+		oclient.buddies[client.ID.to_i] = client.username
+		oclient.updateCurrentBuddies
+		client.updateCurrentBuddies
+		oclient.sendData('%xt%ba%-1%' + client.ID.to_s + '%' + client.username + '%')
 	end
 
+	def handleRemoveBuddy(gameHandlerArgs, client)
+		buddyID = gameHandlerArgs[0]
+		if buddyID == client.ID.to_i
+			return @parent.logger.warn("#{client.username} is trying to remove themselves, wtf?")
+		end
+		if client.buddies.has_key?(buddyID) != true
+			return @parent.logger.warn("#{client.username} is trying to remove a buddy that doesn\'t exist!")
+		end
+		client.buddies.delete(buddyID)
+		client.updateCurrentBuddies
+		oclientBuddies = @parent.mysql.getClientBuddiesByID(buddyID)
+		buddies = oclientBuddies.split(',')
+		buddyString = ''
+		buddies.each do |buddy|
+			budDetails = buddy.split('|')
+			budID = budDetails[0]
+			budName = budDetails[1]
+			if budID.to_i != client.ID.to_i
+				buddyString << budID.to_s + '|' + budName + ','
+			end
+		end
+		@parent.mysql.updateBuddies(buddyString, buddyID)
+		if client.getOnline(buddyID) == 1
+			oclient = client.getClientByID(buddyID)
+			oclient.sendData('%xt%rb%-1%' + client.ID.to_s + '%' + client.username + '%')
+		end
+	end
+	
+	def handleBuddyFind(gameHandlerArgs, client)
+		buddyID = gameHandlerArgs[0]
+		oclient = client.getClientByID(buddyID)
+		if client.getOnline(buddyID) == 1
+			return client.sendData('%xt%bf%-1%' + oclient.room.to_s + '%')
+		end
+	end
+	
+	def handleGetIgnored(gameHandlerArgs, client)
+		buddyString = ''
+		client.ignored.each do |buddyID, buddyName|
+			buddyString << buddyID.to_s + '|' + buddyName + '%'
+		end
+		if buddyString != ''
+			client.sendData('%xt%gn%-1%' + buddyString + '%')
+		else
+			client.sendData('%xt%gn%-1%%')
+		end
+	end
+	
+	def handleAddIgnore(gameHandlerArgs, client)
+		buddyID = gameHandlerArgs[0]
+		if buddyID == client.ID.to_i
+			return @parent.logger.warn("#{client.username} is trying to ignore themselves, wtf?")
+		end
+		if client.ignored.has_key?(buddyID) != false
+			return @parent.logger.warn("#{client.username} is trying to ignore a buddy that\'s already ignored!")
+		end
+		oclient = client.getClientByID(buddyID)
+		client.ignored[oclient.ID.to_i] = oclient.username
+		client.updateCurrentIgnoredBuddies
+		client.sendData('%xt%an%' + client.room.to_s + '%' + oclient.ID.to_s + '%')
+	end
+	
+	def handleRemoveIgnore(gameHandlerArgs, client)
+		buddyID = gameHandlerArgs[0]
+		if buddyID == client.ID.to_i
+			return @parent.logger.warn("#{client.username} is trying to remove themselves from being ignored, wtf?")
+		end
+		if client.ignored.has_key?(buddyID) != true
+			return @parent.logger.warn("#{client.username} is trying to remove an ignored buddy that doesn\'t exist!")
+		end
+		client.ignored.delete(buddyID)
+		client.updateCurrentIgnoredBuddies
+		client.sendData('%xt%rn%' + client.room.to_s + '%' + buddyID.to_s + '%')
+	end
+	
 end
