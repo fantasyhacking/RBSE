@@ -67,6 +67,7 @@ class Login
 		client.loadUserInfo
 		client.loadIglooInfo
 		client.loadStampsInfo
+		client.handleBuddyOnline
 	end
 
 end
