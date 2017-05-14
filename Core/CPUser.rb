@@ -295,7 +295,6 @@ class CPUser
 		newAmount = (@coins - amount)
 		@parent.mysql.updateCurrentCoins(newAmount, @ID)
 		@coins = newAmount
-		self.loadUserInfo
 	end
 
 	def removePlayerFromRoom
