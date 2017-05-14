@@ -51,7 +51,6 @@ class CPUser
 		@inventory = Array.new
 		@buddies = Hash.new
 		@ignored = Hash.new
-		@buddyRequests = Array.new
 		@stamps = Array.new
 		@restamps = Array.new
 		@stampbook_cover = ''
@@ -83,21 +82,23 @@ class CPUser
 			info.each do |key, value|
 				case key
 					when 'inventory'
-						items = value.split('%')
-						items.each do |item|
-							@inventory.push(item)
+						items = value.split('|')
+						items.each do |itemID|
+							@inventory.push(itemID)
 						end
 					when 'buddies'
 						buddies = value.split(',')
 						buddies.each do |buddy|
 							buddyID, buddyName = buddy.split('|')
-							@buddies.store(:buddyID, buddyName)
+							buddyID = buddyID.to_i
+							@buddies[buddyID] = buddyName
 						end
 					when 'ignored'
 						ignoreds = value.split(',')
 						ignoreds.each do |ignored|
 							ignoredID, ignoredName = ignored.split('|')
-							@ignored.store(:ignoredID, ignoredName)
+							ignoredID = ignoredID.to_i
+							@ignored[ignoredID] = ignoredName
 						end
 					when 'moderation'
 						if value != ''
@@ -242,9 +243,18 @@ class CPUser
 		return count
 	end
 	
+	def getOnline(userID)
+		@parent.sock.clients.each_with_index do |client, key|
+			if @parent.sock.clients[key].ID.to_i == userID.to_i
+				return 1
+			end
+		end
+		return 0
+	end
+	
 	def getClientByID(userID)
 		@parent.sock.clients.each_with_index do |client, key|
-			if @parent.sock.clients[key].ID == userID
+			if @parent.sock.clients[key].ID.to_i == userID.to_i
 				return client
 			end
 		end
@@ -261,7 +271,7 @@ class CPUser
 	end
 	
 	def updateCurrentInventory
-		newInventory = @inventory.join('%')
+		newInventory = @inventory.join('|')
 		@parent.mysql.updatePenguinInventory(newInventory, @ID)
 	end
 	
@@ -284,6 +294,23 @@ class CPUser
 		@parent.mysql.updatePenguinStamps(newStamps, newRestamps, @ID)
 	end
 	
+	def updateCurrentBuddies
+		buddyString = ''
+		@buddies.each do |buddyID, buddyName|
+			buddyString << buddyID.to_s + '|' + buddyName + ','
+		end
+		@parent.mysql.updateBuddies(buddyString, @ID)
+	end
+	
+	def updateCurrentIgnoredBuddies
+		buddyString = ''
+		@ignored.each do |buddyID, buddyName|
+			buddyString << buddyID.to_s + '|' + buddyName + ','
+		end
+		@parent.mysql.updateIgnoredBuddies(buddyString, @ID)
+	end
+	
+	
 	def addCoins(amount)
 		newAmount = (@coins + amount)
 		@parent.mysql.updateCurrentCoins(newAmount, @ID)
@@ -299,5 +326,23 @@ class CPUser
 
 	def removePlayerFromRoom
 		self.sendData('%xt%rp%-1%' + @ID.to_s + '%')
+	end
+	
+	def handleBuddyOnline
+		@buddies.each do |buddyID, buddyName|
+			if self.getOnline(buddyID) != 0
+				oclient = self.getClientByID(buddyID)
+				oclient.sendData('%xt%bon%-1%' + @ID.to_s + '%')
+			end
+		end
+	end
+	
+	def handleBuddyOffline
+		@buddies.each do |buddyID, buddyName|
+			if self.getOnline(buddyID) != 0
+				oclient = self.getClientByID(buddyID)
+				oclient.sendData('%xt%bof%-1%' + @ID.to_s + '%')
+			end
+		end
 	end
 end
