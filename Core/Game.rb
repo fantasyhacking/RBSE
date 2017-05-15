@@ -341,14 +341,6 @@ class Game < XTParser
 		end
 	end
 	
-	def handleMailStart(gameHandlerArgs, client)
-	
-	end
-	
-	def handleMailGet(gameHandlerArgs, client)
-	
-	end
-	
 	def handlePuffleGetUser(gameHandlerArgs, client)
 	
 	end
@@ -376,7 +368,7 @@ class Game < XTParser
 		if client.ownedFurns.has_key?(furnID) != false
 			furnQuantity += client.ownedFurns[furnID]
 		end
-		if furnQuantity >= 900
+		if furnQuantity > 99
 			return client.sendError(403)
 		end
 		client.ownedFurns[furnID] = furnQuantity
@@ -399,7 +391,7 @@ class Game < XTParser
 		if @parent.crumbs.igloo_crumbs.has_key?(iglooID) != true
 			return client.sendError(402)
 		elsif client.ownedIgloos.include?(iglooID) != false
-			return client.sendError(400)
+			return client.sendError(500)
 		elsif @parent.crumbs.igloo_crumbs[iglooID][0]['price'] > client.coins
 			return client.sendError(401)
 		end
@@ -649,6 +641,69 @@ class Game < XTParser
 		client.ignored.delete(buddyID)
 		client.updateCurrentIgnoredBuddies
 		client.sendData('%xt%rn%' + client.room.to_s + '%' + buddyID.to_s + '%')
+	end
+	
+	def handleMailStart(gameHandlerArgs, client)
+		unreadPostcards = @parent.mysql.getUnreadPostcardCount(client.ID)
+		receivedPostcards = @parent.mysql.getReceivedPostcardCount(client.ID)
+		client.sendData('%xt%mst%-1%' + unreadPostcards.to_s + '%' + receivedPostcards.to_s + '%')
+	end
+	
+	def handleMailGet(gameHandlerArgs, client)
+		postcards = @parent.mysql.getUserPostcards(client.ID)
+		if postcards != ''
+			client.sendData('%xt%mg%-1%' + postcards + '%')
+		else
+			client.sendData('%xt%mg%-1%%')
+		end
+	end
+	
+	def handleMailSend(gameHandlerArgs, client)
+		recepientID = gameHandlerArgs[0]
+		postcardType = gameHandlerArgs[1]
+		postcardNotes = HTMLEntities.new.decode((gameHandlerArgs[2] ? gameHandlerArgs[2] : ''))
+		if @parent.crumbs.postcard_crumbs.has_key?(postcardType) != true
+			return @parent.logger.warn("#{client.username} is trying to send an invalid postcard")
+		end
+		if @parent.crumbs.postcard_crumbs[postcardType][0]['cost'] > client.coins
+			client.sendData('%xt%ms%-1%' + client.coins.to_s + '%2%')
+		else
+			receiver = client.getClientByID(recepientID)
+			receivedPostcards = @parent.mysql.getReceivedPostcardCount(recepientID)
+			if receivedPostcards > 92
+				return client.sendData('%xt%ms%-1%' + client.coins.to_s + '%0%')
+			end
+			currTimestamp = Time.now.to_i
+			postcardID = @parent.mysql.addPostcard(recepientID, client.username, client.ID, postcardNotes, postcardType, currTimestamp)
+			if client.getOnline(recepientID) == 1
+			   receiver.sendData('%xt%mr%-1%' + client.username + '%' + client.ID.to_s + '%' + postcardType.to_s + '%' + currTimestamp.to_s + '%' + postcardID.to_s + '%')
+			   client.sendData('%xt%ms%-1%' + client.coins.to_s + '%1%')
+			else
+				client.sendData('%xt%ms%-1%' + client.coins.to_s + '%1%')
+			end
+			client.deductCoins(@parent.crumbs.postcard_crumbs[postcardType][0]['cost'])
+		end
+	end
+	
+	def handleMailDelete(gameHandlerArgs, client)
+		postcardID = gameHandlerArgs[0]
+		@parent.mysql.deletePostcardByRecepient(postcardID, client.ID)
+		client.sendData('%xt%md%-1%' + postcardID.to_s + '%')
+	end
+	
+	def handleMailDeletePlayer(gameHandlerArgs, client)
+		userID = gameHandlerArgs[0]
+		@parent.mysql.deletePostcardsByMailer(client.ID, userID)
+		receivedPostcards = @parent.mysql.getReceivedPostcardCount(client.ID)
+		client.sendData('%xt%mdp%-1%' + receivedPostcards.to_s + '%')
+	end
+	
+	def handleMailChecked(gameHandlerArgs, client)
+		unreadPostcards = @parent.mysql.getUnreadPostcardCount(client.ID)
+		if unreadPostcards > 0
+			@parent.mysql.updatePostcardRead(client.ID)
+			client.sendData('%xt%mc%-1%1%')
+		end
 	end
 	
 end
