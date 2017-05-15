@@ -32,3 +32,12 @@ Club Penguin Server Emulator - AS2 Protocol
   <li>typhoeus</li>
 </ul> 
 </details>
+
+<details>
+<summary>Default Users</summary>
+<b>Username:</b> Lynx <br>
+<b>Password:</b> passwordtest
+<br><br>
+<b>Username:</b> Test <br>
+<b>Password:</b> passwordtest
+</details>
