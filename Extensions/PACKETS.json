@@ -904,6 +904,88 @@
               "hasException":true
             }
           ],
+		  "l#mst":[
+            {
+              "method":"handleMailStart",
+              "args":[
+              
+              ],
+              "type":[
+
+              ],
+              "length":-1,
+              "hasException":false
+            }
+          ],
+          "l#mg":[
+            {
+              "method":"handleMailGet",
+              "args":[
+              
+              ],
+              "type":[
+
+              ],
+              "length":-1,
+              "hasException":false
+            }
+          ],
+          "l#ms":[
+            {
+              "method":"handleMailSend",
+              "args":[
+				"recepient",
+				"postcard",
+				"possibleNotes"
+              ],
+              "type":[
+				"Fixnum",
+				"Fixnum",
+				"String"
+              ],
+              "length":2,
+              "hasException":false
+            }
+          ],
+		  "l#md":[
+            {
+              "method":"handleMailDelete",
+              "args":[
+				"postcard"
+              ],
+              "type":[
+				"Fixnum"
+              ],
+              "length":0,
+              "hasException":false
+            }
+          ],
+          "l#mdp":[
+            {
+              "method":"handleMailDeletePlayer",
+              "args":[
+				"pengID"
+              ],
+              "type":[
+				"Fixnum"
+              ],
+              "length":0,
+              "hasException":false
+            }
+          ],
+		  "l#mc":[
+            {
+              "method":"handleMailChecked",
+              "args":[
+              
+              ],
+              "type":[
+
+              ],
+              "length":-1,
+              "hasException":false
+            }
+          ],
           "f#epfga":[
             {
               "method":"handleEPFGetAgent",
