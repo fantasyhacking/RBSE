@@ -191,5 +191,43 @@ class Database
 			return userString
 		end
 	end
+	
+	def getUnreadPostcardCount(userID)
+		results = @connection.xquery("SELECT * FROM postcards WHERE recepient = ? AND isRead = ?", userID, 0)
+		unread_count = results.count
+		return unread_count
+	end
+	
+	def getReceivedPostcardCount(userID)
+		results = @connection.xquery("SELECT * FROM postcards WHERE recepient = ?", userID)
+		postcards_count = results.count
+		return postcards_count
+	end
+	
+	def getUserPostcards(userID)
+		results = @connection.xquery("SELECT * FROM postcards WHERE recepient = ?", userID)
+		postcardsString = ''
+		results.each do |result|
+			postcardsString << result['mailerName'].to_s + '|' + result['mailerID'].to_s + '|' + result['postcardType'].to_s + '|' + result['notes'].to_s + '|' + result['timestamp'].to_s + '|' + result['postcardID'].to_s + '%'
+		end
+		return postcardsString[0..-1]
+	end
+	
+	def addPostcard(recepient, mailerName  = 'sys', mailerID = 0, postcardNotes = 'RBSE', postcardType = 1, timestamp = 0)
+		@connection.xquery("INSERT INTO postcards (recepient, mailerName, mailerID, notes, postcardType, timestamp) values (?, ?, ?, ?, ?, ?)", recepient, mailerName, mailerID, postcardNotes, postcardType, timestamp)
+		return @connection.last_id
+	end
+	
+	def deletePostcardByRecepient(postcard, recepient)
+		@connection.xquery("DELETE FROM postcards WHERE postcardID = ? AND recepient = ?", postcard, recepient)
+	end
+	
+	def deletePostcardsByMailer(recepient, sender)
+		@connection.xquery("DELETE FROM postcards WHERE recepient = ? AND mailerID = ?", recepient, sender)
+	end
+	
+	def updatePostcardRead(userID)
+		@connection.xquery("UPDATE postcards SET isRead = ? WHERE recepient = ?", 1, userID)
+	end
 
 end
