@@ -4,7 +4,7 @@ Club Penguin Server Emulator - AS2 Protocol
 <details> 
 <summary>Screenshots</summary>
 
-![Console](https://s11.postimg.org/i4c5ivvs3/kai_kai-_HP-_Notebook_-home-kai-_Documents-_RBSE_011.png)
+![Console](https://s28.postimg.org/ajbfini1p/Screenshot_from_2017-05-18_12_23_24.png)
 ![Buddy_Online](https://s17.postimg.org/za24gnon3/Screenshot_from_2017-05-15_03_50_12.png)
 ![Buddy_Accept](https://s17.postimg.org/5w6e12lxb/Screenshot_from_2017-05-15_03_49_40.png)
 ![Postcards](https://s12.postimg.org/ibs3lkwb1/Screenshot_from_2017-05-15_15_05_53.png)
