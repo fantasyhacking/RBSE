@@ -29,10 +29,24 @@ class Game < XTParser
 		end
 		gameHandler = handlingInfo[0]['handler']
 		gameHandlerArgs = handlingInfo[0]['arguments']
+		@parent.hooks.each do |hook, hookClass|
+			if @parent.hooks[hook].dependencies['hook_type'].downcase == 'game'
+				if @parent.hooks[hook].respond_to?(gameHandler) == true && @parent.hooks[hook].callBefore == true && @parent.hooks[hook].callAfter == false
+					hookClass.send(gameHandler, gameHandlerArgs, client)
+				end
+			end
+		end
 		if self.respond_to?(gameHandler) != true
 			return @parent.logger.error('Unfortunately doesn\'t seem like the game method exists')
 		end
 		self.send(gameHandler, gameHandlerArgs, client)
+		@parent.hooks.each do |hook, hookClass|
+			if @parent.hooks[hook].dependencies['hook_type'].downcase == 'game'
+				if @parent.hooks[hook].respond_to?(gameHandler) == true && @parent.hooks[hook].callAfter == true && @parent.hooks[hook].callBefore == false
+					hookClass.send(gameHandler, gameHandlerArgs, client)
+				end
+			end
+		end
 	end
 	
 	def handleJoinServer(gameHandlerArgs, client)
@@ -286,9 +300,11 @@ class Game < XTParser
 	def handleSendMessage(gameHandlerArgs, client)
 		userID = gameHandlerArgs[0]
 		userMessage = gameHandlerArgs[1]
+		decodedMessage = HTMLEntities.new.decode(userMessage)
 		if client.astatus['isMuted'].to_bool != true
-			decodedMessage = HTMLEntities.new.decode(userMessage)
 			client.sendRoom('%xt%sm%-1%' + userID.to_s + '%' + decodedMessage + '%') 
+		else
+			client.sendRoom('%xt%mm%-1%' + userID.to_s + '%' + decodedMessage + '%')
 		end
 	end
 	
