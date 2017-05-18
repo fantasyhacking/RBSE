@@ -82,8 +82,22 @@ class TCP
 			action = hash_data['msg']['body']['action']
 			if @parent.login_sys.xml_handlers.has_key?(action)
 				handler = @parent.login_sys.xml_handlers[action]
+				@parent.hooks.each do |hook, hookClass|
+					if @parent.hooks[hook].dependencies['hook_type'] == 'login'
+						if @parent.hooks[hook].respond_to?(handler) == true && @parent.hooks[hook].callBefore == true && @parent.hooks[hook].callAfter == false
+							hookClass.send(handler, hash_data, client)
+						end
+					end
+				end
 				if @parent.login_sys.respond_to?(handler) == true
 					@parent.login_sys.send(handler, hash_data, client)
+				end
+				@parent.hooks.each do |hook, hookClass|
+					if @parent.hooks[hook].dependencies['hook_type'] == 'login'
+						if @parent.hooks[hook].respond_to?(handler) == true && @parent.hooks[hook].callAfter == true && @parent.hooks[hook].callBefore == false
+							hookClass.send(handler, hash_data, client)
+						end
+					end
 				end
 			end
 		end
