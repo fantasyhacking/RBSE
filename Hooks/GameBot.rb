@@ -53,5 +53,10 @@ class GameBot
 	def handleJoinServer(data, client)
 		client.sendRoom('%xt%ap%-1%' + self.buildBotString + '%')
 	end
+	
+	def handleJoinPlayer(data, client)
+		client.sendRoom('%xt%ap%-1%' + self.buildBotString + '%')
+	end
+
 
 end
