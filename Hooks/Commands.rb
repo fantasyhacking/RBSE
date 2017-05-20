@@ -19,6 +19,7 @@ class Commands
 			'global' => 'handleGlobalMessage',
 			'users' => 'handleUserCount',
 			'ai' => 'handleAddItem',
+			'ac' => 'handleAddCoins',
 			'addall' => 'handleAddAllItems',
 			'summon' => 'handleSummonPenguin',
 			'teleport' => 'handleTeleportPenguin',
@@ -60,6 +61,14 @@ class Commands
 			client.sendRoom('%xt%sm%-1%0%I guess its just you and me baby ;)%')
 		else
 			client.sendRoom("%xt%sm%-1%0%Currently there are " + userCount.to_s + " users online%")
+		end
+	end
+	
+	def handleAddCoins(cmdArgs, client)
+		msgArgs = cmdArgs.split(' ')
+		amount = msgArgs[0]
+		if @parent.is_num?(amount) == true && amount.to_i < 5000
+			client.addCoins(amount.to_i)
 		end
 	end
 	
