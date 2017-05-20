@@ -12,6 +12,10 @@ class XTParser
 	def parseData(data)
 		if data.respond_to?(:to_str)
 			packets = data.split('%')
+			if packets.count < 3
+				@parent.logger.warn('Client is trying to send a packet with very less arguments')
+				return false
+			end
 			if @xtPackets.has_key?(packets[1]) != true
 				@parent.logger.warn('Client is trying to send an invalid packet')
 				return false
