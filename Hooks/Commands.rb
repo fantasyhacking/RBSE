@@ -19,7 +19,10 @@ class Commands
 			'global' => 'handleGlobalMessage',
 			'users' => 'handleUserCount',
 			'ai' => 'handleAddItem',
-			'addall' => 'handleAddAllItems'
+			'addall' => 'handleAddAllItems',
+			'summon' => 'handleSummonPenguin',
+			'teleport' => 'handleTeleportPenguin',
+			'find' => 'handleFindPenguin'
 		}
 		@prefix = '!'
 	end
@@ -75,6 +78,36 @@ class Commands
 			argsToSend.push(item.to_i)
 		end
 		@parent.game_sys.handleAddInventory(argsToSend, client)
+	end
+	
+	def handleSummonPenguin(cmdArgs, client)
+		if client.ranking['isStaff'] == 1
+			msgArgs = cmdArgs.split(' ')
+			name = msgArgs[0]
+			if @parent.is_num?(name) != true && name != client.username
+				oclient = client.getClientByName(name)
+				oclient.joinRoom(client.room)
+			end
+		end
+	end
+	
+	def handleTeleportPenguin(cmdArgs, client)
+		msgArgs = cmdArgs.split(' ')
+		name = msgArgs[0]
+		if @parent.is_num?(name) != true && name != client.username
+			oclient = client.getClientByName(name)
+			client.joinRoom(oclient.room)
+		end
+	end
+	
+	def handleFindPenguin(cmdArgs, client)
+		msgArgs = cmdArgs.split(' ')
+		name = msgArgs[0]
+		if @parent.is_num?(name) != true && name != client.username
+			oclient = client.getClientByName(name)
+			room_name = @parent.crumbs.room_crumbs[oclient.room][0]['name']
+			client.sendData('%xt%sm%-1%0%' + oclient.username + ' is at the ' + room_name + '%')
+		end
 	end
 
 end
