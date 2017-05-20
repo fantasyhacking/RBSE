@@ -111,14 +111,14 @@ class CPUser
 						if value != ''
 							rankData = JSON.parse(value)
 							rankData.each do |rankType, rankValue|
-								@ranking[rankType] = rankValue
+								@ranking[rankType] = rankValue.to_i
 							end
 						end
 					when 'clothing'
 						if value != ''
 							clothingData = JSON.parse(value)
 							clothingData.each do |itemType, itemValue|
-								@clothes[itemType] = itemValue
+								@clothes[itemType] = itemValue.to_i
 							end
 						end
 					when 'joindate'
@@ -255,6 +255,14 @@ class CPUser
 	def getClientByID(userID)
 		@parent.sock.clients.each_with_index do |client, key|
 			if @parent.sock.clients[key].ID.to_i == userID.to_i
+				return client
+			end
+		end
+	end
+	
+	def getClientByName(username)
+		@parent.sock.clients.each_with_index do |client, key|
+			if @parent.sock.clients[key].username == username
 				return client
 			end
 		end
