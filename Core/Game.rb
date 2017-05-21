@@ -66,6 +66,7 @@ class Game < XTParser
 		client.sendData('%xt%lp%-1%' + client.buildClientString + '%' + client.coins.to_s + '%0%1440%100%' + client.joindate.to_s + '%4%' + client.joindate.to_s + '%%7%')
 		client.sendData('%xt%gps%-1%' + client.ID.to_s + '%' + client.stamps.join('|') + '%')
 		@parent.mysql.updateLoginKey("", client.username)
+		client.checkPuffleStats
 		client.joinRoom(100)
 	end
 	
@@ -194,8 +195,15 @@ class Game < XTParser
 	
 	def handleUpdatePlayerHand(gameHandlerArgs, client)
 		itemID = gameHandlerArgs[0]
+		walkingPuffleIDS = @parent.mysql.getWalkingPuffleIDS(client.ID)
+		if itemID == 0 && walkingPuffleIDS != nil
+			walkingPuffleIDS.each do |walkingPuffID|
+				@parent.mysql.updateWalkingPuffle(0, client.ID, walkingPuffID)
+			end
+		end
 		client.sendRoom('%xt%upa%-1%' + client.ID.to_s + '%' + itemID.to_s + '%')
-		client.clothes['hand'] = itemID
+		client.clothes['hands'] = itemID
+		client.updateCurrentClothing
 	end
 	
 	def handleUpdatePlayerFeet(gameHandlerArgs, client)
@@ -357,10 +365,6 @@ class Game < XTParser
 		end
 	end
 	
-	def handlePuffleGetUser(gameHandlerArgs, client)
-	
-	end
-	
 	def handleEPFGetAgent(gameHandlerArgs, client)
 	
 	end
@@ -451,10 +455,6 @@ class Game < XTParser
 			furniture = iglooInfo['furniture'].to_s
 		end
 		client.sendData('%xt%gm%-1%' + client.ID.to_s + '%' + (iglooID ? iglooID : 1) + '%' + (musicID ? musicID : 0) + '%' + (floorID ? floorID : 0) + '%' +  (furniture ? furniture : '') + '%')
-	end
-	
-	def handlePuffleGet(gameHandlerArgs, client)
-		client.sendData('%xt%pg%-1%%')
 	end
 	
 	def handleGetOwnedIgloos(gameHandlerArgs, client)
@@ -719,6 +719,247 @@ class Game < XTParser
 		if unreadPostcards > 0
 			@parent.mysql.updatePostcardRead(client.ID)
 			client.sendData('%xt%mc%-1%1%')
+		end
+	end
+	
+	def handleSendPuffleFrame(gameHandlerArgs, client)
+		puffleID = gameHandlerArgs[0]
+		puffleFrame = gameHandlerArgs[1]
+		realPuffID = @parent.mysql.getPuffleIDByOwner(client.ID, puffleID)
+		if realPuffID == puffleID
+			client.sendRoom('%xt%ps%-1%' + puffleID.to_s + '%' + puffleFrame.to_s + '%')
+		end
+	end
+	
+	def handleGetPuffle(gameHandlerArgs, client)
+		userID = gameHandlerArgs[0]
+		userPuffles = @parent.mysql.getNonWalkingPuffles(userID)
+		client.sendData('%xt%pg%-1%' + userPuffles)
+	end
+	
+	def handlePufflePip(gameHandlerArgs, client)
+		puffleID = gameHandlerArgs[0]
+		argOne = gameHandlerArgs[1]
+		argTwo = gameHandlerArgs[2]
+		realPuffID = @parent.mysql.getPuffleIDByOwner(client.ID, puffleID)
+		if realPuffID == puffleID
+			client.sendRoom('%xt%pip%-1%' + realPuffID.to_s + '%' + argOne.to_s + '%' + argTwo.to_s + '%')
+		end
+	end
+	
+	def handlePufflePir(gameHandlerArgs, client)
+		puffleID = gameHandlerArgs[0]
+		argOne = gameHandlerArgs[1]
+		argTwo = gameHandlerArgs[2]
+		realPuffID = @parent.mysql.getPuffleIDByOwner(client.ID, puffleID)
+		if realPuffID == puffleID
+			client.sendRoom('%xt%pir%-1%' + realPuffID.to_s + '%' + argOne.to_s + '%' + argTwo.to_s + '%')
+		end
+	end
+	
+	def handlePuffleIsResting(gameHandlerArgs, client)
+		puffleID = gameHandlerArgs[0]
+		argOne = gameHandlerArgs[1]
+		argTwo = gameHandlerArgs[2]
+		puffle = @parent.mysql.getPuffleByOwner(client.ID, puffleID)
+		if puffle != ''
+			client.sendRoom('%xt%ir%-1%' + puffle + '%' + argOne.to_s + '%' + argTwo.to_s + '%')
+		end
+	end
+	
+	def handlePuffleIsPlaying(gameHandlerArgs, client)
+		puffleID = gameHandlerArgs[0]
+		argOne = gameHandlerArgs[1]
+		argTwo = gameHandlerArgs[2]
+		puffle = @parent.mysql.getPuffleByOwner(client.ID, puffleID)
+		if puffle != ''
+			client.sendRoom('%xt%ip%-1%' + puffle + '%' + argOne.to_s + '%' + argTwo.to_s + '%')
+		end
+	end
+	
+	def handlePuffleIsFeeding(gameHandlerArgs, client)
+		puffleID = gameHandlerArgs[0]
+		argOne = gameHandlerArgs[1]
+		argTwo = gameHandlerArgs[2]
+		puffle = @parent.mysql.getPuffleByOwner(client.ID, puffleID)
+		if puffle != ''
+			client.sendRoom('%xt%if%-1%' + client.coins.to_s + '%' + puffle + '%' + argOne.to_s + '%' + argTwo.to_s + '%')
+		end
+	end
+	
+	def handlePuffleWalk(gameHandlerArgs, client)
+		puffleID = gameHandlerArgs[0]
+		isWalking = gameHandlerArgs[1]
+		walkingPuffleIDS = @parent.mysql.getWalkingPuffleIDS(client.ID)
+		walkingPuffleIDS.each do |walkingPuffID|
+			@parent.mysql.updateWalkingPuffle(0, client.ID, walkingPuffID)
+		end
+		puffleDetails = @parent.mysql.getPuffleDetailsByOwner(client.ID, puffleID)
+		if puffleDetails != nil
+			walkingPuffle = puffleDetails['puffleID'].to_s + '|' + puffleDetails['puffleName'].to_s + '|' + puffleDetails['puffleType'].to_s + '|' + puffleDetails['puffleHealth'].to_s + '|' + puffleDetails['puffleEnergy'].to_s + '|' + puffleDetails['puffleRest'].to_s + '|0|0|0|0|0|0'
+			if isWalking.to_bool == true
+				argsToSend = []
+				puffleHandItem = (75 + puffleDetails['puffleType']).to_i
+				argsToSend.push(puffleHandItem)
+				self.handleUpdatePlayerHand(argsToSend, client)
+				@parent.mysql.updateWalkingPuffle(1, client.ID, puffleDetails['puffleID'])
+				client.sendRoom('%xt%pw%-1%' + client.ID.to_s + '%' + walkingPuffle + '|1%')
+			else
+				argsToSend = []
+				puffleHandItem = 0
+				argsToSend.push(puffleHandItem)
+				self.handleUpdatePlayerHand(argsToSend, client)
+				@parent.mysql.updateWalkingPuffle(0, client.ID, puffleDetails['puffleID'])
+				client.sendRoom('%xt%pw%-1%' + client.ID.to_s + '%' + walkingPuffle + '|0%')
+			end
+		end
+	end
+	
+	def handlePuffleGetUser(gameHandlerArgs, client)
+		puffles = @parent.mysql.getNonWalkingPuffles(client.ID)
+		if puffles != ''
+			client.sendData('%xt%pgu%-1%' + puffles + '%')
+		else
+			client.sendData('%xt%pgu%-1%%')
+		end
+	end
+	
+	def handlePuffleFeedFood(gameHandlerArgs, client)
+		puffleID = gameHandlerArgs[0]
+		realPuffID = @parent.mysql.getPuffleIDByOwner(client.ID, puffleID)
+		if realPuffID == puffleID
+			if client.coins.to_i < 10
+				return client.sendError(401)
+			end
+			currentPuffleStats = @parent.mysql.getPuffleDetailsByOwner(client.ID, puffleID)
+			randHealth = rand(3..10)
+			randEnergy = rand(7..12)
+			randRest = rand(1..7)
+			newPuffleHealth = currentPuffleStats['puffleHealth'].to_i + randHealth
+			newPuffleEnergy = currentPuffleStats['puffleEnergy'].to_i + randEnergy
+			newPuffleRest = currentPuffleStats['puffleRest'].to_i - randRest
+			@parent.mysql.updatePuffleStatByType('puffleHealth', newPuffleHealth, puffleID, client.ID)
+			@parent.mysql.updatePuffleStatByType('puffleEnergy', newPuffleEnergy, puffleID, client.ID)
+			@parent.mysql.updatePuffleStatByType('puffleRest', newPuffleRest, puffleID, client.ID)
+			client.deductCoins(10)
+			puffle = @parent.mysql.getPuffleByOwner(client.ID, puffleID)
+			if puffle != ''
+				client.sendRoom('%xt%pf%-1%' + client.coins.to_s + '%' + puffle)
+			end
+		end
+	end
+	
+	def handleAdoptPuffle(gameHandlerArgs, client)
+		puffleID = gameHandlerArgs[0]
+		puffleName = HTMLEntities.new.decode(gameHandlerArgs[1])
+		if (puffleName =~ /^[A-Za-z0-9]+$/)
+			if client.coins.to_i < 800
+				return client.sendError(401)
+			end
+			client.deductCoins(800)
+			adoptTime = Time.now.to_i
+			postcardType = 111
+			puffle = @parent.mysql.addPuffle(puffleID, puffleName, client.ID)
+			postcardID = @parent.mysql.addPostcard(client.ID, 'sys', 0, puffleName, postcardType, adoptTime)
+			client.sendData('%xt%mr%-1%sys%0%' + postcardType.to_s + '%' + puffleName.to_s + '%' + adoptTime.to_s + '%' + postcardID.to_s + '%')
+			client.sendData('%xt%pn%-1%' + client.coins.to_s + '%' + puffle + '%')
+		end
+	end
+	
+	def handlePuffleRest(gameHandlerArgs, client)
+		puffleID = gameHandlerArgs[0]
+		realPuffID = @parent.mysql.getPuffleIDByOwner(client.ID, puffleID)
+		if realPuffID == puffleID
+			currentPuffleStats = @parent.mysql.getPuffleDetailsByOwner(client.ID, puffleID)
+			randHealth = rand(6..14)
+			randRest = rand(14..19)
+			randEnergy = rand(7..15)
+			newPuffleHealth = currentPuffleStats['puffleHealth'].to_i - randHealth
+			newPuffleEnergy = currentPuffleStats['puffleEnergy'].to_i + randEnergy
+			newPuffleRest = currentPuffleStats['puffleRest'].to_i + randRest
+			@parent.mysql.updatePuffleStatByType('puffleHealth', newPuffleHealth, puffleID, client.ID)
+			@parent.mysql.updatePuffleStatByType('puffleEnergy', newPuffleEnergy, puffleID, client.ID)
+			@parent.mysql.updatePuffleStatByType('puffleRest', newPuffleRest, puffleID, client.ID)
+			puffle = @parent.mysql.getPuffleByOwner(client.ID, puffleID)
+			if puffle != ''
+				client.sendRoom('%xt%pr%-1%' + puffle)
+			end
+		end
+	end
+	
+	def handlePufflePlay(gameHandlerArgs, client)
+		puffleID = gameHandlerArgs[0]
+		realPuffID = @parent.mysql.getPuffleIDByOwner(client.ID, puffleID)
+		if realPuffID == puffleID
+			currentPuffleStats = @parent.mysql.getPuffleDetailsByOwner(client.ID, puffleID)
+			randHealth = rand(4..10)
+			randRest = rand(5..12)
+			randEnergy = rand(5..10)
+			newPuffleHealth = currentPuffleStats['puffleHealth'].to_i + randHealth
+			newPuffleEnergy = currentPuffleStats['puffleEnergy'].to_i - randEnergy
+			newPuffleRest = currentPuffleStats['puffleRest'].to_i - randRest
+			@parent.mysql.updatePuffleStatByType('puffleHealth', newPuffleHealth, puffleID, client.ID)
+			@parent.mysql.updatePuffleStatByType('puffleEnergy', newPuffleEnergy, puffleID, client.ID)
+			@parent.mysql.updatePuffleStatByType('puffleRest', newPuffleRest, puffleID, client.ID)
+			puffle = @parent.mysql.getPuffleByOwner(client.ID, puffleID)
+			if puffle != ''
+				client.sendRoom('%xt%pp%-1%' + puffle + (rand(2).to_s) + '%')
+			end
+		end
+	end
+	
+	def handlePuffleFeed(gameHandlerArgs, client)
+		puffleID = gameHandlerArgs[0]
+		puffleAction = gameHandlerArgs[1]
+		if client.coins.to_i < 5
+			return client.sendError(401)
+		end
+		currentPuffleStats = @parent.mysql.getPuffleDetailsByOwner(client.ID, puffleID)
+		randHealth = rand(3..10)
+		randEnergy = rand(7..12)
+		randRest = rand(1..7)
+		newPuffleHealth = currentPuffleStats['puffleHealth'].to_i - randHealth
+		newPuffleEnergy = currentPuffleStats['puffleEnergy'].to_i - randEnergy
+		newPuffleRest = currentPuffleStats['puffleRest'].to_i - randRest
+		@parent.mysql.updatePuffleStatByType('puffleHealth', newPuffleHealth, puffleID, client.ID)
+		@parent.mysql.updatePuffleStatByType('puffleEnergy', newPuffleEnergy, puffleID, client.ID)
+		@parent.mysql.updatePuffleStatByType('puffleRest', newPuffleRest, puffleID, client.ID)
+		client.deductCoins(5)
+		puffle = @parent.mysql.getPuffleByOwner(client.ID, puffleID)
+		if puffle != ''
+			client.sendRoom('%xt%pt%-1%' + client.coins.to_s + '%' + puffle + puffleAction.to_s + '%')
+		end
+	end
+	
+	def handlePuffleMove(gameHandlerArgs, client)
+		puffleID = gameHandlerArgs[0]
+		xpos = gameHandlerArgs[1]
+		ypos = gameHandlerArgs[1]
+		realPuffID = @parent.mysql.getPuffleIDByOwner(client.ID, puffleID)
+		if realPuffID == puffleID
+			client.sendRoom('%xt%pm%-1%' + puffleID.to_s + '%' + xpos.to_s + '%' + ypos.to_s + '%')
+		end
+	end
+	
+	def handlePuffleBath(gameHandlerArgs, client)
+		puffleID = gameHandlerArgs[0]
+		if client.coins.to_i < 5
+			return client.sendError(401)
+		end
+		currentPuffleStats = @parent.mysql.getPuffleDetailsByOwner(client.ID, puffleID)
+		randHealth = rand(8..13)
+		randEnergy = rand(7..12)
+		randRest = rand(13..20)
+		newPuffleHealth = currentPuffleStats['puffleHealth'].to_i + randHealth
+		newPuffleEnergy = currentPuffleStats['puffleEnergy'].to_i + randEnergy
+		newPuffleRest = currentPuffleStats['puffleRest'].to_i + randRest
+		@parent.mysql.updatePuffleStatByType('puffleHealth', newPuffleHealth, puffleID, client.ID)
+		@parent.mysql.updatePuffleStatByType('puffleEnergy', newPuffleEnergy, puffleID, client.ID)
+		@parent.mysql.updatePuffleStatByType('puffleRest', newPuffleRest, puffleID, client.ID)
+		client.deductCoins(5)
+		puffle = @parent.mysql.getPuffleByOwner(client.ID, puffleID)
+		if puffle != ''
+			client.sendRoom('%xt%pb%-1%' + client.coins.to_s + '%' + puffle)
 		end
 	end
 	
