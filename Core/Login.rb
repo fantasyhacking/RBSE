@@ -25,7 +25,7 @@ class Login
 	def handleGameLogin(data, client)
 		username = data['msg']['body']['login']['nick']
 		password = data['msg']['body']['login']['pword']
-		if !username.match(/^[[:alpha:]]+$/)
+		if (username !~ /^[A-Za-z0-9]+$/)
 			client.sendError(100)
 		end
 		if password.length < 64
@@ -67,6 +67,7 @@ class Login
 		client.loadUserInfo
 		client.loadIglooInfo
 		client.loadStampsInfo
+		client.loadEPFInfo
 		client.handleBuddyOnline
 	end
 
