@@ -2,7 +2,6 @@ require 'rubygems'
 require 'log4r'
 require 'time'
 require 'nokogiri'
-require 'active_support/core_ext/hash'
 
 class ClubPenguin
 
