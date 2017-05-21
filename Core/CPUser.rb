@@ -406,7 +406,8 @@ class CPUser
 				end
 				@parent.mysql.deletePuffleByID(@ID, puffleID)
 			end
-			if userPuff['puffleEnergy'].to_i <= 45 && energyTimeDiff.to_i == 30
+			if userPuff['puffleEnergy'].to_i <= 45 && energyTimeDiff.to_i >= 30
+				currTimestamp = Time.now.to_i
 				postcardID = @parent.mysql.addPostcard(@ID, 'sys', 0, userPuff['puffleName'], 110, currTimestamp)
 				self.sendData('%xt%mr%-1%sys%0%110%' + userPuff['puffleName'].to_s + '%' + currTimestamp.to_s + '%' + postcardID.to_s + '%')
 			end
