@@ -4,7 +4,7 @@ def getConfig
 		'database_user' => 'root',
 		'database_pass' => '1337h4x0r',
 		'database_host' => '127.0.0.1',
-		'database_name' => 'purecp'
+		'database_name' => 'cpps'
 	}
 	return config
 end
