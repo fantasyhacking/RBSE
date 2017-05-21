@@ -1035,68 +1035,6 @@
 					}
 				]
 			}]
-		}],
-		"red": [{
-			"rjs": [{
-				"method": [
-					"handleRedemptionJoinServer",
-					{
-						"args": [
-
-						],
-						"type": [
-
-						],
-						"length": -1,
-						"hasException": false
-					}
-				]
-			}],
-			"rsc": [{
-				"method": [
-					"handleRedemptionSendCode",
-					{
-						"args": [
-							"redeemCode"
-						],
-						"type": [
-							"String"
-						],
-						"length": 0,
-						"hasException": false
-					}
-				]
-			}],
-			"rgbq": [{
-				"method": [
-					"handleRedemptionGetBookQuery",
-					{
-						"args": [
-							"penguinID"
-						],
-						"type": [
-							"Fixnum"
-						],
-						"length": 0,
-						"hasException": false
-					}
-				]
-			}],
-			"rsba": [{
-				"method": [
-					"handleRedemptionSendBookAwards",
-					{
-						"args": [
-							"penguinID"
-						],
-						"type": [
-							"Fixnum"
-						],
-						"length": 0,
-						"hasException": false
-					}
-				]
-			}]
 		}]
 	}]
 }
