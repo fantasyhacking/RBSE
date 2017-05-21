@@ -87,6 +87,12 @@ class Database
 		end
 	end
 	
+	def updateCurrentEPFPoints(newPoints, userID)
+		@connections.with do |connection|
+			connection.xquery("UPDATE epf SET currentpoints = ? WHERE ID = ?", newPoints, userID)
+		end
+	end
+	
 	def updatePenguinModStatus(newModStatus, userID)
 		@connections.with do |connection|
 			connection.xquery("UPDATE users SET moderation = ? WHERE ID = ?", newModStatus, userID)
@@ -387,6 +393,13 @@ class Database
 	def deletePuffleByID(userID, puffleID)
 		@connections.with do |connection|
 			connection.xquery("DELETE FROM puffles WHERE puffleID = ? AND ownerID = ?", puffleID, userID)
+		end
+	end
+	
+	def getEPFDetails(userID)
+		@connections.with do |connection|
+			results = connection.xquery("SELECT * FROM epf WHERE ID = ?", userID)
+			return results
 		end
 	end
 
