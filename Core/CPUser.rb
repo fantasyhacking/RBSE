@@ -1,6 +1,8 @@
 require 'rubygems'
 require 'date'
 require 'json'
+require 'time'
+require 'time_difference'
 
 class CPUser
 
@@ -186,7 +188,7 @@ class CPUser
 			@clothes['face'],
 			@clothes['neck'],
 			@clothes['body'],
-			@clothes['hand'],
+			@clothes['hands'],
 			@clothes['feet'],
 			@clothes['flag'],
 			@clothes['photo'],
@@ -353,4 +355,62 @@ class CPUser
 			end
 		end
 	end
+	
+	def checkPuffleStats
+		userPuffles = @parent.mysql.getPufflesByOwner(@ID)
+		userPuffles.each do |userPuff|
+			puffleID = userPuff['puffleID']
+			timeDiff = (TimeDifference.between(Time.parse(userPuff['lastFedTime'].to_s), Time.now).in_hours).round
+			energyTimeDiff = (TimeDifference.between(Time.parse(userPuff['lastFedTime'].to_s), Time.now).in_minutes).round
+			if timeDiff.to_i >= 1
+				randHealth = rand(3..10)
+				randEnergy = rand(7..12)
+				randRest = rand(1..7)
+				newPuffleHealth = userPuff['puffleHealth'].to_i - randHealth
+				newPuffleEnergy = userPuff['puffleEnergy'].to_i - randEnergy
+				newPuffleRest = userPuff['puffleRest'].to_i - randRest
+				@parent.mysql.updatePuffleStatByType('puffleHealth', newPuffleHealth, puffleID, @ID)
+				@parent.mysql.updatePuffleStatByType('puffleEnergy', newPuffleEnergy, puffleID, @ID)
+				@parent.mysql.updatePuffleStatByType('puffleRest', newPuffleRest, puffleID, @ID)
+			end
+			if userPuff['puffleHealth'].to_i < 5
+				puffType = userPuff['puffleType']
+				currTimestamp = Time.now.to_i
+				postcardType = 0
+				realPuffleType = "75#{puffType}"
+				case puffType
+					when 0
+						postcardType = 100
+					when 1
+						postcardType = 101
+					when 2
+						postcardType = 102
+					when 3
+						postcardType = 103
+					when 4
+						postcardType = 104
+					when 5
+						postcardType = 105
+					when 6
+						postcardType = 106
+					when 7
+						postcardType = 169
+					when 8
+						postcardType = 109
+				end
+				postcardID = @parent.mysql.addPostcard(@ID, 'sys', 0, userPuff['puffleName'], postcardType, currTimestamp)
+				self.sendData('%xt%mr%-1%sys%0%' + postcardType.to_s + '%' + userPuff['puffleName'].to_s + '%' + currTimestamp.to_s + '%' + postcardID.to_s + '%')
+				if self.clothes['hands'] == realPuffleType.to_i
+					self.clothes['hands'] = 0
+					self.updateCurrentClothing
+				end
+				@parent.mysql.deletePuffleByID(@ID, puffleID)
+			end
+			if userPuff['puffleEnergy'].to_i <= 45 && energyTimeDiff.to_i == 30
+				postcardID = @parent.mysql.addPostcard(@ID, 'sys', 0, userPuff['puffleName'], 110, currTimestamp)
+				self.sendData('%xt%mr%-1%sys%0%110%' + userPuff['puffleName'].to_s + '%' + currTimestamp.to_s + '%' + postcardID.to_s + '%')
+			end
+		end
+	end
+	
 end
