@@ -30,6 +30,7 @@ Club Penguin Server Emulator - AS2 Protocol
   <li>socket</li>
   <li>to_bool</li>
   <li>typhoeus</li>
+  <li>time_difference</li>
 </ul> 
 </details>
 
