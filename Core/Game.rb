@@ -365,16 +365,44 @@ class Game < XTParser
 		end
 	end
 	
-	def handleEPFGetAgent(gameHandlerArgs, client)
+	def handleEPFAddItem(gameHandlerArgs, client)
+		epfItemID = gameHandlerArgs[0]
+		if @parent.crumbs.epf_item_crumbs.has_key?(epfItemID) != true
+			return client.sendError(402)
+		elsif client.inventory.include?(epfItemID) != false
+			return client.sendError(400)
+		elsif @parent.crumbs.epf_item_crumbs[epfItemID][0]['points'] > client.currentpoints
+			return client.sendError(405)
+		end
+		client.inventory.push(epfItemID)
+		client.updateCurrentInventory
+		client.deductEPFPoints(@parent.crumbs.epf_item_crumbs[epfItemID][0]['points'])
+		client.sendData('%xt%epfai%-1%' + client.currentpoints.to_s + '%')
+	end
 	
+	def handleEPFGetAgent(gameHandlerArgs, client)
+		client.sendData('%xt%epfga%-1%' + client.status.to_s + '%')
+	end
+	
+	def handleEPFSetAgent(gameHandlerArgs, client)
+		client.sendData('%xt%epfsa%-1%' + client.status.to_s + '%')
 	end
 	
 	def handleEPFGetRevisions(gameHandlerArgs, client)
-	
+		client.sendData('%xt%epfgr%-1%' + client.totalpoints.to_s + '%' + client.currentpoints.to_s + '%')
 	end
 	
 	def handleEPFGetField(gameHandlerArgs, client)
+		client.sendData('%xt%epfgf%-1%1%')
+		client.sendData('%xt%epfgr%-1%' + client.totalpoints.to_s + '%' + client.currentpoints.to_s + '%')
+	end
 	
+	def handleEPFSetField(gameHandlerArgs, client)
+		client.sendData('%xt%epfsf%-1%1%')
+	end
+	
+	def handleEPFGetComMessages(gameHandlerArgs, client)
+		client.sendData('%xt%epfgm%-1%0%Powered by RBSE|' + (Time.now.to_i).to_s + '|10%')
 	end
 	
 	def handleAddFurniture(gameHandlerArgs, client)
