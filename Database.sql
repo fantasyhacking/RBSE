@@ -23,8 +23,8 @@ DROP TABLE IF EXISTS `epf`;
 CREATE TABLE `epf` (
   `ID` int(11) NOT NULL,
   `isagent` tinyint(1) NOT NULL DEFAULT '1',
-  `status` mediumtext NOT NULL,
-  `currentpoints` int(10) NOT NULL DEFAULT '20',
+  `status` tinyint(1) NOT NULL DEFAULT '1',
+  `currentpoints` int(10) NOT NULL DEFAULT '80',
   `totalpoints` int(10) NOT NULL DEFAULT '100',
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
