@@ -9,6 +9,7 @@ class CPUser
 	attr_accessor :sock, :ID, :username, :lkey, :coins, :joindate, :clothes, :ranking, :astatus, :clothes, :ranking, :inventory, :buddies, :ignored, :room, :xaxis, :yaxis, :frame
 	attr_accessor :igloo, :floor, :music, :furniture, :ownedFurns, :ownedIgloos
 	attr_accessor :stamps, :restamps, :stampbook_cover
+	attr_accessor :isagent, :status, :currentpoints, :totalpoints
 
 	def initialize(main_class, socket)
 		@parent = main_class
@@ -56,6 +57,10 @@ class CPUser
 		@stamps = Array.new
 		@restamps = Array.new
 		@stampbook_cover = ''
+		@isagent = 0
+		@status = 0
+		@currentpoints = 0
+		@totalpoints = 0
 	end
 	
 	def sendData(data)
@@ -175,6 +180,15 @@ class CPUser
 					else
 						self.instance_variable_set("@#{key}", value)
 				end
+			end
+		end
+	end
+	
+	def loadEPFInfo
+		epfInfo = @parent.mysql.getEPFDetails(@ID)
+		epfInfo.each do |info|
+			info.each do |key, value|
+				self.instance_variable_set("@#{key}", value.to_i)
 			end
 		end
 	end
@@ -332,6 +346,12 @@ class CPUser
 		newAmount = (@coins - amount)
 		@parent.mysql.updateCurrentCoins(newAmount, @ID)
 		@coins = newAmount
+	end
+	
+	def deductEPFPoints(points)
+		newPoints = (@currentpoints - points)
+		@parent.mysql.updateCurrentEPFPoints(newPoints, @ID)
+		@currentpoints = newPoints
 	end
 
 	def removePlayerFromRoom
