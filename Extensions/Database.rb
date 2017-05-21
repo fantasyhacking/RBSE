@@ -1,170 +1,231 @@
 require 'rubygems'
 require 'mysql2-cs-bind'
 require 'json'
+require 'connection_pool'
 
 class Database
 
 	def initialize(main_class)
 		@parent = main_class
-		@connection
+		@connections
 	end
 
 	def connectMySQL(db_user, db_pass, db_host, db_name)
-		@connection = Mysql2::Client.new(:host => db_host, :username => db_user, :password => db_pass, :database => db_name, :reconnect => true)
-		if @connection == nil
-			@parent.logger.info('Failed to connect to the MySQL server')
-		else
-			@parent.logger.info('Successfully connected to the MySQL server')
+		@connections = ConnectionPool.new(:size => 5) { Mysql2::Client.new(:host => db_host, :username => db_user, :password => db_pass, :database => db_name, :reconnect => true) }
+		@connections.with do |connection|
+			if connection == nil
+				@parent.logger.info('Failed to connect to the MySQL server')
+			else
+				@parent.logger.info('Successfully connected to the MySQL server')
+			end
 		end
 	end
 	
 	def checkUserExists(username)
-		results = @connection.xquery("SELECT * FROM users WHERE username = ?", username)
-		return results.count
+		@connections.with do |connection|
+			results = connection.xquery("SELECT * FROM users WHERE username = ?", username)
+			return results.count
+		end
 	end
 	
 	def getCurrentPassword(username)
-		results = @connection.xquery("SELECT * FROM users WHERE username = ?", username)
-		results.each do |result|
-			return result['password']
+		@connections.with do |connection|
+			results = connection.xquery("SELECT * FROM users WHERE username = ?", username)
+			results.each do |result|
+				return result['password']
+			end
 		end
 	end
 	
 	def getBannedStatus(username)
-		results = @connection.xquery("SELECT * FROM users WHERE username = ?", username)
-		results.each do |result|
-			moderation_status = result['moderation']
-			decoded_status = JSON.parse(moderation_status)
-			return decoded_status['isBanned']
+		@connections.with do |connection|
+			results = connection.xquery("SELECT * FROM users WHERE username = ?", username)
+			results.each do |result|
+				moderation_status = result['moderation']
+				decoded_status = JSON.parse(moderation_status)
+				return decoded_status['isBanned']
+			end
 		end
 	end
 	
 	def getInvalidLogins(username)
-		results = @connection.xquery("SELECT * FROM users WHERE username = ?", username)
-		results.each do |result|
-			return result['invalid_logins']
+		@connections.with do |connection|
+			results = connection.xquery("SELECT * FROM users WHERE username = ?", username)
+			results.each do |result|
+				return result['invalid_logins']
+			end
 		end
 	end
 	
 	def updateInvalidLogins(username, times)
-		@connection.xquery("UPDATE users SET invalid_logins = ? WHERE username = ?", times, username)
+		@connections.with do |connection|
+			connection.xquery("UPDATE users SET invalid_logins = ? WHERE username = ?", times, username)
+		end
 	end
 	
 	def updateLoginKey(key, username)
-		@connection.xquery("UPDATE users SET lkey = ? WHERE username = ?", key, username)
+		@connections.with do |connection|
+			connection.xquery("UPDATE users SET lkey = ? WHERE username = ?", key, username)
+		end
 	end
 	
 	def updatePenguinClothing(newClothing, userID)
-		@connection.xquery("UPDATE users SET clothing = ? WHERE ID = ?", newClothing, userID)
+		@connections.with do |connection|
+			connection.xquery("UPDATE users SET clothing = ? WHERE ID = ?", newClothing, userID)
+		end
 	end
 	
 	def updatePenguinInventory(newInventory, userID)
-		@connection.xquery("UPDATE users SET inventory = ? WHERE ID = ?", newInventory, userID)
+		@connections.with do |connection|
+			connection.xquery("UPDATE users SET inventory = ? WHERE ID = ?", newInventory, userID)
+		end
 	end
 	
 	def updateCurrentCoins(newCoins, userID)
-		@connection.xquery("UPDATE users SET coins = ? WHERE ID = ?", newCoins, userID)
+		@connections.with do |connection|
+			connection.xquery("UPDATE users SET coins = ? WHERE ID = ?", newCoins, userID)
+		end
 	end
 	
 	def updatePenguinModStatus(newModStatus, userID)
-		@connection.xquery("UPDATE users SET moderation = ? WHERE ID = ?", newModStatus, userID)
+		@connections.with do |connection|
+			connection.xquery("UPDATE users SET moderation = ? WHERE ID = ?", newModStatus, userID)
+		end
 	end
 	
 	def updateFurnitureInventory(newInventory, userID)
-		@connection.xquery("UPDATE igloos SET ownedFurns = ? WHERE ID = ?", newInventory, userID)
+		@connections.with do |connection|
+			connection.xquery("UPDATE igloos SET ownedFurns = ? WHERE ID = ?", newInventory, userID)
+		end
 	end
 	
 	def updateIglooInventory(newInventory, userID)
-		@connection.xquery("UPDATE igloos SET ownedIgloos = ? WHERE ID = ?", newInventory, userID)
+		@connections.with do |connection|
+			connection.xquery("UPDATE igloos SET ownedIgloos = ? WHERE ID = ?", newInventory, userID)
+		end
 	end
 	
 	def updateIglooType(iglooID, userID)
-		@connection.xquery("UPDATE igloos SET igloo = ? WHERE ID = ?", iglooID, userID)
+		@connections.with do |connection|
+			connection.xquery("UPDATE igloos SET igloo = ? WHERE ID = ?", iglooID, userID)
+		end
 	end
 	
 	def updateFloorType(floorID, userID)
-		@connection.xquery("UPDATE igloos SET floor = ? WHERE ID = ?", floorID, userID)
+		@connections.with do |connection|
+			connection.xquery("UPDATE igloos SET floor = ? WHERE ID = ?", floorID, userID)
+		end
 	end
 	
 	def updateIglooFurniture(furniture, userID)
-		@connection.xquery("UPDATE igloos SET furniture = ? WHERE ID = ?", furniture, userID)
+		@connections.with do |connection|
+			connection.xquery("UPDATE igloos SET furniture = ? WHERE ID = ?", furniture, userID)
+		end
 	end
 	
 	def updateIglooMusic(musicID, userID)
-		@connection.xquery("UPDATE igloos SET music = ? WHERE ID = ?", musicID, userID)
+		@connections.with do |connection|
+			connection.xquery("UPDATE igloos SET music = ? WHERE ID = ?", musicID, userID)
+		end
 	end
 	
 	def updatePenguinStamps(stamps, restamps, userID)
-		@connection.xquery("UPDATE stamps SET stamps = ?, restamps = ? WHERE ID = ?", stamps, restamps, userID)
+		@connections.with do |connection|
+			connection.xquery("UPDATE stamps SET stamps = ?, restamps = ? WHERE ID = ?", stamps, restamps, userID)
+		end
 	end
 	
 	def updateStampbookCover(cover, userID)
-		@connection.xquery("UPDATE stamps SET stampbook_cover = ? WHERE ID = ?", cover, userID)
+		@connections.with do |connection|
+			connection.xquery("UPDATE stamps SET stampbook_cover = ? WHERE ID = ?", cover, userID)
+		end
 	end
 	
 	def updateBuddies(buddies, userID)
-		@connection.xquery("UPDATE users SET buddies = ? WHERE ID = ?", buddies, userID)
+		@connections.with do |connection|
+			connection.xquery("UPDATE users SET buddies = ? WHERE ID = ?", buddies, userID)
+		end
 	end
 	
 	def updateIgnoredBuddies(ignored, userID)
-		@connection.xquery("UPDATE users SET ignored = ? WHERE ID = ?", ignored, userID)
+		@connections.with do |connection|
+			connection.xquery("UPDATE users SET ignored = ? WHERE ID = ?", ignored, userID)
+		end
 	end
 	
 	def getPenguinInventoryByID(userID)
-		results = @connection.xquery("SELECT * FROM users WHERE ID = ?", userID)
-		results.each do |result|
-			return result['inventory']
+		@connections.with do |connection|
+			results = connection.xquery("SELECT * FROM users WHERE ID = ?", userID)
+			results.each do |result|
+				return result['inventory']
+			end
 		end
 	end
 	
 	def getStampsByID(userID)
-		results = @connection.xquery("SELECT * FROM stamps WHERE ID = ?", userID)
-		results.each do |result|
-			return result['stamps']
+		@connections.with do |connection|
+			results = connection.xquery("SELECT * FROM stamps WHERE ID = ?", userID)
+			results.each do |result|
+				return result['stamps']
+			end
 		end
 	end
 	
 	def getStampbookCoverByID(userID)
-		results = @connection.xquery("SELECT * FROM stamps WHERE ID = ?", userID)
-		results.each do |result|
-			return result['stampbook_cover']
+		@connections.with do |connection|
+			results = connection.xquery("SELECT * FROM stamps WHERE ID = ?", userID)
+			results.each do |result|
+				return result['stampbook_cover']
+			end
 		end
 	end
 	
 	def getLoginKey(username)
-		results = @connection.xquery("SELECT * FROM users WHERE username = ?", username)
-		results.each do |result|
-			return result['lkey']
+		@connections.with do |connection|
+			results = connection.xquery("SELECT * FROM users WHERE username = ?", username)
+			results.each do |result|
+				return result['lkey']
+			end
 		end
 	end
 	
 	def getClientIDByUsername(username)
-		results = @connection.xquery("SELECT * FROM users WHERE username = ?", username)
-		results.each do |result|
-			return result['ID']
+		@connections.with do |connection|
+			results = connection.xquery("SELECT * FROM users WHERE username = ?", username)
+			results.each do |result|
+				return result['ID']
+			end
 		end
 	end
 	
 	def getClientBuddiesByID(userID)
-		results = @connection.xquery("SELECT * FROM users WHERE ID = ?", userID)
-		results.each do |result|
-			return result['buddies']
+		@connections.with do |connection|
+			results = connection.xquery("SELECT * FROM users WHERE ID = ?", userID)
+			results.each do |result|
+				return result['buddies']
+			end
 		end
 	end
 	
 	def getUserDetails(userID)
-		results = @connection.xquery("SELECT * FROM users WHERE ID = ?", userID)
-		return results
+		@connections.with do |connection|
+			results = connection.xquery("SELECT * FROM users WHERE ID = ?", userID)
+			return results
+		end
 	end
 	
 	def getIglooDetails(userID)
-		results = @connection.xquery("SELECT * FROM igloos WHERE ID = ?", userID)
-		return results
+		@connections.with do |connection|
+			results = connection.xquery("SELECT * FROM igloos WHERE ID = ?", userID)
+			return results
+		end
 	end
 	
 	def getStampsInfo(userID)
-		results = @connection.xquery("SELECT * FROM stamps WHERE ID = ?", userID)
-		return results
+		@connections.with do |connection|
+			results = connection.xquery("SELECT * FROM stamps WHERE ID = ?", userID)
+			return results
+		end
 	end
 	
 	def getPlayerString(userID)
@@ -181,7 +242,7 @@ class Database
 				clothing['face'],
 				clothing['neck'],
 				clothing['body'],
-				clothing['hand'],
+				clothing['hands'],
 				clothing['feet'],
 				clothing['flag'],
 				clothing['photo'], 0, 0, 0,
@@ -193,41 +254,140 @@ class Database
 	end
 	
 	def getUnreadPostcardCount(userID)
-		results = @connection.xquery("SELECT * FROM postcards WHERE recepient = ? AND isRead = ?", userID, 0)
-		unread_count = results.count
-		return unread_count
+		@connections.with do |connection|
+			results = connection.xquery("SELECT * FROM postcards WHERE recepient = ? AND isRead = ?", userID, 0)
+			unread_count = results.count
+			return unread_count
+		end
 	end
 	
 	def getReceivedPostcardCount(userID)
-		results = @connection.xquery("SELECT * FROM postcards WHERE recepient = ?", userID)
-		postcards_count = results.count
-		return postcards_count
+		@connections.with do |connection|
+			results = connection.xquery("SELECT * FROM postcards WHERE recepient = ?", userID)
+			postcards_count = results.count
+			return postcards_count
+		end
 	end
 	
 	def getUserPostcards(userID)
-		results = @connection.xquery("SELECT * FROM postcards WHERE recepient = ?", userID)
 		postcardsString = ''
-		results.each do |result|
-			postcardsString << result['mailerName'].to_s + '|' + result['mailerID'].to_s + '|' + result['postcardType'].to_s + '|' + result['notes'].to_s + '|' + result['timestamp'].to_s + '|' + result['postcardID'].to_s + '%'
+		@connections.with do |connection|
+			results = connection.xquery("SELECT * FROM postcards WHERE recepient = ?", userID)
+			results.each do |result|
+				postcardsString << result['mailerName'].to_s + '|' + result['mailerID'].to_s + '|' + result['postcardType'].to_s + '|' + result['notes'].to_s + '|' + result['timestamp'].to_s + '|' + result['postcardID'].to_s + '%'
+			end
+			return postcardsString[0..-1]
 		end
-		return postcardsString[0..-1]
 	end
 	
 	def addPostcard(recepient, mailerName  = 'sys', mailerID = 0, postcardNotes = 'RBSE', postcardType = 1, timestamp = 0)
-		@connection.xquery("INSERT INTO postcards (recepient, mailerName, mailerID, notes, postcardType, timestamp) values (?, ?, ?, ?, ?, ?)", recepient, mailerName, mailerID, postcardNotes, postcardType, timestamp)
-		return @connection.last_id
+		@connections.with do |connection|
+			connection.xquery("INSERT INTO postcards (recepient, mailerName, mailerID, notes, postcardType, timestamp) values (?, ?, ?, ?, ?, ?)", recepient, mailerName, mailerID, postcardNotes, postcardType, timestamp)
+			return connection.last_id
+		end
 	end
 	
 	def deletePostcardByRecepient(postcard, recepient)
-		@connection.xquery("DELETE FROM postcards WHERE postcardID = ? AND recepient = ?", postcard, recepient)
+		@connections.with do |connection|
+			connection.xquery("DELETE FROM postcards WHERE postcardID = ? AND recepient = ?", postcard, recepient)
+		end
 	end
 	
 	def deletePostcardsByMailer(recepient, sender)
-		@connection.xquery("DELETE FROM postcards WHERE recepient = ? AND mailerID = ?", recepient, sender)
+		@connections.with do |connection|
+			connection.xquery("DELETE FROM postcards WHERE recepient = ? AND mailerID = ?", recepient, sender)
+		end
 	end
 	
 	def updatePostcardRead(userID)
-		@connection.xquery("UPDATE postcards SET isRead = ? WHERE recepient = ?", 1, userID)
+		@connections.with do |connection|
+			connection.xquery("UPDATE postcards SET isRead = ? WHERE recepient = ?", 1, userID)
+		end
+	end
+	
+	def getNonWalkingPuffles(userID)
+		pufflesString = ''
+		@connections.with do |connection|
+			results = connection.xquery("SELECT * FROM puffles WHERE ownerID = ? AND puffleWalking = ?", userID, 0)
+			results.each do |result|
+				pufflesString << result['puffleID'].to_s + '|' + result['puffleName'].to_s + '|' + result['puffleType'].to_s + '|' + result['puffleHealth'].to_s + '|' + result['puffleEnergy'].to_s + '|' + result['puffleRest'].to_s + '%'
+			end
+			return pufflesString
+		end
+	end
+	
+	def getPuffleIDByOwner(userID, puffleID)
+		@connections.with do |connection|
+			results  = connection.xquery("SELECT * FROM puffles WHERE ownerID = ? AND puffleID = ?", userID, puffleID)
+			results.each do |result|
+				return result['puffleID'].to_i
+			end
+		end
+	end
+	
+	def getPuffleByOwner(userID, puffleID)
+		puffleString = ''
+		@connections.with do |connection|
+			results  = connection.xquery("SELECT * FROM puffles WHERE ownerID = ? AND puffleID = ?", userID, puffleID)
+			results.each do |result|
+				puffleString << result['puffleID'].to_s + '|' + result['puffleName'].to_s + '|' + result['puffleType'].to_s + '|' + result['puffleHealth'].to_s + '|' + result['puffleEnergy'].to_s + '|' + result['puffleRest'].to_s + '%'
+			end
+		end
+		return puffleString
+	end
+	
+	def getWalkingPuffleIDS(userID)
+		puffIDS = []
+		@connections.with do |connection|
+			results = connection.xquery("SELECT * FROM puffles WHERE ownerID = ? AND puffleWalking = ?", userID, 1)
+			results.each do |result|
+				puffIDS.push(result['puffleID'])
+			end
+		end
+		return puffIDS
+	end
+	
+	def updateWalkingPuffle(blnWalking, userID, puffleID)
+		@connections.with do |connection|
+			connection.xquery("UPDATE puffles SET puffleWalking = ? WHERE puffleID = ? AND ownerID = ?", blnWalking, puffleID, userID)
+		end
+	end
+	
+	def getPuffleDetailsByOwner(userID, puffleID)
+		@connections.with do |connection|
+			results  = connection.xquery("SELECT * FROM puffles WHERE ownerID = ? AND puffleID = ?", userID, puffleID)
+			results.each do |result|
+				return result
+			end
+		end
+	end
+	
+	def updatePuffleStatByType(statType, newStat, puffleID, userID)
+		@connections.with do |connection|
+			connection.xquery("UPDATE puffles SET #{statType} = ? WHERE puffleID = ? AND ownerID = ?", newStat, puffleID, userID)
+		end
+	end
+	
+	def addPuffle(puffleType, puffleName, ownerID)
+		@connections.with do |connection|
+			connection.xquery("INSERT INTO puffles (ownerID, puffleName, puffleType) values (?, ?, ?)", ownerID, puffleName, puffleType)
+			puffleID = connection.last_id
+			puffle = puffleID.to_s + '|' + puffleName.to_s + '|' + puffleType.to_s + '|100|100|100'
+			return puffle
+		end
+	end
+	
+	def getPufflesByOwner(userID)
+		@connections.with do |connection|
+			results  = connection.xquery("SELECT * FROM puffles WHERE ownerID = ?", userID)
+			return results
+		end
+	end
+	
+	def deletePuffleByID(userID, puffleID)
+		@connections.with do |connection|
+			connection.xquery("DELETE FROM puffles WHERE puffleID = ? AND ownerID = ?", puffleID, userID)
+		end
 	end
 
 end
