@@ -13,8 +13,21 @@ Club Penguin Server Emulator - AS2 Protocol
 
 </details>
 
+<details>
+<summary>Requirements</summary>
+<ul>
+  <li>Apache2/Nginx</li>
+  <li>Ruby 2.4</li>
+  <li>PHP 5.5+</li>
+  <li>MySQL</li>
+  <li>DBMS (Database Management Software)</li>
+  <li>Gems List</li>
+  <li>AS2 Mediaserver</li>
+</ul> 
+</details>
+
 <details> 
-<summary>Modules List</summary>
+<summary>Gems List</summary>
 <ul>
   <li>activesupport</li>
   <li>curb</li>
@@ -33,6 +46,7 @@ Club Penguin Server Emulator - AS2 Protocol
   <li>time_difference</li>
 </ul> 
 </details>
+
 
 <details>
 <summary>Default Users</summary>
