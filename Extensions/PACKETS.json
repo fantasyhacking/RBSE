@@ -985,8 +985,52 @@
 				"length": -1,
 				"hasException": false
 			}],
+			"f#epfai": [{
+				"method": "handleEPFAddItem",
+				"args": [
+					"itemID"
+				],
+				"type": [
+					"Fixnum"
+				],
+				"length": 0,
+				"hasException": false
+			}],
 			"f#epfga": [{
 				"method": "handleEPFGetAgent",
+				"args": [
+
+				],
+				"type": [
+
+				],
+				"length": -1,
+				"hasException": false
+			}],
+			"f#epfsa": [{
+				"method": "handleEPFSetAgent",
+				"args": [
+
+				],
+				"type": [
+
+				],
+				"length": -1,
+				"hasException": false
+			}],
+			"f#epfgf": [{
+				"method": "handleEPFGetField",
+				"args": [
+
+				],
+				"type": [
+
+				],
+				"length": -1,
+				"hasException": false
+			}],
+			"f#epfsf": [{
+				"method": "handleEPFSetField",
 				"args": [
 
 				],
@@ -1007,8 +1051,8 @@
 				"length": -1,
 				"hasException": false
 			}],
-			"f#epfgf": [{
-				"method": "handleEPFGetField",
+			"f#epfgm": [{
+				"method": "handleEPFGetComMessages",
 				"args": [
 
 				],
