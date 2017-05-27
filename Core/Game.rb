@@ -308,6 +308,10 @@ class Game < XTParser
 	def handleSendMessage(gameHandlerArgs, client)
 		userID = gameHandlerArgs[0]
 		userMessage = gameHandlerArgs[1]
+		if userMessage.include?('|') != false
+			@parent.logger.warn("#{client.username} is trying perform some sort of exploit")
+			return
+		end
 		decodedMessage = HTMLEntities.new.decode(userMessage)
 		if client.astatus['isMuted'].to_bool != true
 			client.sendRoom('%xt%sm%-1%' + userID.to_s + '%' + decodedMessage + '%') 
@@ -503,14 +507,14 @@ class Game < XTParser
 		client.ownedFurns.each do |furnQuantity, furnID|
 			furnitures << furnQuantity.to_s + '|' + furnID.to_s + '%'
 		end
-		client.sendData('%xt%gf%-1%' + furnitures + '%')
+		client.sendData('%xt%gf%-1%' + furnitures)
 	end
 	
 	def handleGetFurnitureRevision(gameHandlerArgs, client)
 		furnitures = ''
 		gameHandlerArgs.each do |furniture|
 			furnitureInfo = furniture.split('|')
-			if furnitureInfo.count > 5
+			if furnitureInfo.count > 5 || furnitureInfo.count < 5
 				@parent.logger.warn('Client is trying to send invalid furniture arguments')
 				return false
 			end
@@ -520,7 +524,7 @@ class Game < XTParser
 					return false
 				end
 			end
-			furnitures << ',' + furniture
+			furnitures << furniture + ','
 		end
 		@parent.mysql.updateIglooFurniture(furnitures, client.ID)
 	end
@@ -573,6 +577,26 @@ class Game < XTParser
 	end
 	
 	def handleSetStampBookCoverDetails(gameHandlerArgs, client)
+		gameHandlerArgs.each do |argument|
+			if argument.include?('|') != false
+				exceptionArguments = argument.split('|')
+				if exceptionArguments.count > 6 || exceptionArguments.count < 6
+					@parent.logger.warn('Client is trying to send invalid amount of stampbook cover arguments')
+					return false
+				end
+				exceptionArguments.each do |exceptionArg|
+					if @parent.is_num?(exceptionArg) != true
+						@parent.logger.warn('Client is trying to send invalid cover arguments')
+						return false
+					end
+				end
+			else
+				if @parent.is_num?(argument) != true
+					@parent.logger.warn('Client is trying to send invalid cover style arguments')
+					return false
+				end
+			end
+		end
 		stampbook_cover = gameHandlerArgs.join('%')
 		@parent.mysql.updateStampbookCover(stampbook_cover, client.ID)
 		client.sendData('%xt%ssbcd%-1%' + (stampbook_cover ? stampbook_cover : '1%1%1%1%'))
