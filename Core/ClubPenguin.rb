@@ -27,13 +27,11 @@ class ClubPenguin
 	end
 
 	def displayASCII
-		puts "######  ######   #####  #######\n"
-		puts "#     # #     # #     # #      \n"
-		puts "#     # #     # #       #      \n"    
-		puts "######  ######   #####  #####  \n"  
-		puts "#   #   #     #       # #      \n"
-		puts "#    #  #     # #     # #      \n"   
-		puts "#     # ######   #####  #######\n\r"
+		puts "\n\r$-----------------------$"
+		puts "|*****|*****|*****|*****|"
+		puts "|**R**|**B**|**S**|**E**|"
+		puts "|*****|*****|*****|*****|" 
+		puts "$-----------------------$\n\r"
 		@logger.info('Thanks for using RBSE! The most comprehensive CPSE :-)')
 		@logger.info('Created by: Lynx')
 		@logger.info('Protocol: Actionscript 2.0')
