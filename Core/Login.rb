@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'bcrypt'
 require 'digest'
+require 'to_bool'
 
 class Login
 
@@ -25,6 +26,10 @@ class Login
 	def handleGameLogin(data, client)
 		username = data['msg']['body']['login']['nick']
 		password = data['msg']['body']['login']['pword']
+		isLoggedIn = @parent.mysql.getLoggedInStatus(username)
+		if isLoggedIn.to_bool == true
+			return client.sendError(150)
+		end
 		if (username !~ /^[A-Za-z0-9]+$/)
 			client.sendError(100)
 		end
@@ -60,6 +65,7 @@ class Login
 		encryptedRandKey = Digest::SHA256.hexdigest(@parent.genRandString(12))
 		bcryptRandKey = BCrypt::Password.create(encryptedRandKey, cost: 12)
 		@parent.mysql.updateLoginKey(bcryptRandKey, username)
+		@parent.mysql.updateLoggedIn(1, username)
 		clientID = @parent.mysql.getClientIDByUsername(username)
 		client.sendData('%xt%l%-1%' + clientID.to_s + '%' + encryptedRandKey + '%')
 		client.ID = clientID
