@@ -43,9 +43,8 @@ CREATE TABLE `igloos` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 INSERT INTO `igloos` (`ID`, `igloo`, `floor`, `music`, `furniture`, `ownedFurns`, `ownedIgloos`) VALUES
-(1,	1,	9,	35,	',649|320|336|1|4,660|491|335|3|2,660|231|330|1|2,136|386|230|2|1,643|259|172|1|4,154|484|256|1|1',	'2|660,1|136,1|649,1|643,1|660,1|154,',	'25|2|6'),
-(2,	1,	0,	0,	'',	'',	'')
-ON DUPLICATE KEY UPDATE `ID` = VALUES(`ID`), `igloo` = VALUES(`igloo`), `floor` = VALUES(`floor`), `music` = VALUES(`music`), `furniture` = VALUES(`furniture`), `ownedFurns` = VALUES(`ownedFurns`), `ownedIgloos` = VALUES(`ownedIgloos`);
+(1,	1,	9,	35,	'136|386|230|2|1,649|530|327|1|5,154|298|325|1|1,643|250|172|1|2,',	'1|136,1|649,1|643,1|154,',	'25|2|6'),
+(2,	1,	0,	0,	'',	'',	'');
 
 DROP TABLE IF EXISTS `igloo_contest`;
 CREATE TABLE `igloo_contest` (
