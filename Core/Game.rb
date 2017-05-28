@@ -97,8 +97,10 @@ class Game < XTParser
 	
 	def handleGetPlayer(gameHandlerArgs, client)
 		userID = gameHandlerArgs[0]
-		userDetails = @parent.mysql.getPlayerString(userID)
-		client.sendData('%xt%gp%-1%' + (userDetails ? userDetails : '') + '%')
+		if userID != 0
+			userDetails = @parent.mysql.getPlayerString(userID)
+			client.sendData('%xt%gp%-1%' + (userDetails ? userDetails : '') + '%')
+		end
 	end
 	
 	def handleGetLatestRevision(gameHandlerArgs, client)
@@ -234,7 +236,9 @@ class Game < XTParser
 	
 	def handleRemoveToy(gameHandlerArgs, client)
 		userID = gameHandlerArgs[0]
-		client.sendData('%xt%rt%-1%' + userID.to_s + '%')
+		if userID != 0
+			client.sendData('%xt%rt%-1%' + userID.to_s + '%')
+		end
 	end
 	
 	def handleGetInventory(gameHandlerArgs, client)
@@ -259,43 +263,47 @@ class Game < XTParser
 	
 	def handleQueryPlayerPins(gameHandlerArgs, client)
 		userID = gameHandlerArgs[0]
-		userPins = Array.new
-		userDetails = @parent.mysql.getPenguinInventoryByID(userID)
-		userItems = userDetails.split('%')
-		userItems.each do |item|
-			item = item.to_i
-			if @parent.crumbs.item_crumbs.has_key?(item) == true && @parent.crumbs.item_crumbs[item][0]['type'] == 'flag'
-				userPins.push(item)
+		if userID != 0
+			userPins = Array.new
+			userDetails = @parent.mysql.getPenguinInventoryByID(userID)
+			userItems = userDetails.split('%')
+			userItems.each do |item|
+				item = item.to_i
+				if @parent.crumbs.item_crumbs.has_key?(item) == true && @parent.crumbs.item_crumbs[item][0]['type'] == 'flag'
+					userPins.push(item)
+				end
 			end
-		end
-		pins = ''
-		if userPins.count > 0
-			userPins.each do |pin|
-				pins << pin.to_s + '|' + (Time.now.to_i).to_s + '%'
-			end
-		else
 			pins = ''
-		end
-		if pins != ''
-			client.sendData('%xt%qpp%-1%' + pins.to_s + '%')
-		else
-			client.sendData('%xt%qpp%-1%')
+			if userPins.count > 0
+				userPins.each do |pin|
+					pins << pin.to_s + '|' + (Time.now.to_i).to_s + '%'
+				end
+			else
+				pins = ''
+			end
+			if pins != ''
+				client.sendData('%xt%qpp%-1%' + pins.to_s + '%')
+			else
+				client.sendData('%xt%qpp%-1%')
+			end
 		end
 	end
 	
 	def handleQueryPlayerAwards(gameHandlerArgs, client)
 		userID = gameHandlerArgs[0]
-		userAwards = Array.new
-		userDetails = @parent.mysql.getPenguinInventoryByID(userID)
-		userItems = userDetails.split('%')
-		userItems.each do |item|
-			item = item.to_i
-			if @parent.crumbs.item_crumbs.has_key?(item) && @parent.crumbs.item_crumbs[item][0]['type'] == 'other'
-				userAwards.push(item)
+		if userID != 0
+			userAwards = Array.new
+			userDetails = @parent.mysql.getPenguinInventoryByID(userID)
+			userItems = userDetails.split('%')
+			userItems.each do |item|
+				item = item.to_i
+				if @parent.crumbs.item_crumbs.has_key?(item) && @parent.crumbs.item_crumbs[item][0]['type'] == 'other'
+					userAwards.push(item)
+				end
 			end
+			awards = userAwards.join('|')
+			client.sendData('%xt%qpa%-1%' + client.ID.to_s + '%' + awards.to_s + '%')
 		end
-		awards = userAwards.join('|')
-		client.sendData('%xt%qpa%-1%' + client.ID.to_s + '%' + awards.to_s + '%')
 	end
 	
 	def handleCoinsDigUpdate(gameHandlerArgs, client)
@@ -322,49 +330,55 @@ class Game < XTParser
 	
 	def handleKickButton(gameHandlerArgs, client)
 		userID = gameHandlerArgs[0]
-		oclient = client.getClientByID(userID)
-		if oclient.ranking['isStaff'].to_bool == true
-			@parent.logger.warn("#{client.username} is trying to kick #{oclient.username} who is a staff member")
-			return
-		end
-		if client.ranking['isStaff'].to_bool == true
-			@parent.logger.warn("Staff: #{client.username} has kicked #{oclient.username}")
-			oclient.sendError('610%You have been kicked. THIS IS NOT A BAN!')
+		if userID != 0
+			oclient = client.getClientByID(userID)
+			if oclient.ranking['isStaff'].to_bool == true
+				@parent.logger.warn("#{client.username} is trying to kick #{oclient.username} who is a staff member")
+				return
+			end
+			if client.ranking['isStaff'].to_bool == true
+				@parent.logger.warn("Staff: #{client.username} has kicked #{oclient.username}")
+				oclient.sendError('610%You have been kicked. THIS IS NOT A BAN!')
+			end
 		end
 	end
 	
 	def handleMuteButton(gameHandlerArgs, client)
 		userID = gameHandlerArgs[0]
-		oclient = client.getClientByID(userID)
-		if oclient.ranking['isStaff'].to_bool == true
-			@parent.logger.warn("#{client.username} is trying to mute #{oclient.username} who is a staff member")
-			return
-		end
-		if client.ranking['isStaff'].to_bool == true
-			if oclient.astatus['isMuted'].to_bool == false
-				oclient.astatus['isMuted'] = 1
-				@parent.logger.warn("Staff: #{client.username} has muted #{oclient.username}")
-			else
-				oclient.astatus['isMuted'] = 0
-				@parent.logger.warn("Staff: #{client.username} has unmuted #{oclient.username}")
+		if userID != 0
+			oclient = client.getClientByID(userID)
+			if oclient.ranking['isStaff'].to_bool == true
+				@parent.logger.warn("#{client.username} is trying to mute #{oclient.username} who is a staff member")
+				return
 			end
-			oclient.updateCurrentModStatus
+			if client.ranking['isStaff'].to_bool == true
+				if oclient.astatus['isMuted'].to_bool == false
+					oclient.astatus['isMuted'] = 1
+					@parent.logger.warn("Staff: #{client.username} has muted #{oclient.username}")
+				else
+					oclient.astatus['isMuted'] = 0
+					@parent.logger.warn("Staff: #{client.username} has unmuted #{oclient.username}")
+				end
+				oclient.updateCurrentModStatus
+			end
 		end
 	end
 	
 	def handleBanButton(gameHandlerArgs, client)
 		userID = gameHandlerArgs[0]
 		userReason = gameHandlerArgs[1]
-		oclient = client.getClientByID(userID)
-		if oclient.ranking['isStaff'].to_bool == true
-			@parent.logger.warn("#{client.username} is trying to ban #{oclient.username} who is a staff member")
-			return
-		end
-		if client.ranking['isStaff'].to_bool == true
-			if oclient.astatus['isBanned'].to_i == 0
-				oclient.astatus['isBanned'] = 'PERMABANNED'
-				oclient.updateCurrentModStatus
-				oclient.sendError("610%#{userReason}")
+		if userID != 0
+			oclient = client.getClientByID(userID)
+			if oclient.ranking['isStaff'].to_bool == true
+				@parent.logger.warn("#{client.username} is trying to ban #{oclient.username} who is a staff member")
+				return
+			end
+			if client.ranking['isStaff'].to_bool == true
+				if oclient.astatus['isBanned'].to_i == 0
+					oclient.astatus['isBanned'] = 'PERMABANNED'
+					oclient.updateCurrentModStatus
+					oclient.sendError("610%#{userReason}")
+				end
 			end
 		end
 	end
@@ -475,18 +489,20 @@ class Game < XTParser
 	
 	def handleGetIglooDetails(gameHandlerArgs, client)
 		userID = gameHandlerArgs[0]
-		iglooID = ''
-		musicID = ''
-		floorID = ''
-		furniture = ''
-		iglooData = @parent.mysql.getIglooDetails(userID)
-		iglooData.each do |iglooInfo|
-			iglooID = iglooInfo['igloo'].to_s
-			musicID = iglooInfo['music'].to_s
-			floorID = iglooInfo['floor'].to_s
-			furniture = iglooInfo['furniture'].to_s
+		if userID != 0
+			iglooID = ''
+			musicID = ''
+			floorID = ''
+			furniture = ''
+			iglooData = @parent.mysql.getIglooDetails(userID)
+			iglooData.each do |iglooInfo|
+				iglooID = iglooInfo['igloo'].to_s
+				musicID = iglooInfo['music'].to_s
+				floorID = iglooInfo['floor'].to_s
+				furniture = iglooInfo['furniture'].to_s
+			end
+			client.sendData('%xt%gm%-1%' + userID.to_s + '%' + (iglooID ? iglooID : 1) + '%' + (musicID ? musicID : 0) + '%' + (floorID ? floorID : 0) + '%' +  (furniture ? furniture : '') + '%')
 		end
-		client.sendData('%xt%gm%-1%' + userID.to_s + '%' + (iglooID ? iglooID : 1) + '%' + (musicID ? musicID : 0) + '%' + (floorID ? floorID : 0) + '%' +  (furniture ? furniture : '') + '%')
 	end
 	
 	def handleGetOwnedIgloos(gameHandlerArgs, client)
@@ -556,8 +572,10 @@ class Game < XTParser
 	
 	def handleGetPlayersStamps(gameHandlerArgs, client)
 		userID = gameHandlerArgs[0]
-		userStamps = @parent.mysql.getStampsByID(userID)
-		client.sendData('%xt%gps%-1%' + userID.to_s + '%' + userStamps + '%')
+		if userID != 0
+			userStamps = @parent.mysql.getStampsByID(userID)
+			client.sendData('%xt%gps%-1%' + userID.to_s + '%' + userStamps + '%')
+		end
 	end
 	
 	def handleGetMyRecentlyEarnedStamps(gameHandlerArgs, client)
@@ -622,53 +640,59 @@ class Game < XTParser
 	
 	def handleBuddyAccept(gameHandlerArgs, client)
 		buddyID = gameHandlerArgs[0]
-		if buddyID == client.ID.to_i
-			return @parent.logger.warn("#{client.username} is trying to add themselves, wtf?")
+		if buddyID != 0
+			if buddyID == client.ID.to_i
+				return @parent.logger.warn("#{client.username} is trying to add themselves, wtf?")
+			end
+			if client.buddies.has_key?(buddyID) != false
+				return @parent.logger.warn("#{client.username} is trying to add a buddy that already exists!")
+			end
+			oclient = client.getClientByID(buddyID)
+			client.buddies[buddyID] = oclient.username
+			oclient.buddies[client.ID.to_i] = client.username
+			oclient.updateCurrentBuddies
+			client.updateCurrentBuddies
+			oclient.sendData('%xt%ba%-1%' + client.ID.to_s + '%' + client.username + '%')
 		end
-		if client.buddies.has_key?(buddyID) != false
-			return @parent.logger.warn("#{client.username} is trying to add a buddy that already exists!")
-		end
-		oclient = client.getClientByID(buddyID)
-		client.buddies[buddyID] = oclient.username
-		oclient.buddies[client.ID.to_i] = client.username
-		oclient.updateCurrentBuddies
-		client.updateCurrentBuddies
-		oclient.sendData('%xt%ba%-1%' + client.ID.to_s + '%' + client.username + '%')
 	end
 
 	def handleRemoveBuddy(gameHandlerArgs, client)
 		buddyID = gameHandlerArgs[0]
-		if buddyID == client.ID.to_i
-			return @parent.logger.warn("#{client.username} is trying to remove themselves, wtf?")
-		end
-		if client.buddies.has_key?(buddyID) != true
-			return @parent.logger.warn("#{client.username} is trying to remove a buddy that doesn\'t exist!")
-		end
-		client.buddies.delete(buddyID)
-		client.updateCurrentBuddies
-		oclientBuddies = @parent.mysql.getClientBuddiesByID(buddyID)
-		buddies = oclientBuddies.split(',')
-		buddyString = ''
-		buddies.each do |buddy|
-			budDetails = buddy.split('|')
-			budID = budDetails[0]
-			budName = budDetails[1]
-			if budID.to_i != client.ID.to_i
-				buddyString << budID.to_s + '|' + budName + ','
+		if buddyID != 0
+			if buddyID == client.ID.to_i
+				return @parent.logger.warn("#{client.username} is trying to remove themselves, wtf?")
 			end
-		end
-		@parent.mysql.updateBuddies(buddyString, buddyID)
-		if client.getOnline(buddyID) == 1
-			oclient = client.getClientByID(buddyID)
-			oclient.sendData('%xt%rb%-1%' + client.ID.to_s + '%' + client.username + '%')
+			if client.buddies.has_key?(buddyID) != true
+				return @parent.logger.warn("#{client.username} is trying to remove a buddy that doesn\'t exist!")
+			end
+			client.buddies.delete(buddyID)
+			client.updateCurrentBuddies
+			oclientBuddies = @parent.mysql.getClientBuddiesByID(buddyID)
+			buddies = oclientBuddies.split(',')
+			buddyString = ''
+			buddies.each do |buddy|
+				budDetails = buddy.split('|')
+				budID = budDetails[0]
+				budName = budDetails[1]
+				if budID.to_i != client.ID.to_i
+					buddyString << budID.to_s + '|' + budName + ','
+				end
+			end
+			@parent.mysql.updateBuddies(buddyString, buddyID)
+			if client.getOnline(buddyID) == 1
+				oclient = client.getClientByID(buddyID)
+				oclient.sendData('%xt%rb%-1%' + client.ID.to_s + '%' + client.username + '%')
+			end
 		end
 	end
 	
 	def handleBuddyFind(gameHandlerArgs, client)
 		buddyID = gameHandlerArgs[0]
-		oclient = client.getClientByID(buddyID)
-		if client.getOnline(buddyID) == 1
-			return client.sendData('%xt%bf%-1%' + oclient.room.to_s + '%')
+		if buddyID != 0
+			oclient = client.getClientByID(buddyID)
+			if client.getOnline(buddyID) == 1
+				return client.sendData('%xt%bf%-1%' + oclient.room.to_s + '%')
+			end
 		end
 	end
 	
@@ -686,29 +710,33 @@ class Game < XTParser
 	
 	def handleAddIgnore(gameHandlerArgs, client)
 		buddyID = gameHandlerArgs[0]
-		if buddyID == client.ID.to_i
-			return @parent.logger.warn("#{client.username} is trying to ignore themselves, wtf?")
+		if buddyID != 0
+			if buddyID == client.ID.to_i
+				return @parent.logger.warn("#{client.username} is trying to ignore themselves, wtf?")
+			end
+			if client.ignored.has_key?(buddyID) != false
+				return @parent.logger.warn("#{client.username} is trying to ignore a buddy that\'s already ignored!")
+			end
+			oclient = client.getClientByID(buddyID)
+			client.ignored[oclient.ID.to_i] = oclient.username
+			client.updateCurrentIgnoredBuddies
+			client.sendData('%xt%an%' + client.room.to_s + '%' + oclient.ID.to_s + '%')
 		end
-		if client.ignored.has_key?(buddyID) != false
-			return @parent.logger.warn("#{client.username} is trying to ignore a buddy that\'s already ignored!")
-		end
-		oclient = client.getClientByID(buddyID)
-		client.ignored[oclient.ID.to_i] = oclient.username
-		client.updateCurrentIgnoredBuddies
-		client.sendData('%xt%an%' + client.room.to_s + '%' + oclient.ID.to_s + '%')
 	end
 	
 	def handleRemoveIgnore(gameHandlerArgs, client)
 		buddyID = gameHandlerArgs[0]
-		if buddyID == client.ID.to_i
-			return @parent.logger.warn("#{client.username} is trying to remove themselves from being ignored, wtf?")
+		if buddyID != 0
+			if buddyID == client.ID.to_i
+				return @parent.logger.warn("#{client.username} is trying to remove themselves from being ignored, wtf?")
+			end
+			if client.ignored.has_key?(buddyID) != true
+				return @parent.logger.warn("#{client.username} is trying to remove an ignored buddy that doesn\'t exist!")
+			end
+			client.ignored.delete(buddyID)
+			client.updateCurrentIgnoredBuddies
+			client.sendData('%xt%rn%' + client.room.to_s + '%' + buddyID.to_s + '%')
 		end
-		if client.ignored.has_key?(buddyID) != true
-			return @parent.logger.warn("#{client.username} is trying to remove an ignored buddy that doesn\'t exist!")
-		end
-		client.ignored.delete(buddyID)
-		client.updateCurrentIgnoredBuddies
-		client.sendData('%xt%rn%' + client.room.to_s + '%' + buddyID.to_s + '%')
 	end
 	
 	def handleMailStart(gameHandlerArgs, client)
@@ -730,26 +758,28 @@ class Game < XTParser
 		recepientID = gameHandlerArgs[0]
 		postcardType = gameHandlerArgs[1]
 		postcardNotes = HTMLEntities.new.decode((gameHandlerArgs[2] ? gameHandlerArgs[2] : ''))
-		if @parent.crumbs.postcard_crumbs.has_key?(postcardType) != true
-			return @parent.logger.warn("#{client.username} is trying to send an invalid postcard")
-		end
-		if @parent.crumbs.postcard_crumbs[postcardType][0]['cost'] > client.coins
-			client.sendData('%xt%ms%-1%' + client.coins.to_s + '%2%')
-		else
-			receiver = client.getClientByID(recepientID)
-			receivedPostcards = @parent.mysql.getReceivedPostcardCount(recepientID)
-			if receivedPostcards > 92
-				return client.sendData('%xt%ms%-1%' + client.coins.to_s + '%0%')
+		if recepientID != 0
+			if @parent.crumbs.postcard_crumbs.has_key?(postcardType) != true
+				return @parent.logger.warn("#{client.username} is trying to send an invalid postcard")
 			end
-			currTimestamp = Time.now.to_i
-			postcardID = @parent.mysql.addPostcard(recepientID, client.username, client.ID, postcardNotes, postcardType, currTimestamp)
-			if client.getOnline(recepientID) == 1
-			   receiver.sendData('%xt%mr%-1%' + client.username + '%' + client.ID.to_s + '%' + postcardType.to_s + '%' + currTimestamp.to_s + '%' + postcardID.to_s + '%')
-			   client.sendData('%xt%ms%-1%' + client.coins.to_s + '%1%')
+			if @parent.crumbs.postcard_crumbs[postcardType][0]['cost'] > client.coins
+				client.sendData('%xt%ms%-1%' + client.coins.to_s + '%2%')
 			else
-				client.sendData('%xt%ms%-1%' + client.coins.to_s + '%1%')
+				receiver = client.getClientByID(recepientID)
+				receivedPostcards = @parent.mysql.getReceivedPostcardCount(recepientID)
+				if receivedPostcards > 92
+					return client.sendData('%xt%ms%-1%' + client.coins.to_s + '%0%')
+				end
+				currTimestamp = Time.now.to_i
+				postcardID = @parent.mysql.addPostcard(recepientID, client.username, client.ID, postcardNotes, postcardType, currTimestamp)
+				if client.getOnline(recepientID) == 1
+				   receiver.sendData('%xt%mr%-1%' + client.username + '%' + client.ID.to_s + '%' + postcardType.to_s + '%' + currTimestamp.to_s + '%' + postcardID.to_s + '%')
+				   client.sendData('%xt%ms%-1%' + client.coins.to_s + '%1%')
+				else
+					client.sendData('%xt%ms%-1%' + client.coins.to_s + '%1%')
+				end
+				client.deductCoins(@parent.crumbs.postcard_crumbs[postcardType][0]['cost'])
 			end
-			client.deductCoins(@parent.crumbs.postcard_crumbs[postcardType][0]['cost'])
 		end
 	end
 	
@@ -761,9 +791,11 @@ class Game < XTParser
 	
 	def handleMailDeletePlayer(gameHandlerArgs, client)
 		userID = gameHandlerArgs[0]
-		@parent.mysql.deletePostcardsByMailer(client.ID, userID)
-		receivedPostcards = @parent.mysql.getReceivedPostcardCount(client.ID)
-		client.sendData('%xt%mdp%-1%' + receivedPostcards.to_s + '%')
+		if userID != 0
+			@parent.mysql.deletePostcardsByMailer(client.ID, userID)
+			receivedPostcards = @parent.mysql.getReceivedPostcardCount(client.ID)
+			client.sendData('%xt%mdp%-1%' + receivedPostcards.to_s + '%')
+		end
 	end
 	
 	def handleMailChecked(gameHandlerArgs, client)
@@ -785,8 +817,10 @@ class Game < XTParser
 	
 	def handleGetPuffle(gameHandlerArgs, client)
 		userID = gameHandlerArgs[0]
-		userPuffles = @parent.mysql.getNonWalkingPuffles(userID)
-		client.sendData('%xt%pg%-1%' + userPuffles)
+		if userID != 0
+			userPuffles = @parent.mysql.getNonWalkingPuffles(userID)
+			client.sendData('%xt%pg%-1%' + userPuffles)
+		end
 	end
 	
 	def handlePufflePip(gameHandlerArgs, client)
