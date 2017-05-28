@@ -417,5 +417,33 @@ class Database
 			return results
 		end
 	end
+	
+	def checkIfSignedIglooContest(userID)
+		@connections.with do |connection|
+			results = connection.xquery("SELECT * FROM igloo_contest WHERE ID = ?", userID)
+			return results.empty ? true : false
+		end
+	end
+	
+	def getLastIglooContestSignUpTime(userID)
+		@connections.with do |connection|
+			results = connection.xquery("SELECT * FROM igloo_contest WHERE ID = ?", userID)
+			results.each do |result|
+				return result['signup_time']
+			end
+		end
+	end
+	
+	def deleteExistingSignUpDetails(userID)
+		@connections.with do |connection|
+			connection.xquery("DELETE FROM igloo_contest WHERE ID = ?", userID)
+		end
+	end
+	
+	def signupIglooContest(userID, username)
+		@connections.with do |connection|
+			connection.xquery("INSERT INTO igloo_contest (ID, username) values (?, ?)", userID, username)
+		end
+	end
 
 end
