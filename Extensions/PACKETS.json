@@ -1,1120 +1,707 @@
 {
-  "xt": [
-    {
-      "s": [
-        {
-          "delimeter": "#",
-          "j#js": [
-            {
-              "method": "handleJoinServer",
-              "args": [
-                "id",
-                "loginkey",
-                "lang"
-              ],
-              "type": [
-                "Fixnum",
-                "String",
-                "String"
-              ],
-              "length": 2,
-              "hasException": false
-            }
-          ],
-          "j#jp": [
-            {
-              "method": "handleJoinPlayer",
-              "args": [
-                "room_id"
-              ],
-              "type": [
-                "Fixnum"
-              ],
-              "length": 0,
-              "hasException": false
-            }
-          ],
-          "u#gp": [
-            {
-              "method": "handleGetPlayer",
-              "args": [
-                "penguin_id"
-              ],
-              "type": [
-                "Fixnum"
-              ],
-              "length": 0,
-              "hasException": false
-            }
-          ],
-          "j#jg": [
-            {
-              "method": "handleJoinGame",
-              "args": [
-                "room_id"
-              ],
-              "type": [
-                "Fixnum"
-              ],
-              "length": 0,
-              "hasException": false
-            }
-          ],
-          "j#grs": [
-            {
-              "method": "handleGetRoomSynced",
-              "length": -1,
-              "hasException": false
-            }
-          ],
-          "j#jr": [
-            {
-              "method": "handleJoinRoom",
-              "args": [
-                "room_id",
-                "x",
-                "y"
-              ],
-              "type": [
-                "Fixnum",
-                "Fixnum",
-                "Fixnum"
-              ],
-              "length": 2,
-              "hasException": false
-            }
-          ],
-          "i#gi": [
-            {
-              "method": "handleGetInventory",
-              "length": -1,
-              "hasException": false
-            }
-          ],
-          "t#at": [
-            {
-              "method": "handleAddToy",
-              "args": [
-                "toy"
-              ],
-              "type": [
-                "Fixnum"
-              ],
-              "length": 0,
-              "hasException": false
-            }
-          ],
-          "t#rt": [
-            {
-              "method": "handleRemoveToy",
-              "length": -1,
-              "hasException": false
-            }
-          ],
-          "i#ai": [
-            {
-              "method": "handleAddInventory",
-              "args": [
-                "item"
-              ],
-              "type": [
-                "Fixnum"
-              ],
-              "length": 0,
-              "hasException": false
-            }
-          ],
-          "i#qpp": [
-            {
-              "method": "handleQueryPlayerPins",
-              "args": [
-                "penguinID"
-              ],
-              "type": [
-                "Fixnum"
-              ],
-              "length": 0,
-              "hasException": false
-            }
-          ],
-          "i#qpa": [
-            {
-              "method": "handleQueryPlayerAwards",
-              "args": [
-                "penguinID"
-              ],
-              "type": [
-                "Fixnum"
-              ],
-              "length": 0,
-              "hasException": false
-            }
-          ],
-          "r#cdu": [
-            {
-              "method": "handleCoinsDigUpdate",
-              "length": -1,
-              "hasException": false
-            }
-          ],
-          "g#af": [
-            {
-              "method": "handleAddFurniture",
-              "args": [
-                "furnID"
-              ],
-              "type": [
-                "Fixnum"
-              ],
-              "length": 0,
-              "hasException": false
-            }
-          ],
-          "g#ao": [
-            {
-              "method": "handleUpdateIgloo",
-              "args": [
-                "iglooID"
-              ],
-              "type": [
-                "Fixnum"
-              ],
-              "length": 0,
-              "hasException": false
-            }
-          ],
-          "g#au": [
-            {
-              "method": "handleAddIgloo",
-              "args": [
-                "igloo"
-              ],
-              "type": [
-                "Fixnum"
-              ],
-              "length": 0,
-              "hasException": false
-            }
-          ],
-          "g#ag": [
-            {
-              "method": "handleUpdateFloor",
-              "args": [
-                "floor"
-              ],
-              "type": [
-                "Fixnum"
-              ],
-              "length": 0,
-              "hasException": false
-            }
-          ],
-          "g#gm": [
-            {
-              "method": "handleGetIglooDetails",
-              "args": [
-                "pengID"
-              ],
-              "type": [
-                "Fixnum"
-              ],
-              "length": 0,
-              "hasException": false
-            }
-          ],
-          "g#um": [
-            {
-              "method": "handleUpdateMusic",
-              "args": [
-                "musicID"
-              ],
-              "type": [
-                "Fixnum"
-              ],
-              "length": 0,
-              "hasException": false
-            }
-          ],
-          "g#go": [
-            {
-              "method": "handleGetOwnedIgloos",
-              "length": -1,
-              "hasException": false
-            }
-          ],
-          "g#or": [
-            {
-              "method": "handleOpenIgloo",
-              "length": -1,
-              "hasException": false
-            }
-          ],
-          "g#cr": [
-            {
-              "method": "handleCloseIgloo",
-              "length": -1,
-              "hasException": false
-            }
-          ],
-          "g#gf": [
-            {
-              "method": "handleGetOwnedFurniture",
-              "length": -1,
-              "hasException": false
-            }
-          ],
-          "g#ur": [
-            {
-              "method": "handleGetFurnitureRevision",
-              "length": -1,
-              "hasException": true
-            }
-          ],
-          "g#gr": [
-            {
-              "method": "handleGetOpenedIgloos",
-              "length": -1,
-              "hasException": false
-            }
-          ],
-          "m#sm": [
-            {
-              "method": "handleSendMessage",
-              "args": [
-                "userID",
-                "message"
-              ],
-              "type": [
-                "Fixnum",
-                "String"
-              ],
-              "length": 1,
-              "hasException": true
-            }
-          ],
-          "o#k": [
-            {
-              "method": "handleKickButton",
-              "args": [
-                "userID"
-              ],
-              "type": [
-                "Fixnum"
-              ],
-              "length": 0,
-              "hasException": false
-            }
-          ],
-          "o#m": [
-            {
-              "method": "handleMuteButton",
-              "args": [
-                "userID"
-              ],
-              "type": [
-                "Fixnum"
-              ],
-              "length": 0,
-              "hasException": false
-            }
-          ],
-          "o#b": [
-            {
-              "method": "handleBanButton",
-              "args": [
-                "userID",
-                "reason"
-              ],
-              "type": [
-                "Fixnum",
-                "String"
-              ],
-              "length": 1,
-              "hasException": false
-            }
-          ],
-          "b#gb": [
-            {
-              "method": "handleGetBuddies",
-              "length": -1,
-              "hasException": false
-            }
-          ],
-          "b#br": [
-            {
-              "method": "handleBuddyRequest",
-              "args": [
-                "buddyID"
-              ],
-              "type": [
-                "Fixnum"
-              ],
-              "length": 0,
-              "hasException": false
-            }
-          ],
-          "b#ba": [
-            {
-              "method": "handleBuddyAccept",
-              "args": [
-                "buddyID"
-              ],
-              "type": [
-                "Fixnum"
-              ],
-              "length": 0,
-              "hasException": false
-            }
-          ],
-          "b#rb": [
-            {
-              "method": "handleRemoveBuddy",
-              "args": [
-                "buddyID"
-              ],
-              "type": [
-                "Fixnum"
-              ],
-              "length": 0,
-              "hasException": false
-            }
-          ],
-          "b#bf": [
-            {
-              "method": "handleBuddyFind",
-              "args": [
-                "buddyID"
-              ],
-              "type": [
-                "Fixnum"
-              ],
-              "length": 0,
-              "hasException": false
-            }
-          ],
-          "n#gn": [
-            {
-              "method": "handleGetIgnored",
-              "length": -1,
-              "hasException": false
-            }
-          ],
-          "n#an": [
-            {
-              "method": "handleAddIgnore",
-              "args": [
-                "buddyID"
-              ],
-              "type": [
-                "Fixnum"
-              ],
-              "length": 0,
-              "hasException": false
-            }
-          ],
-          "n#rn": [
-            {
-              "method": "handleRemoveIgnore",
-              "args": [
-                "buddyID"
-              ],
-              "type": [
-                "Fixnum"
-              ],
-              "length": 0,
-              "hasException": false
-            }
-          ],
-          "p#ps": [
-            {
-              "method": "handleSendPuffleFrame",
-              "args": [
-                "puffleID",
-                "frameID"
-              ],
-              "type": [
-                "Fixnum",
-                "Fixnum"
-              ],
-              "length": 1,
-              "hasException": false
-            }
-          ],
-          "p#pg": [
-            {
-              "method": "handleGetPuffle",
-              "args": [
-                "pengID"
-              ],
-              "type": [
-                "Fixnum"
-              ],
-              "length": 0,
-              "hasException": false
-            }
-          ],
-          "p#pgu": [
-            {
-              "method": "handlePuffleGetUser",
-              "length": -1,
-              "hasException": false
-            }
-          ],
-          "p#pip": [
-            {
-              "method": "handlePufflePip",
-              "args": [
-                "argOne",
-                "argTwo"
-              ],
-              "type": [
-                "Fixnum",
-                "Fixnum"
-              ],
-              "length": 1,
-              "hasException": false
-            }
-          ],
-          "p#pir": [
-            {
-              "method": "handlePufflePir",
-              "args": [
-                "argOne",
-                "argTwo"
-              ],
-              "type": [
-                "Fixnum",
-                "Fixnum"
-              ],
-              "length": 1,
-              "hasException": false
-            }
-          ],
-          "p#ir": [
-            {
-              "method": "handlePuffleIsResting",
-              "args": [
-                "puffID",
-                "argOne",
-                "argTwo"
-              ],
-              "type": [
-                "Fixnum",
-                "Fixnum",
-                "Fixnum"
-              ],
-              "length": 2,
-              "hasException": false
-            }
-          ],
-          "p#ip": [
-            {
-              "method": "handlePuffleIsPlaying",
-              "args": [
-                "puffID",
-                "argOne",
-                "argTwo"
-              ],
-              "type": [
-                "Fixnum",
-                "Fixnum",
-                "Fixnum"
-              ],
-              "length": 2,
-              "hasException": false
-            }
-          ],
-          "p#if": [
-            {
-              "method": "handlePuffleIsFeeding",
-              "args": [
-                "puffID",
-                "argOne",
-                "argTwo"
-              ],
-              "type": [
-                "Fixnum",
-                "Fixnum",
-                "Fixnum"
-              ],
-              "length": 2,
-              "hasException": false
-            }
-          ],
-          "p#pw": [
-            {
-              "method": "handlePuffleWalk",
-              "args": [
-                "puffID",
-                "isWalking"
-              ],
-              "type": [
-                "Fixnum",
-                "Fixnum"
-              ],
-              "length": 1,
-              "hasException": false
-            }
-          ],
-          "p#pf": [
-            {
-              "method": "handlePuffleFeedFood",
-              "args": [
-                "puffID"
-              ],
-              "type": [
-                "Fixnum"
-              ],
-              "length": 0,
-              "hasException": false
-            }
-          ],
-          "p#pn": [
-            {
-              "method": "handleAdoptPuffle",
-              "args": [
-                "puffID",
-                "puffName"
-              ],
-              "type": [
-                "Fixnum",
-                "String"
-              ],
-              "length": 1,
-              "hasException": false
-            }
-          ],
-          "p#pr": [
-            {
-              "method": "handlePuffleRest",
-              "args": [
-                "puffID"
-              ],
-              "type": [
-                "Fixnum"
-              ],
-              "length": 0,
-              "hasException": false
-            }
-          ],
-          "p#pp": [
-            {
-              "method": "handlePufflePlay",
-              "args": [
-                "puffID"
-              ],
-              "type": [
-                "Fixnum"
-              ],
-              "length": 0,
-              "hasException": false
-            }
-          ],
-          "p#pt": [
-            {
-              "method": "handlePuffleFeed",
-              "args": [
-                "puffID",
-                "action"
-              ],
-              "type": [
-                "Fixnum",
-                "Fixnum"
-              ],
-              "length": 1,
-              "hasException": false
-            }
-          ],
-          "p#pm": [
-            {
-              "method": "handlePuffleMove",
-              "args": [
-                "puffID",
-                "xpos",
-                "ypos"
-              ],
-              "type": [
-                "Fixnum",
-                "Fixnum",
-                "Fixnum"
-              ],
-              "length": 2,
-              "hasException": false
-            }
-          ],
-          "p#pb": [
-            {
-              "method": "handlePuffleBath",
-              "args": [
-                "puffID"
-              ],
-              "type": [
-                "Fixnum"
-              ],
-              "length": 0,
-              "hasException": false
-            }
-          ],
-          "u#glr": [
-            {
-              "method": "handleGetLatestRevision",
-              "length": -1,
-              "hasException": false
-            }
-          ],
-          "u#h": [
-            {
-              "method": "handleUserHeartbeat",
-              "length": -1,
-              "hasException": false
-            }
-          ],
-          "u#sp": [
-            {
-              "method": "handleSendPosition",
-              "args": [
-                "xaxis",
-                "yaxis"
-              ],
-              "type": [
-                "Fixnum",
-                "Fixnum"
-              ],
-              "length": 1,
-              "hasException": false
-            }
-          ],
-          "u#sf": [
-            {
-              "method": "handleSendFrame",
-              "args": [
-                "frame"
-              ],
-              "type": [
-                "Fixnum"
-              ],
-              "length": 0,
-              "hasException": false
-            }
-          ],
-          "u#se": [
-            {
-              "method": "handleSendEmote",
-              "args": [
-                "emote"
-              ],
-              "type": [
-                "Fixnum"
-              ],
-              "length": 0,
-              "hasException": false
-            }
-          ],
-          "u#sq": [
-            {
-              "method": "handleSendQuickMessage",
-              "args": [
-                "message"
-              ],
-              "type": [
-                "Fixnum"
-              ],
-              "length": 0,
-              "hasException": false
-            }
-          ],
-          "u#sa": [
-            {
-              "method": "handleSendAction",
-              "args": [
-                "action"
-              ],
-              "type": [
-                "Fixnum"
-              ],
-              "length": 0,
-              "hasException": false
-            }
-          ],
-          "u#ss": [
-            {
-              "method": "handleSendSafeMessage",
-              "args": [
-                "message"
-              ],
-              "type": [
-                "Fixnum"
-              ],
-              "length": 0,
-              "hasException": false
-            }
-          ],
-          "u#sg": [
-            {
-              "method": "handleSendGuideMessage",
-              "args": [
-                "message"
-              ],
-              "type": [
-                "Fixnum"
-              ],
-              "length": 0,
-              "hasException": false
-            }
-          ],
-          "u#sj": [
-            {
-              "method": "handleSendJoke",
-              "args": [
-                "joke"
-              ],
-              "type": [
-                "Fixnum"
-              ],
-              "length": 0,
-              "hasException": false
-            }
-          ],
-          "u#sma": [
-            {
-              "method": "handleSendMascotMessage",
-              "args": [
-                "joke"
-              ],
-              "type": [
-                "Fixnum"
-              ],
-              "length": 0,
-              "hasException": false
-            }
-          ],
-          "u#sb": [
-            {
-              "method": "handleThrowSnowball",
-              "args": [
-                "xpos",
-                "ypos"
-              ],
-              "type": [
-                "Fixnum",
-                "Fixnum"
-              ],
-              "length": 1,
-              "hasException": false
-            }
-          ],
-          "s#upc": [
-            {
-              "method": "handleUpdatePlayerColor",
-              "args": [
-                "color"
-              ],
-              "type": [
-                "Fixnum"
-              ],
-              "length": 0,
-              "hasException": false
-            }
-          ],
-          "s#uph": [
-            {
-              "method": "handleUpdatePlayerHead",
-              "args": [
-                "head"
-              ],
-              "type": [
-                "Fixnum"
-              ],
-              "length": 0,
-              "hasException": false
-            }
-          ],
-          "s#upf": [
-            {
-              "method": "handleUpdatePlayerFace",
-              "args": [
-                "face"
-              ],
-              "type": [
-                "Fixnum"
-              ],
-              "length": 0,
-              "hasException": false
-            }
-          ],
-          "s#upn": [
-            {
-              "method": "handleUpdatePlayerNeck",
-              "args": [
-                "neck"
-              ],
-              "type": [
-                "Fixnum"
-              ],
-              "length": 0,
-              "hasException": false
-            }
-          ],
-          "s#upb": [
-            {
-              "method": "handleUpdatePlayerBody",
-              "args": [
-                "body"
-              ],
-              "type": [
-                "Fixnum"
-              ],
-              "length": 0,
-              "hasException": false
-            }
-          ],
-          "s#upa": [
-            {
-              "method": "handleUpdatePlayerHand",
-              "args": [
-                "hand"
-              ],
-              "type": [
-                "Fixnum"
-              ],
-              "length": 0,
-              "hasException": false
-            }
-          ],
-          "s#upe": [
-            {
-              "method": "handleUpdatePlayerFeet",
-              "args": [
-                "feet"
-              ],
-              "type": [
-                "Fixnum"
-              ],
-              "length": 0,
-              "hasException": false
-            }
-          ],
-          "s#upp": [
-            {
-              "method": "handleUpdatePlayerPhoto",
-              "args": [
-                "photo"
-              ],
-              "type": [
-                "Fixnum"
-              ],
-              "length": 0,
-              "hasException": false
-            }
-          ],
-          "s#upl": [
-            {
-              "method": "handleUpdatePlayerPin",
-              "args": [
-                "flag"
-              ],
-              "type": [
-                "Fixnum"
-              ],
-              "length": 0,
-              "hasException": false
-            }
-          ],
-          "st#sse": [
-            {
-              "method": "handleSendStampEarned",
-              "args": [
-                "stamp"
-              ],
-              "type": [
-                "Fixnum"
-              ],
-              "length": 0,
-              "hasException": false
-            }
-          ],
-          "st#gps": [
-            {
-              "method": "handleGetPlayersStamps",
-              "args": [
-                "pengID"
-              ],
-              "type": [
-                "Fixnum"
-              ],
-              "length": 0,
-              "hasException": false
-            }
-          ],
-          "st#gmres": [
-            {
-              "method": "handleGetMyRecentlyEarnedStamps",
-              "length": -1,
-              "hasException": false
-            }
-          ],
-          "st#gsbcd": [
-            {
-              "method": "handleGetStampBookCoverDetails",
-              "args": [
-                "pengID"
-              ],
-              "type": [
-                "Fixnum"
-              ],
-              "length": 0,
-              "hasException": false
-            }
-          ],
-          "st#ssbcd": [
-            {
-              "method": "handleSetStampBookCoverDetails",
-              "length": -1,
-              "hasException": true
-            }
-          ],
-          "l#mst": [
-            {
-              "method": "handleMailStart",
-              "length": -1,
-              "hasException": false
-            }
-          ],
-          "l#mg": [
-            {
-              "method": "handleMailGet",
-              "length": -1,
-              "hasException": false
-            }
-          ],
-          "l#ms": [
-            {
-              "method": "handleMailSend",
-              "args": [
-                "recepient",
-                "postcard",
-                "possibleNotes"
-              ],
-              "type": [
-                "Fixnum",
-                "Fixnum",
-                "String"
-              ],
-              "length": 2,
-              "hasException": false
-            }
-          ],
-          "l#md": [
-            {
-              "method": "handleMailDelete",
-              "args": [
-                "postcard"
-              ],
-              "type": [
-                "Fixnum"
-              ],
-              "length": 0,
-              "hasException": false
-            }
-          ],
-          "l#mdp": [
-            {
-              "method": "handleMailDeletePlayer",
-              "args": [
-                "pengID"
-              ],
-              "type": [
-                "Fixnum"
-              ],
-              "length": 0,
-              "hasException": false
-            }
-          ],
-          "l#mc": [
-            {
-              "method": "handleMailChecked",
-              "length": -1,
-              "hasException": false
-            }
-          ],
-          "f#epfai": [
-            {
-              "method": "handleEPFAddItem",
-              "args": [
-                "itemID"
-              ],
-              "type": [
-                "Fixnum"
-              ],
-              "length": 0,
-              "hasException": false
-            }
-          ],
-          "f#epfga": [
-            {
-              "method": "handleEPFGetAgent",
-              "length": -1,
-              "hasException": false
-            }
-          ],
-          "f#epfsa": [
-            {
-              "method": "handleEPFSetAgent",
-              "length": -1,
-              "hasException": false
-            }
-          ],
-          "f#epfgf": [
-            {
-              "method": "handleEPFGetField",
-              "length": -1,
-              "hasException": false
-            }
-          ],
-          "f#epfsf": [
-            {
-              "method": "handleEPFSetField",
-              "length": -1,
-              "hasException": false
-            }
-          ],
-          "f#epfgr": [
-            {
-              "method": "handleEPFGetRevisions",
-              "length": -1,
-              "hasException": false
-            }
-          ],
-          "f#epfgm": [
-            {
-              "method": "handleEPFGetComMessages",
-              "length": -1,
-              "hasException": false
-            }
-          ]
-        }
-      ],
-      "z": [
-        {
-          "jw": [
-            {
-              "method": [
-                "handleJoinWaddle",
-                {
-                  "args": [
-                    "waddle_id"
-                  ],
-                  "type": [
-                    "Fixnum"
-                  ],
-                  "length": 0,
-                  "hasException": false
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    }
-  ]
+	"xt": [{
+		"s": [{
+			"delimeter": "#",
+			"j#js": [{
+				"method": "handleJoinServer",
+				"type": [
+					"Fixnum",
+					"String",
+					"String"
+				],
+				"length": 2,
+				"hasException": false
+			}],
+			"j#jp": [{
+				"method": "handleJoinPlayer",
+				"type": [
+					"Fixnum"
+				],
+				"length": 0,
+				"hasException": false
+			}],
+			"u#gp": [{
+				"method": "handleGetPlayer",
+				"type": [
+					"Fixnum"
+				],
+				"length": 0,
+				"hasException": false
+			}],
+			"j#jg": [{
+				"method": "handleJoinGame",
+				"type": [
+					"Fixnum"
+				],
+				"length": 0,
+				"hasException": false
+			}],
+			"j#grs": [{
+				"method": "handleGetRoomSynced",
+				"length": -1,
+				"hasException": false
+			}],
+			"j#jr": [{
+				"method": "handleJoinRoom",
+				"type": [
+					"Fixnum",
+					"Fixnum",
+					"Fixnum"
+				],
+				"length": 2,
+				"hasException": false
+			}],
+			"i#gi": [{
+				"method": "handleGetInventory",
+				"length": -1,
+				"hasException": false
+			}],
+			"t#at": [{
+				"method": "handleAddToy",
+				"type": [
+					"Fixnum"
+				],
+				"length": 0,
+				"hasException": false
+			}],
+			"t#rt": [{
+				"method": "handleRemoveToy",
+				"length": -1,
+				"hasException": false
+			}],
+			"i#ai": [{
+				"method": "handleAddInventory",
+				"type": [
+					"Fixnum"
+				],
+				"length": 0,
+				"hasException": false
+			}],
+			"i#qpp": [{
+				"method": "handleQueryPlayerPins",
+				"type": [
+					"Fixnum"
+				],
+				"length": 0,
+				"hasException": false
+			}],
+			"i#qpa": [{
+				"method": "handleQueryPlayerAwards",
+				"type": [
+					"Fixnum"
+				],
+				"length": 0,
+				"hasException": false
+			}],
+			"r#cdu": [{
+				"method": "handleCoinsDigUpdate",
+				"length": -1,
+				"hasException": false
+			}],
+			"g#af": [{
+				"method": "handleAddFurniture",
+				"type": [
+					"Fixnum"
+				],
+				"length": 0,
+				"hasException": false
+			}],
+			"g#ao": [{
+				"method": "handleUpdateIgloo",
+				"type": [
+					"Fixnum"
+				],
+				"length": 0,
+				"hasException": false
+			}],
+			"g#au": [{
+				"method": "handleAddIgloo",
+				"type": [
+					"Fixnum"
+				],
+				"length": 0,
+				"hasException": false
+			}],
+			"g#ag": [{
+				"method": "handleUpdateFloor",
+				"type": [
+					"Fixnum"
+				],
+				"length": 0,
+				"hasException": false
+			}],
+			"g#gm": [{
+				"method": "handleGetIglooDetails",
+				"type": [
+					"Fixnum"
+				],
+				"length": 0,
+				"hasException": false
+			}],
+			"g#um": [{
+				"method": "handleUpdateMusic",
+				"type": [
+					"Fixnum"
+				],
+				"length": 0,
+				"hasException": false
+			}],
+			"g#go": [{
+				"method": "handleGetOwnedIgloos",
+				"length": -1,
+				"hasException": false
+			}],
+			"g#or": [{
+				"method": "handleOpenIgloo",
+				"length": -1,
+				"hasException": false
+			}],
+			"g#cr": [{
+				"method": "handleCloseIgloo",
+				"length": -1,
+				"hasException": false
+			}],
+			"g#gf": [{
+				"method": "handleGetOwnedFurniture",
+				"length": -1,
+				"hasException": false
+			}],
+			"g#ur": [{
+				"method": "handleGetFurnitureRevision",
+				"length": -1,
+				"hasException": true
+			}],
+			"g#gr": [{
+				"method": "handleGetOpenedIgloos",
+				"length": -1,
+				"hasException": false
+			}],
+			"m#sm": [{
+				"method": "handleSendMessage",
+				"type": [
+					"Fixnum",
+					"String"
+				],
+				"length": 1,
+				"hasException": true
+			}],
+			"o#k": [{
+				"method": "handleKickButton",
+				"type": [
+					"Fixnum"
+				],
+				"length": 0,
+				"hasException": false
+			}],
+			"o#m": [{
+				"method": "handleMuteButton",
+				"type": [
+					"Fixnum"
+				],
+				"length": 0,
+				"hasException": false
+			}],
+			"o#b": [{
+				"method": "handleBanButton",
+				"type": [
+					"Fixnum",
+					"String"
+				],
+				"length": 1,
+				"hasException": false
+			}],
+			"b#gb": [{
+				"method": "handleGetBuddies",
+				"length": -1,
+				"hasException": false
+			}],
+			"b#br": [{
+				"method": "handleBuddyRequest",
+				"type": [
+					"Fixnum"
+				],
+				"length": 0,
+				"hasException": false
+			}],
+			"b#ba": [{
+				"method": "handleBuddyAccept",
+				"type": [
+					"Fixnum"
+				],
+				"length": 0,
+				"hasException": false
+			}],
+			"b#rb": [{
+				"method": "handleRemoveBuddy",
+				"type": [
+					"Fixnum"
+				],
+				"length": 0,
+				"hasException": false
+			}],
+			"b#bf": [{
+				"method": "handleBuddyFind",
+				"type": [
+					"Fixnum"
+				],
+				"length": 0,
+				"hasException": false
+			}],
+			"n#gn": [{
+				"method": "handleGetIgnored",
+				"length": -1,
+				"hasException": false
+			}],
+			"n#an": [{
+				"method": "handleAddIgnore",
+				"type": [
+					"Fixnum"
+				],
+				"length": 0,
+				"hasException": false
+			}],
+			"n#rn": [{
+				"method": "handleRemoveIgnore",
+				"type": [
+					"Fixnum"
+				],
+				"length": 0,
+				"hasException": false
+			}],
+			"p#ps": [{
+				"method": "handleSendPuffleFrame",
+				"type": [
+					"Fixnum",
+					"Fixnum"
+				],
+				"length": 1,
+				"hasException": false
+			}],
+			"p#pg": [{
+				"method": "handleGetPuffle",
+				"type": [
+					"Fixnum"
+				],
+				"length": 0,
+				"hasException": false
+			}],
+			"p#pgu": [{
+				"method": "handlePuffleGetUser",
+				"length": -1,
+				"hasException": false
+			}],
+			"p#pip": [{
+				"method": "handlePufflePip",
+				"type": [
+					"Fixnum",
+					"Fixnum"
+				],
+				"length": 1,
+				"hasException": false
+			}],
+			"p#pir": [{
+				"method": "handlePufflePir",
+				"type": [
+					"Fixnum",
+					"Fixnum"
+				],
+				"length": 1,
+				"hasException": false
+			}],
+			"p#ir": [{
+				"method": "handlePuffleIsResting",
+				"type": [
+					"Fixnum",
+					"Fixnum",
+					"Fixnum"
+				],
+				"length": 2,
+				"hasException": false
+			}],
+			"p#ip": [{
+				"method": "handlePuffleIsPlaying",
+				"type": [
+					"Fixnum",
+					"Fixnum",
+					"Fixnum"
+				],
+				"length": 2,
+				"hasException": false
+			}],
+			"p#if": [{
+				"method": "handlePuffleIsFeeding",
+				"type": [
+					"Fixnum",
+					"Fixnum",
+					"Fixnum"
+				],
+				"length": 2,
+				"hasException": false
+			}],
+			"p#pw": [{
+				"method": "handlePuffleWalk",
+				"type": [
+					"Fixnum",
+					"Fixnum"
+				],
+				"length": 1,
+				"hasException": false
+			}],
+			"p#pf": [{
+				"method": "handlePuffleFeedFood",
+				"type": [
+					"Fixnum"
+				],
+				"length": 0,
+				"hasException": false
+			}],
+			"p#pn": [{
+				"method": "handleAdoptPuffle",
+				"type": [
+					"Fixnum",
+					"String"
+				],
+				"length": 1,
+				"hasException": false
+			}],
+			"p#pr": [{
+				"method": "handlePuffleRest",
+				"type": [
+					"Fixnum"
+				],
+				"length": 0,
+				"hasException": false
+			}],
+			"p#pp": [{
+				"method": "handlePufflePlay",
+				"type": [
+					"Fixnum"
+				],
+				"length": 0,
+				"hasException": false
+			}],
+			"p#pt": [{
+				"method": "handlePuffleFeed",
+				"type": [
+					"Fixnum",
+					"Fixnum"
+				],
+				"length": 1,
+				"hasException": false
+			}],
+			"p#pm": [{
+				"method": "handlePuffleMove",
+				"type": [
+					"Fixnum",
+					"Fixnum",
+					"Fixnum"
+				],
+				"length": 2,
+				"hasException": false
+			}],
+			"p#pb": [{
+				"method": "handlePuffleBath",
+				"type": [
+					"Fixnum"
+				],
+				"length": 0,
+				"hasException": false
+			}],
+			"u#glr": [{
+				"method": "handleGetLatestRevision",
+				"length": -1,
+				"hasException": false
+			}],
+			"u#h": [{
+				"method": "handleUserHeartbeat",
+				"length": -1,
+				"hasException": false
+			}],
+			"u#sp": [{
+				"method": "handleSendPosition",
+				"type": [
+					"Fixnum",
+					"Fixnum"
+				],
+				"length": 1,
+				"hasException": false
+			}],
+			"u#sf": [{
+				"method": "handleSendFrame",
+				"type": [
+					"Fixnum"
+				],
+				"length": 0,
+				"hasException": false
+			}],
+			"u#se": [{
+				"method": "handleSendEmote",
+				"type": [
+					"Fixnum"
+				],
+				"length": 0,
+				"hasException": false
+			}],
+			"u#sq": [{
+				"method": "handleSendQuickMessage",
+				"type": [
+					"Fixnum"
+				],
+				"length": 0,
+				"hasException": false
+			}],
+			"u#sa": [{
+				"method": "handleSendAction",
+				"type": [
+					"Fixnum"
+				],
+				"length": 0,
+				"hasException": false
+			}],
+			"u#ss": [{
+				"method": "handleSendSafeMessage",
+				"type": [
+					"Fixnum"
+				],
+				"length": 0,
+				"hasException": false
+			}],
+			"u#sg": [{
+				"method": "handleSendGuideMessage",
+				"type": [
+					"Fixnum"
+				],
+				"length": 0,
+				"hasException": false
+			}],
+			"u#sj": [{
+				"method": "handleSendJoke",
+				"type": [
+					"Fixnum"
+				],
+				"length": 0,
+				"hasException": false
+			}],
+			"u#sma": [{
+				"method": "handleSendMascotMessage",
+				"type": [
+					"Fixnum"
+				],
+				"length": 0,
+				"hasException": false
+			}],
+			"u#sb": [{
+				"method": "handleThrowSnowball",
+				"type": [
+					"Fixnum",
+					"Fixnum"
+				],
+				"length": 1,
+				"hasException": false
+			}],
+			"s#upc": [{
+				"method": "handleUpdatePlayerColor",
+				"type": [
+					"Fixnum"
+				],
+				"length": 0,
+				"hasException": false
+			}],
+			"s#uph": [{
+				"method": "handleUpdatePlayerHead",
+				"type": [
+					"Fixnum"
+				],
+				"length": 0,
+				"hasException": false
+			}],
+			"s#upf": [{
+				"method": "handleUpdatePlayerFace",
+				"type": [
+					"Fixnum"
+				],
+				"length": 0,
+				"hasException": false
+			}],
+			"s#upn": [{
+				"method": "handleUpdatePlayerNeck",
+				"type": [
+					"Fixnum"
+				],
+				"length": 0,
+				"hasException": false
+			}],
+			"s#upb": [{
+				"method": "handleUpdatePlayerBody",
+				"type": [
+					"Fixnum"
+				],
+				"length": 0,
+				"hasException": false
+			}],
+			"s#upa": [{
+				"method": "handleUpdatePlayerHand",
+				"type": [
+					"Fixnum"
+				],
+				"length": 0,
+				"hasException": false
+			}],
+			"s#upe": [{
+				"method": "handleUpdatePlayerFeet",
+				"type": [
+					"Fixnum"
+				],
+				"length": 0,
+				"hasException": false
+			}],
+			"s#upp": [{
+				"method": "handleUpdatePlayerPhoto",
+				"type": [
+					"Fixnum"
+				],
+				"length": 0,
+				"hasException": false
+			}],
+			"s#upl": [{
+				"method": "handleUpdatePlayerPin",
+				"type": [
+					"Fixnum"
+				],
+				"length": 0,
+				"hasException": false
+			}],
+			"st#sse": [{
+				"method": "handleSendStampEarned",
+				"type": [
+					"Fixnum"
+				],
+				"length": 0,
+				"hasException": false
+			}],
+			"st#gps": [{
+				"method": "handleGetPlayersStamps",
+				"type": [
+					"Fixnum"
+				],
+				"length": 0,
+				"hasException": false
+			}],
+			"st#gmres": [{
+				"method": "handleGetMyRecentlyEarnedStamps",
+				"length": -1,
+				"hasException": false
+			}],
+			"st#gsbcd": [{
+				"method": "handleGetStampBookCoverDetails",
+				"type": [
+					"Fixnum"
+				],
+				"length": 0,
+				"hasException": false
+			}],
+			"st#ssbcd": [{
+				"method": "handleSetStampBookCoverDetails",
+				"length": -1,
+				"hasException": true
+			}],
+			"l#mst": [{
+				"method": "handleMailStart",
+				"length": -1,
+				"hasException": false
+			}],
+			"l#mg": [{
+				"method": "handleMailGet",
+				"length": -1,
+				"hasException": false
+			}],
+			"l#ms": [{
+				"method": "handleMailSend",
+				"type": [
+					"Fixnum",
+					"Fixnum",
+					"String"
+				],
+				"length": 2,
+				"hasException": false
+			}],
+			"l#md": [{
+				"method": "handleMailDelete",
+				"type": [
+					"Fixnum"
+				],
+				"length": 0,
+				"hasException": false
+			}],
+			"l#mdp": [{
+				"method": "handleMailDeletePlayer",
+				"type": [
+					"Fixnum"
+				],
+				"length": 0,
+				"hasException": false
+			}],
+			"l#mc": [{
+				"method": "handleMailChecked",
+				"length": -1,
+				"hasException": false
+			}],
+			"f#epfai": [{
+				"method": "handleEPFAddItem",
+				"type": [
+					"Fixnum"
+				],
+				"length": 0,
+				"hasException": false
+			}],
+			"f#epfga": [{
+				"method": "handleEPFGetAgent",
+				"length": -1,
+				"hasException": false
+			}],
+			"f#epfsa": [{
+				"method": "handleEPFSetAgent",
+				"length": -1,
+				"hasException": false
+			}],
+			"f#epfgf": [{
+				"method": "handleEPFGetField",
+				"length": -1,
+				"hasException": false
+			}],
+			"f#epfsf": [{
+				"method": "handleEPFSetField",
+				"length": -1,
+				"hasException": false
+			}],
+			"f#epfgr": [{
+				"method": "handleEPFGetRevisions",
+				"length": -1,
+				"hasException": false
+			}],
+			"f#epfgm": [{
+				"method": "handleEPFGetComMessages",
+				"length": -1,
+				"hasException": false
+			}]
+		}],
+		"z": [{
+			"jw": [{
+				"method": "handleJoinWaddle",
+				"length": 0,
+				"type": [
+					"Fixnum"
+				],
+				"hasException": false
+			}],
+			"zo": [{
+				"method": "handleGameOver",
+				"length": 0,
+				"type": [
+					"Fixnum"
+				],
+				"hasException": false
+			}]
+		}]
+	}]
 }
