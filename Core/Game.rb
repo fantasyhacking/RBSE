@@ -2,6 +2,8 @@ require 'rubygems'
 require 'bcrypt'
 require 'htmlentities'
 require 'to_bool'
+require 'time'
+require 'time_difference'
 
 class Game < XTParser
 
@@ -1059,6 +1061,44 @@ class Game < XTParser
 			client.addCoins(coins)
 			client.sendData('%xt%zo%-1%' + client.coins.to_s + '%%0%0%0%')
 		end
+	end
+	
+	def handleDonateCoins(gameHandlerArgs, client)
+		amount = gameHandlerArgs[1]
+		if amount > client.coins
+			return client.sendError(401)
+		end
+		amountTypes = [100, 500, 1000, 5000, 10000]
+		if amountTypes.include?(amount)
+			client.deductCoins(amount)
+		end
+	end
+	
+	def handleSignIglooContest(gameHandlerArgs, client)
+		isSignedUp = @parent.mysql.checkIfSignedIglooContest(client.ID)
+		if isSignedUp == false
+			return @parent.mysql.signupIglooContest(client.ID, client.username)
+		end
+		lastSignUpTime = @parent.mysql.getLastIglooContestSignUpTime(client.ID)
+		lastSignUpDifference = (TimeDifference.between(Time.parse(lastSignUpTime.to_s), Time.now).in_minutes).round
+		if lastSignUpDifference.to_i >= 1
+			@parent.mysql.deleteExistingSignUpDetails(client.ID)
+			@parent.mysql.signupIglooContest(client.ID, client.username)
+		else
+			client.sendError(913)
+		end
+	end
+	
+	def handleGetTables(gameHandlerArgs, client)
+	
+	end
+	
+	def handleJoinTable(gameHandlerArgs, client)
+	
+	end
+	
+	def handleLeaveTable(gameHandlerArgs, client)
+	
 	end
 	
 end
