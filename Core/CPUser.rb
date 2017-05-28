@@ -6,7 +6,7 @@ require 'time_difference'
 
 class CPUser
 
-	attr_accessor :sock, :ID, :username, :lkey, :coins, :joindate, :clothes, :ranking, :astatus, :clothes, :ranking, :inventory, :buddies, :ignored, :room, :xaxis, :yaxis, :frame, :logged_in
+	attr_accessor :sock, :ID, :username, :lkey, :coins, :joindate, :clothes, :ranking, :astatus, :clothes, :ranking, :inventory, :buddies, :ignored, :room, :xaxis, :yaxis, :frame, :logged_in, :lastPacket, :spamFilter
 	attr_accessor :igloo, :floor, :music, :furniture, :ownedFurns, :ownedIgloos
 	attr_accessor :stamps, :restamps, :stampbook_cover
 	attr_accessor :isagent, :status, :currentpoints, :totalpoints
@@ -62,6 +62,8 @@ class CPUser
 		@currentpoints = 0
 		@totalpoints = 0
 		@logged_in = 0
+		@lastPacket = Hash.new
+		@spamFilter = Hash.new
 	end
 	
 	def sendData(data)
