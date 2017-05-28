@@ -479,14 +479,14 @@ class Game < XTParser
 		musicID = ''
 		floorID = ''
 		furniture = ''
-		iglooData = @parent.mysql.getIglooDetails(client.ID)
+		iglooData = @parent.mysql.getIglooDetails(userID)
 		iglooData.each do |iglooInfo|
 			iglooID = iglooInfo['igloo'].to_s
 			musicID = iglooInfo['music'].to_s
 			floorID = iglooInfo['floor'].to_s
 			furniture = iglooInfo['furniture'].to_s
 		end
-		client.sendData('%xt%gm%-1%' + client.ID.to_s + '%' + (iglooID ? iglooID : 1) + '%' + (musicID ? musicID : 0) + '%' + (floorID ? floorID : 0) + '%' +  (furniture ? furniture : '') + '%')
+		client.sendData('%xt%gm%-1%' + userID.to_s + '%' + (iglooID ? iglooID : 1) + '%' + (musicID ? musicID : 0) + '%' + (floorID ? floorID : 0) + '%' +  (furniture ? furniture : '') + '%')
 	end
 	
 	def handleGetOwnedIgloos(gameHandlerArgs, client)
