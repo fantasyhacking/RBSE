@@ -11,7 +11,7 @@ class Database
 	end
 
 	def connectMySQL(db_user, db_pass, db_host, db_name)
-		@connections = ConnectionPool.new(:size => 5) { Mysql2::Client.new(:host => db_host, :username => db_user, :password => db_pass, :database => db_name, :reconnect => true) }
+		@connections = ConnectionPool.new(:size => 10) { Mysql2::Client.new(:host => db_host, :username => db_user, :password => db_pass, :database => db_name, :reconnect => true) }
 		@connections.with do |connection|
 			if connection == nil
 				@parent.logger.info('Failed to connect to the MySQL server')
