@@ -41,22 +41,22 @@ class XTParser
 				end
 			end
 			realArgs = packets.drop(5)
-			if realArgs.empty? != true && realArgs.count < (@xtPackets[packets[1]][0][packets[2]][0][gamePacket][0]['length'] - 1)
+			if realArgs.empty? != true && realArgs.count < @xtPackets[packets[1]][0][packets[2]][0][gamePacket][0]['length'].to_i
 				@parent.logger.warn('Client is sending invalid amount of Arguments')
 				return false
 			end
-			if @xtPackets[packets[1]][0][packets[2]][0][gamePacket][0]['length'] < 0	
+			if @xtPackets[packets[1]][0][packets[2]][0][gamePacket][0]['length'].to_i < 0	
 				if gamePacket == 'st#ssbcd' || gamePacket == 'g#ur' || gamePacket == 'm#sm' #because stampbook cover is a pain
 					handlingInfo = ['handler' => @xtPackets[packets[1]][0][packets[2]][0][gamePacket][0]['method'], 'arguments' => realArgs]
 					return handlingInfo
 				end
 				handlingInfo = ['handler' => @xtPackets[packets[1]][0][packets[2]][0][gamePacket][0]['method'], 'arguments' => []]
 				return handlingInfo
-			elsif @xtPackets[packets[1]][0][packets[2]][0][gamePacket][0]['length'] >= 0
-				packLength = @xtPackets[packets[1]][0][packets[2]][0][gamePacket][0]['length']
+			elsif @xtPackets[packets[1]][0][packets[2]][0][gamePacket][0]['length'].to_i >= 0
+				packLength = @xtPackets[packets[1]][0][packets[2]][0][gamePacket][0]['length'].to_i
 				newArgs = Array.new
 				(0..packLength).each do |pack_index|
-					name = @xtPackets[packets[1]][0][packets[2]][0][gamePacket][0]['args'][pack_index]
+					puts packets[2]
 					type = @xtPackets[packets[1]][0][packets[2]][0][gamePacket][0]['type'][pack_index]
 					item = realArgs[pack_index]
 					item_type = ''
