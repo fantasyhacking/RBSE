@@ -9,22 +9,12 @@ DROP DATABASE IF EXISTS `cpps`;
 CREATE DATABASE `cpps` /*!40100 DEFAULT CHARACTER SET latin1 */;
 USE `cpps`;
 
-DROP TABLE IF EXISTS `donations`;
-CREATE TABLE `donations` (
-  `ID` int(11) NOT NULL,
-  `username` longtext NOT NULL,
-  `donation` int(11) NOT NULL,
-  `donate_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
-
 DROP TABLE IF EXISTS `epf`;
 CREATE TABLE `epf` (
   `ID` int(11) NOT NULL,
   `isagent` tinyint(1) NOT NULL DEFAULT '1',
-  `status` tinyint(1) NOT NULL DEFAULT '1',
-  `currentpoints` int(10) NOT NULL DEFAULT '80',
+  `status` mediumtext NOT NULL,
+  `currentpoints` int(10) NOT NULL DEFAULT '20',
   `totalpoints` int(10) NOT NULL DEFAULT '100',
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -50,7 +40,7 @@ DROP TABLE IF EXISTS `igloo_contest`;
 CREATE TABLE `igloo_contest` (
   `ID` int(11) NOT NULL,
   `username` longtext NOT NULL,
-  `signup_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `signup_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
