@@ -56,7 +56,6 @@ class XTParser
 				packLength = @xtPackets[packets[1]][0][packets[2]][0][gamePacket][0]['length'].to_i
 				newArgs = Array.new
 				(0..packLength).each do |pack_index|
-					puts packets[2]
 					type = @xtPackets[packets[1]][0][packets[2]][0][gamePacket][0]['type'][pack_index]
 					item = realArgs[pack_index]
 					item_type = ''
