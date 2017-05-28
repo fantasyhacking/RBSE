@@ -624,8 +624,13 @@ class Game < XTParser
 	
 	def handleBuddyRequest(gameHandlerArgs, client)
 		buddyID = gameHandlerArgs[0]
-		oclient = client.getClientByID(buddyID)
-		oclient.sendData('%xt%br%-1%' + client.ID.to_s + '%' + client.username + '%')
+		if buddyID != 0
+			if buddyID == client.ID.to_i
+				return @parent.logger.warn("#{client.username} is trying to add themselves, wtf?")
+			end
+			oclient = client.getClientByID(buddyID)
+			oclient.sendData('%xt%br%-1%' + client.ID.to_s + '%' + client.username + '%')
+		end
 	end
 	
 	def handleGetBuddies(gameHandlerArgs, client)
