@@ -45,15 +45,6 @@ class TCP
 			end
 			rescue Exception => e
 				@parent.logger.error("#{e} (#{e.class}) - #{e.backtrace.join("\n\t")}")
-			ensure
-				if @parent.game_sys.iglooMap.has_key?(client.ID)
-						@parent.game_sys.iglooMap.delete(client.ID)
-				end
-				client.removePlayerFromRoom
-				if client.logged_in.to_bool == true
-					@parent.mysql.updateLoggedIn(0, client.username)
-				end
-				self.handleRemoveClient(connection)
 			end
         end
 	end
