@@ -47,7 +47,10 @@ class GameBot
 	end
 	
 	def handleJoinRoom(data, client)
-		client.sendRoom('%xt%ap%-1%' + self.buildBotString + '%')
+		roomID = data[0]
+		if @parent.crumbs.game_room_crumbs.has_key?(roomID) != true
+			client.sendRoom('%xt%ap%-1%' + self.buildBotString + '%')
+		end
 	end
 	
 	def handleJoinServer(data, client)
@@ -55,8 +58,10 @@ class GameBot
 	end
 	
 	def handleJoinPlayer(data, client)
-		client.sendRoom('%xt%ap%-1%' + self.buildBotString + '%')
+		roomID = data[0]
+		if @parent.crumbs.game_room_crumbs.has_key?(roomID) != true
+			client.sendRoom('%xt%ap%-1%' + self.buildBotString + '%')
+		end
 	end
-
 
 end
