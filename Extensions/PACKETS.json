@@ -683,6 +683,35 @@
 				"method": "handleEPFGetComMessages",
 				"length": -1,
 				"hasException": false
+			}],
+			"e#dc": [{
+				"method": "handleDonateCoins",
+				"length": 1,
+				"type": [
+					"Fixnum",
+					"Fixnum"
+				],
+				"hasException": false
+			}],
+			"e#sig": [{
+				"method": "handleSignIglooContest",
+				"length": -1,
+				"hasException": false
+			}],
+			"a#gt": [{
+				"method": "handleGetTables",
+				"length": -1,
+				"hasException": false
+			}],
+			"a#jt": [{
+				"method": "handleJoinTable",
+				"length": 0,
+				"hasException": false
+			}],
+			"a#lt": [{
+				"method": "handleLeaveTable",
+				"length": 0,
+				"hasException": false
 			}]
 		}],
 		"z": [{
