@@ -1049,4 +1049,16 @@ class Game < XTParser
 		end
 	end
 	
+	def handleGameOver(gameHandlerArgs, client)
+		score = gameHandlerArgs[0]
+		if client.room < 900
+			return client.sendData('%xt%zo%-1%' + client.coins.to_s + '%%0%0%0%')
+		end
+		coins = (score / 10).round
+		if score < 99999
+			client.addCoins(coins)
+			client.sendData('%xt%zo%-1%' + client.coins.to_s + '%%0%0%0%')
+		end
+	end
+	
 end
