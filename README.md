@@ -29,6 +29,7 @@ Club Penguin Server Emulator - AS2 Protocol
 <details> 
 <summary>Gems List</summary>
 <ul>
+  <li>rails</li>
   <li>activesupport</li>
   <li>curb</li>
   <li>log4r</li>
