@@ -85,7 +85,7 @@ class MySQL {
         $resStmtFour = $this->connection->prepare("INSERT INTO " . $this->config['tables'][4] . " (ID, stamps, restamps) VALUES (?, ?, ?)");
         $resStmtFour->bind_param('iss', $intPengID, $strBasicStamps, $strBasicStamps);
         $resStmtFour->execute();
-		$resStmtFour->close();
+	$resStmtFour->close();
 		
         $resStmtFive = $this->connection->prepare("INSERT INTO " . $this->config['tables'][5] . " (ID) VALUES (?)");
         $resStmtFive->bind_param('i', $intPengID);
