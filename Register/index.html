@@ -1,0 +1,23 @@
+<html> <!--- credits to https://codepen.io/ianpirro -->
+	<head>
+		<meta charset="utf-8"/>
+		<title>RBSE :: Register</title>
+		<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+		<link href="http://127.0.0.1/register/style.css" rel="stylesheet">
+		<script src="http://127.0.0.1/sweetalert/dist/sweetalert.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="http://127.0.0.1/sweetalert/dist/sweetalert.css">
+		<script src='https://www.google.com/recaptcha/api.js'></script>
+		<script src='http://127.0.0.1/register/register.js'></script>
+	</head>
+	<body>
+		<div class="login-wrap">
+		  <h2>Create</h2>  
+		  <div class="form" autocomplete="off">
+			<input id="username" type="text" placeholder="Username" name="username" maxlength="10" required>
+			<input id="password" type="password" placeholder="Password" name="password" maxlength="10" required>
+			<div class="g-recaptcha" data-sitekey="6LcelR8TAAAAADee8jrqIK04cUuj2TFOA70L3uB4"></div><br>
+			<input type="button" name="submit" value="Register" onClick="createAccount();">
+		  </div>
+		</div>
+	</body>
+</html>
