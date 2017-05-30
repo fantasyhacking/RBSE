@@ -64,12 +64,14 @@ class MySQL {
         $resStmt = $this->connection->prepare("INSERT INTO " . $this->config['tables'][1] . " (username, nickname, password, uuid, clothing, ranking, moderation, inventory) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
         $resStmt->bind_param('ssssssss', $strUsername, $strUsername, $strPassword, $strUUID, $strClothing, $strRanking, $strModeration, $strInventory);
         $resStmt->execute();
+        $resStmt->close();
 
         $intPengID = $resStmt->insert_id;
 
         $resStmtTwo = $this->connection->prepare("INSERT INTO " . $this->config['tables'][2] . " (ID) VALUES (?)");
         $resStmtTwo->bind_param('i', $intPengID);
         $resStmtTwo->execute();
+        $resStmtTwo->close();
 
         $resStmtThree = $this->connection->prepare("INSERT INTO " . $this->config['tables'][3] . " (recepient, mailerName, mailerID, timestamp, postcardType) VALUES (?, ?, ?, ?, ?)");
         $mailerName = 'sys';
@@ -78,14 +80,17 @@ class MySQL {
         $postcardID = 125;
         $resStmtThree->bind_param('isiii', $intPengID, $mailerName, $mailerID, $timeStamp, $postcardID);
         $resStmtThree->execute();
+        $resStmtThree->close();
 
         $resStmtFour = $this->connection->prepare("INSERT INTO " . $this->config['tables'][4] . " (ID, stamps, restamps) VALUES (?, ?, ?)");
         $resStmtFour->bind_param('iss', $intPengID, $strBasicStamps, $strBasicStamps);
         $resStmtFour->execute();
-
+		$resStmtFour->close();
+		
         $resStmtFive = $this->connection->prepare("INSERT INTO " . $this->config['tables'][5] . " (ID) VALUES (?)");
         $resStmtFive->bind_param('i', $intPengID);
         $resStmtFive->execute();
+        $resStmtFive->close();
 
     }
 
