@@ -13,6 +13,12 @@ class Game < XTParser
 		@parent = main_class
 		@xtPackets = Hash.new
 		@iglooMap = Hash.new
+		@gamePuck = '0%0%0%0%'
+		@findFourRooms = [220, 221]
+		@findFourTables = [200, 201, 202, 203, 204, 205, 206, 207]
+		@tablePopulationByID = Hash[@findFourTables.map {|tableID| [tableID, Array.new]}]
+		@playersByTableID = Hash[@findFourTables.map {|tableID| [tableID, Array.new]}]
+		@gamesByTableID = Hash[@findFourTables.map {|tableID| [tableID, nil]}]
 		self.handleLoadPackets
 	end
 	
@@ -1058,6 +1064,9 @@ class Game < XTParser
 	
 	def handleGameOver(gameHandlerArgs, client)
 		score = gameHandlerArgs[0]
+		if score < 0
+			return @parent.logger.warn("#{client.username} is trying to add an invalid score")
+		end
 		if client.room < 900
 			return client.sendData('%xt%zo%-1%' + client.coins.to_s + '%%0%0%0%')
 		end
@@ -1095,15 +1104,144 @@ class Game < XTParser
 	end
 	
 	def handleGetTables(gameHandlerArgs, client)
-	
+		if @findFourRooms.include?(client.room) != false
+			tablesPopulation = ''
+			gameHandlerArgs.each do |gameTable|
+				if @parent.is_num?(gameTable) != false && @findFourTables.include?(gameTable) && @tablePopulationByID.has_key?(gameTable)
+					tablesPopulation << gameTable.to_s + '|' + @tablePopulationByID[gameTable].count.to_s + '%'
+				end
+			end
+			client.sendData('%xt%gt%-1%' + tablesPopulation)
+		end
 	end
 	
 	def handleJoinTable(gameHandlerArgs, client)
-	
+		tableID = gameHandlerArgs[0]
+		if @findFourRooms.include?(client.room) != false
+			if @findFourTables.include?(tableID) != false && @tablePopulationByID.has_key?(tableID)
+				seatID = @tablePopulationByID[tableID].count
+				if @gamesByTableID[tableID] == nil
+					findFourGame = FindFour.new
+					@gamesByTableID[tableID] = findFourGame
+				end
+				seatID += 1
+				client.sendData('%xt%jt%-1%' + tableID.to_s + '%' + seatID.to_s + '%')
+				client.sendRoom('%xt%ut%-1%' + tableID.to_s + '%' + seatID.to_s + '%')
+				@tablePopulationByID[tableID].push(client.username)
+				@playersByTableID[tableID].push(client.username)
+				client.tableID = tableID
+			end
+		end
 	end
 	
 	def handleLeaveTable(gameHandlerArgs, client)
+		tableID = client.tableID
+		if tableID != nil
+			seatID = @playersByTableID[tableID].index(client.username)
+			if @playersByTableID[tableID].index(client.username) < 2 && @gamesByTableID[tableID].gameOver != false
+				@playersByTableID[tableID].each_with_index do |username, key|
+					oclient = client.getClientByName(username)
+					oclient.sendData('%xt%cz%-1%' + client.username + '%')
+				end
+			end
+			@playersByTableID[tableID].delete(client.username)
+			@tablePopulationByID[tableID].delete(client.username)
+			client.sendRoom('%xt%ut%-1%' + tableID.to_s + '%' + seatID.to_s + '%')
+			client.tableID = nil
+			if @playersByTableID[tableID].count == 0
+				@playersByTableID[tableID].clear
+				@gamesByTableID[tableID] = nil
+			end
+		end
+	end
 	
+	def handleQuitGame(gameHandlerArgs, client)
+	
+	end
+	
+	def handleGetGame(gameHandlerArgs, client)
+		if client.room == 802
+			return client.sendData('%xt%gz%-1%' + @gamePuck + '%')
+		end
+		if @findFourRooms.include?(client.room) != false
+			tableID = client.tableID
+			if tableID != nil
+				players = @tablePopulationByID[tableID]
+				firstPlayer = players[0]
+				secondPlayer = players[1]
+				board = @gamesByTableID[tableID].convertToString
+				client.sendData('%xt%gz%-1%' + (firstPlayer ? firstPlayer : '') + '%' + (secondPlayer ? secondPlayer : '') + '%' + board + '%')
+			end
+		end
+	end
+	
+	def handleStartGame(gameHandlerArgs, client)
+		tableID = client.tableID
+		if @findFourRooms.include?(client.room) != false && @findFourTables.include?(tableID) != false
+			seatID = @tablePopulationByID[tableID].index(client.username) - 1
+			client.sendData('%xt%jz%-1%' + seatID.to_s + '%')
+			if seatID < 2
+				client.sendRoom('%xt%uz%-1%' + seatID.to_s + '%' + client.username + '%')
+				if seatID == 1
+					@playersByTableID[tableID].each_with_index do |username, key|
+						oclient = client.getClientByName(username)
+						oclient.sendData('%xt%sz%-1%0%')
+					end
+				end
+			end
+		end
+	end
+	
+	def handleMovePuck(gameHandlerArgs, client)
+		if client.room == 802
+			rinkPuck = gameHandlerArgs.join('%')
+			@gamePuck = rinkPuck
+			client.sendRoom('%xt%zm%-1%' + client.ID.to_s + '%' + rinkPuck + '%')
+		end
+	end
+	
+	def handleSendMove(gameHandlerArgs, client)
+		tableID = client.tableID
+		if tableID != nil
+			if @playersByTableID[tableID].index(client.username) < 2 && @playersByTableID[tableID].count >= 2
+				chipColumn = gameHandlerArgs[0]
+				chipRow = gameHandlerArgs[1]
+				if @parent.is_num?(chipColumn) != false && @parent.is_num?(chipRow) != false
+					seatID = @playersByTableID[tableID].index(client.username)
+					libID = seatID + 1
+					if @gamesByTableID[tableID].currPlayer == libID
+						gameStatus = @gamesByTableID[tableID].placeChip(chipColumn.to_i, chipRow.to_i).to_i
+						@playersByTableID[tableID].each_with_index do |username, key|
+							oclient = client.getClientByName(username)
+							oclient.sendData('%xt%zm%-1%' + seatID.to_s + '%' + chipColumn.to_s + '%' + chipRow.to_s + '%')
+						end
+						if gameStatus == 1
+							@gamesByTableID[tableID].gameOver = true
+							@playersByTableID[tableID].each_with_index do |username, key|
+								if username.downcase != client.username.downcase
+									oclient = client.getClientByName(username)
+									oclient.addCoins(5)
+									oclient.sendData('%xt%zo%-1%' + oclient.coins.to_s + '%')
+								end
+							end
+							client.addCoins(10)
+							client.sendData('%xt%zo%-1%' + client.coins.to_s + '%')
+						elsif gameStatus == 2
+							@gamesByTableID[tableID].gameOver = true
+							@playersByTableID[tableID].each_with_index do |username, key|
+								if username.downcase != client.username.downcase
+									oclient = client.getClientByName(username)
+									oclient.addCoins(10)
+									oclient.sendData('%xt%zo%-1%' + oclient.coins.to_s + '%')
+								end
+							end
+							client.addCoins(10)
+							client.sendData('%xt%zo%-1%' + client.coins.to_s + '%')
+						end
+					end
+				end
+			end
+		end
 	end
 	
 end
