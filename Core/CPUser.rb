@@ -10,6 +10,7 @@ class CPUser
 	attr_accessor :igloo, :floor, :music, :furniture, :ownedFurns, :ownedIgloos
 	attr_accessor :stamps, :restamps, :stampbook_cover
 	attr_accessor :isagent, :status, :currentpoints, :totalpoints
+	attr_accessor :tableID, :waddleRoom
 
 	def initialize(main_class, socket)
 		@parent = main_class
@@ -64,6 +65,8 @@ class CPUser
 		@logged_in = 0
 		@lastPacket = Hash.new
 		@spamFilter = Hash.new
+		@tableID = nil
+		@waddleRoom = nil
 	end
 	
 	def sendData(data)
