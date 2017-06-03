@@ -4,6 +4,8 @@ require './Extensions/Database.rb'
 require './Extensions/TCP.rb'
 require './Extensions/XTParser.rb'
 
+require './Core/Gaming/FindFour.rb'
+
 require './Core/Login.rb'
 require './Core/Game.rb'
 
