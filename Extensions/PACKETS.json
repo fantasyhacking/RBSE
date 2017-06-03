@@ -706,15 +706,56 @@
 			"a#jt": [{
 				"method": "handleJoinTable",
 				"length": 0,
+				"type": [
+					"Fixnum"
+				],
 				"hasException": false
 			}],
 			"a#lt": [{
 				"method": "handleLeaveTable",
-				"length": 0,
+				"length": -1,
 				"hasException": false
 			}]
 		}],
 		"z": [{
+			"zo": [{
+				"method": "handleGameOver",
+				"length": 0,
+				"type": [
+					"Fixnum"
+				],
+				"hasException": false
+			}],
+			"m": [{
+				"method": "handleMovePuck",
+				"length": -1,
+				"hasException": false
+			}],
+			"gz": [{
+				"method": "handleGetGame",
+				"length": -1,
+				"hasException": false
+			}],
+			"jz": [{
+				"method": "handleStartGame",
+				"length": -1,
+				"hasException": false
+			}],
+			"lz": [{
+				"method": "handleQuitGame",
+				"length": -1,
+				"hasException": false
+			}],
+			"zm": [{
+				"method": "handleSendMove",
+				"length": -1,
+				"hasException": false
+			}],
+			"gw": [{
+				"method": "handleGetWaddlesPopulationById",
+				"length": -1,
+				"hasException": false
+			}],
 			"jw": [{
 				"method": "handleJoinWaddle",
 				"length": 0,
@@ -723,8 +764,8 @@
 				],
 				"hasException": false
 			}],
-			"zo": [{
-				"method": "handleGameOver",
+			"lw": [{
+				"method": "handleLeaveWaddle",
 				"length": 0,
 				"type": [
 					"Fixnum"
