@@ -69,12 +69,6 @@ class Database
 		end
 	end
 	
-	def updateLoggedIn(blnLogin, username)
-		@connections.with do |connection|
-			connection.xquery("UPDATE users SET logged_in = ? WHERE username = ?", blnLogin, username)
-		end
-	end
-	
 	def updatePenguinClothing(newClothing, userID)
 		@connections.with do |connection|
 			connection.xquery("UPDATE users SET clothing = ? WHERE ID = ?", newClothing, userID)
@@ -197,15 +191,6 @@ class Database
 			results = connection.xquery("SELECT * FROM users WHERE username = ?", username)
 			results.each do |result|
 				return result['lkey']
-			end
-		end
-	end
-	
-	def getLoggedInStatus(username)
-		@connections.with do |connection|
-			results = connection.xquery("SELECT * FROM users WHERE username = ?", username)
-			results.each do |result|
-				return result['logged_in']
 			end
 		end
 	end
