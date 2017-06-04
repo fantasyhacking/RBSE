@@ -5,6 +5,7 @@ require './Extensions/TCP.rb'
 require './Extensions/XTParser.rb'
 
 require './Core/Gaming/FindFour.rb'
+require './Core/Gaming/Mancala.rb'
 
 require './Core/Login.rb'
 require './Core/Game.rb'
