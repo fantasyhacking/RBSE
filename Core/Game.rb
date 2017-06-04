@@ -16,7 +16,7 @@ class Game < XTParser
 		@gamePuck = '0%0%0%0%'
 		@findFourRooms = [220, 221]
 		@findFourTables = [200, 201, 202, 203, 204, 205, 206, 207]
-		@tablePopulationByID = Hash[@findFourTables.map {|tableID| [tableID, Array.new]}]
+		@tablePopulationByID = Hash[@findFourTables.map {|tableID| [tableID, Hash.new]}]
 		@playersByTableID = Hash[@findFourTables.map {|tableID| [tableID, Array.new]}]
 		@gamesByTableID = Hash[@findFourTables.map {|tableID| [tableID, nil]}]
 		self.handleLoadPackets
@@ -1119,17 +1119,19 @@ class Game < XTParser
 		tableID = gameHandlerArgs[0]
 		if @findFourRooms.include?(client.room) != false
 			if @findFourTables.include?(tableID) != false && @tablePopulationByID.has_key?(tableID)
-				seatID = @tablePopulationByID[tableID].count
-				if @gamesByTableID[tableID] == nil
-					findFourGame = FindFour.new
-					@gamesByTableID[tableID] = findFourGame
+				if @tablePopulationByID[tableID].count < 3
+					seatID = @tablePopulationByID[tableID].count
+					if @gamesByTableID[tableID] == nil
+						findFourGame = FindFour.new
+						@gamesByTableID[tableID] = findFourGame
+					end
+					seatID += 1
+					client.sendData('%xt%jt%-1%' + tableID.to_s + '%' + seatID.to_s + '%')
+					client.sendRoom('%xt%ut%-1%' + tableID.to_s + '%' + seatID.to_s + '%')
+					@tablePopulationByID[tableID][client.username] = client
+					@playersByTableID[tableID].push(client.username)
+					client.tableID = tableID
 				end
-				seatID += 1
-				client.sendData('%xt%jt%-1%' + tableID.to_s + '%' + seatID.to_s + '%')
-				client.sendRoom('%xt%ut%-1%' + tableID.to_s + '%' + seatID.to_s + '%')
-				@tablePopulationByID[tableID].push(client.username)
-				@playersByTableID[tableID].push(client.username)
-				client.tableID = tableID
 			end
 		end
 	end
@@ -1138,7 +1140,7 @@ class Game < XTParser
 		tableID = client.tableID
 		if tableID != nil
 			seatID = @playersByTableID[tableID].index(client.username)
-			if @playersByTableID[tableID].index(client.username) < 2 && @gamesByTableID[tableID].gameOver != false
+			if @playersByTableID[tableID].index(client.username) < 2
 				@playersByTableID[tableID].each_with_index do |username, key|
 					oclient = client.getClientByName(username)
 					oclient.sendData('%xt%cz%-1%' + client.username + '%')
@@ -1166,7 +1168,7 @@ class Game < XTParser
 		if @findFourRooms.include?(client.room) != false
 			tableID = client.tableID
 			if tableID != nil
-				players = @tablePopulationByID[tableID]
+				players = @tablePopulationByID[tableID].keys
 				firstPlayer = players[0]
 				secondPlayer = players[1]
 				board = @gamesByTableID[tableID].convertToString
@@ -1175,18 +1177,24 @@ class Game < XTParser
 		end
 	end
 	
-	def handleStartGame(gameHandlerArgs, client)
+	def handleStartGame(gameHandlerArgs, client) 
 		tableID = client.tableID
-		if @findFourRooms.include?(client.room) != false && @findFourTables.include?(tableID) != false
-			seatID = @tablePopulationByID[tableID].index(client.username) - 1
-			client.sendData('%xt%jz%-1%' + seatID.to_s + '%')
-			if seatID < 2
-				client.sendRoom('%xt%uz%-1%' + seatID.to_s + '%' + client.username + '%')
-				if seatID == 1
-					@playersByTableID[tableID].each_with_index do |username, key|
-						oclient = client.getClientByName(username)
-						oclient.sendData('%xt%sz%-1%0%')
+		if @playersByTableID[tableID].include?(client.username) != false
+			index = @tablePopulationByID[tableID].count - 1
+			client.sendData('%xt%jz%-1%' + index.to_s + '%')
+			if index == 0
+				client.sendData('%xt%uz%-1%' + index.to_s + '%' + client.username + '%')
+			else		
+				@tablePopulationByID[tableID][@tablePopulationByID[tableID].keys.first].sendData('%xt%uz%-1%' + index.to_s + '%' + client.username + '%')
+				@tablePopulationByID[tableID].each do |username, oclient|
+					if @tablePopulationByID[tableID].keys.first.downcase != username.downcase
+						@tablePopulationByID[tableID][username].sendData('%xt%uz%-1%' + index.to_s + '%' + username + '%')
 					end
+				end
+			end
+			if index == 1
+				@tablePopulationByID[tableID].each do |username, oclient|
+					@tablePopulationByID[tableID][username].sendData('%xt%sz%-1%')
 				end
 			end
 		end
@@ -1216,7 +1224,6 @@ class Game < XTParser
 							oclient.sendData('%xt%zm%-1%' + seatID.to_s + '%' + chipColumn.to_s + '%' + chipRow.to_s + '%')
 						end
 						if gameStatus == 1
-							@gamesByTableID[tableID].gameOver = true
 							@playersByTableID[tableID].each_with_index do |username, key|
 								if username.downcase != client.username.downcase
 									oclient = client.getClientByName(username)
@@ -1227,7 +1234,6 @@ class Game < XTParser
 							client.addCoins(10)
 							client.sendData('%xt%zo%-1%' + client.coins.to_s + '%')
 						elsif gameStatus == 2
-							@gamesByTableID[tableID].gameOver = true
 							@playersByTableID[tableID].each_with_index do |username, key|
 								if username.downcase != client.username.downcase
 									oclient = client.getClientByName(username)
