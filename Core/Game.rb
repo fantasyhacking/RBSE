@@ -1179,22 +1179,24 @@ class Game < XTParser
 	
 	def handleStartGame(gameHandlerArgs, client) 
 		tableID = client.tableID
-		if @playersByTableID[tableID].include?(client.username) != false
-			index = @tablePopulationByID[tableID].count - 1
-			client.sendData('%xt%jz%-1%' + index.to_s + '%')
-			if index == 0
-				client.sendData('%xt%uz%-1%' + index.to_s + '%' + client.username + '%')
-			else		
-				@tablePopulationByID[tableID][@tablePopulationByID[tableID].keys.first].sendData('%xt%uz%-1%' + index.to_s + '%' + client.username + '%')
-				@tablePopulationByID[tableID].each do |username, oclient|
-					if @tablePopulationByID[tableID].keys.first.downcase != username.downcase
-						@tablePopulationByID[tableID][username].sendData('%xt%uz%-1%' + index.to_s + '%' + username + '%')
+		if tableID != nil 
+			if @playersByTableID[tableID].include?(client.username) != false
+				index = @tablePopulationByID[tableID].count - 1
+				client.sendData('%xt%jz%-1%' + index.to_s + '%')
+				if index == 0
+					client.sendData('%xt%uz%-1%' + index.to_s + '%' + client.username + '%')
+				else		
+					@tablePopulationByID[tableID][@tablePopulationByID[tableID].keys.first].sendData('%xt%uz%-1%' + index.to_s + '%' + client.username + '%')
+					@tablePopulationByID[tableID].each do |username, oclient|
+						if @tablePopulationByID[tableID].keys.first.downcase != username.downcase
+							@tablePopulationByID[tableID][username].sendData('%xt%uz%-1%' + index.to_s + '%' + username + '%')
+						end
 					end
 				end
-			end
-			if index == 1
-				@tablePopulationByID[tableID].each do |username, oclient|
-					@tablePopulationByID[tableID][username].sendData('%xt%sz%-1%')
+				if index == 1
+					@tablePopulationByID[tableID].each do |username, oclient|
+						@tablePopulationByID[tableID][username].sendData('%xt%sz%-1%')
+					end
 				end
 			end
 		end
