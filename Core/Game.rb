@@ -16,9 +16,12 @@ class Game < XTParser
 		@gamePuck = '0%0%0%0%'
 		@findFourRooms = [220, 221]
 		@findFourTables = [200, 201, 202, 203, 204, 205, 206, 207]
-		@tablePopulationByID = Hash[@findFourTables.map {|tableID| [tableID, Hash.new]}]
-		@playersByTableID = Hash[@findFourTables.map {|tableID| [tableID, Array.new]}]
-		@gamesByTableID = Hash[@findFourTables.map {|tableID| [tableID, nil]}]
+		@mancalaTables = [100, 101, 102, 103, 104]
+		@mancalaRoom = 111
+		@tables = [@findFourTables, @mancalaTables].reduce([], :concat)
+		@tablePopulationByID = Hash[@tables.map {|tableID| [tableID, Hash.new]}]
+		@playersByTableID = Hash[@tables.map {|tableID| [tableID, Array.new]}]
+		@gamesByTableID = Hash[@tables.map {|tableID| [tableID, nil]}]
 		self.handleLoadPackets
 	end
 	
@@ -1104,10 +1107,10 @@ class Game < XTParser
 	end
 	
 	def handleGetTables(gameHandlerArgs, client)
-		if @findFourRooms.include?(client.room) != false
+		if @findFourRooms.include?(client.room) != false || @mancalaRoom == client.room
 			tablesPopulation = ''
 			gameHandlerArgs.each do |gameTable|
-				if @parent.is_num?(gameTable) != false && @findFourTables.include?(gameTable) && @tablePopulationByID.has_key?(gameTable)
+				if @parent.is_num?(gameTable) != false && @findFourTables.include?(gameTable) || @mancalaTables.include?(gameTable) && @tablePopulationByID.has_key?(gameTable)
 					tablesPopulation << gameTable.to_s + '|' + @tablePopulationByID[gameTable].count.to_s + '%'
 				end
 			end
@@ -1117,13 +1120,21 @@ class Game < XTParser
 	
 	def handleJoinTable(gameHandlerArgs, client)
 		tableID = gameHandlerArgs[0]
-		if @findFourRooms.include?(client.room) != false
-			if @findFourTables.include?(tableID) != false && @tablePopulationByID.has_key?(tableID)
+		if @findFourRooms.include?(client.room) != false || @mancalaRoom == client.room
+			if @tablePopulationByID.has_key?(tableID)
 				if @tablePopulationByID[tableID].count < 3
 					seatID = @tablePopulationByID[tableID].count
-					if @gamesByTableID[tableID] == nil
-						findFourGame = FindFour.new
-						@gamesByTableID[tableID] = findFourGame
+					if @findFourTables.include?(tableID) != false
+						if @gamesByTableID[tableID] == nil
+							findFourGame = FindFour.new
+							@gamesByTableID[tableID] = findFourGame
+						end
+					end
+					if @mancalaTables.include?(tableID) != false
+						if @gamesByTableID[tableID] == nil
+							mancalaGame = Mancala.new
+							@gamesByTableID[tableID] = mancalaGame
+						end
 					end
 					seatID += 1
 					client.sendData('%xt%jt%-1%' + tableID.to_s + '%' + seatID.to_s + '%')
@@ -1165,7 +1176,7 @@ class Game < XTParser
 		if client.room == 802
 			return client.sendData('%xt%gz%-1%' + @gamePuck + '%')
 		end
-		if @findFourRooms.include?(client.room) != false
+		if @findFourRooms.include?(client.room) != false || @mancalaRoom == client.room
 			tableID = client.tableID
 			if tableID != nil
 				players = @tablePopulationByID[tableID].keys
@@ -1195,7 +1206,7 @@ class Game < XTParser
 				end
 				if index == 1
 					@tablePopulationByID[tableID].each do |username, oclient|
-						@tablePopulationByID[tableID][username].sendData('%xt%sz%-1%')
+						@tablePopulationByID[tableID][username].sendData('%xt%sz%-1%0%')
 					end
 				end
 			end
@@ -1214,37 +1225,78 @@ class Game < XTParser
 		tableID = client.tableID
 		if tableID != nil
 			if @playersByTableID[tableID].index(client.username) < 2 && @playersByTableID[tableID].count >= 2
-				chipColumn = gameHandlerArgs[0]
-				chipRow = gameHandlerArgs[1]
-				if @parent.is_num?(chipColumn) != false && @parent.is_num?(chipRow) != false
-					seatID = @playersByTableID[tableID].index(client.username)
-					libID = seatID + 1
-					if @gamesByTableID[tableID].currPlayer == libID
-						gameStatus = @gamesByTableID[tableID].placeChip(chipColumn.to_i, chipRow.to_i).to_i
-						@playersByTableID[tableID].each_with_index do |username, key|
-							oclient = client.getClientByName(username)
-							oclient.sendData('%xt%zm%-1%' + seatID.to_s + '%' + chipColumn.to_s + '%' + chipRow.to_s + '%')
+				if @findFourTables.include?(tableID) != false
+					chipColumn = gameHandlerArgs[0]
+					chipRow = gameHandlerArgs[1]
+					if @parent.is_num?(chipColumn) != false && @parent.is_num?(chipRow) != false
+						seatID = @playersByTableID[tableID].index(client.username)
+						libID = seatID + 1
+						if @gamesByTableID[tableID].currPlayer == libID
+							gameStatus = @gamesByTableID[tableID].placeChip(chipColumn.to_i, chipRow.to_i).to_i
+							@playersByTableID[tableID].each_with_index do |username, key|
+								oclient = client.getClientByName(username)
+								oclient.sendData('%xt%zm%-1%' + seatID.to_s + '%' + chipColumn.to_s + '%' + chipRow.to_s + '%')
+							end
+							if gameStatus == 1
+								@playersByTableID[tableID].each_with_index do |username, key|
+									if username.downcase != client.username.downcase
+										oclient = client.getClientByName(username)
+										oclient.addCoins(5)
+										oclient.sendData('%xt%zo%-1%' + oclient.coins.to_s + '%')
+									end
+								end
+								client.addCoins(10)
+								client.sendData('%xt%zo%-1%' + client.coins.to_s + '%')
+							elsif gameStatus == 2
+								@playersByTableID[tableID].each_with_index do |username, key|
+									if username.downcase != client.username.downcase
+										oclient = client.getClientByName(username)
+										oclient.addCoins(10)
+										oclient.sendData('%xt%zo%-1%' + oclient.coins.to_s + '%')
+									end
+								end
+								client.addCoins(10)
+								client.sendData('%xt%zo%-1%' + client.coins.to_s + '%')
+							end
 						end
-						if gameStatus == 1
+					end
+				elsif @mancalaTables.include?(tableID) != false
+					potIndex = gameHandlerArgs[0]
+					if @parent.is_num?(potIndex) != false
+						seatID = @playersByTableID[tableID].index(client.username)
+						libID = seatID + 1
+						if @gamesByTableID[tableID].currPlayer == libID
+							gameStatus = @gamesByTableID[tableID].makeMove(potIndex.to_i)
 							@playersByTableID[tableID].each_with_index do |username, key|
-								if username.downcase != client.username.downcase
-									oclient = client.getClientByName(username)
-									oclient.addCoins(5)
-									oclient.sendData('%xt%zo%-1%' + oclient.coins.to_s + '%')
+								oclient = client.getClientByName(username)
+								if gameStatus == 'f' || gameStatus == 'c'
+									oclient.sendData('%xt%zm%-1%' + seatID.to_s + '%' + potIndex.to_s + '%' + gameStatus.to_s + '%')
+								else
+									oclient.sendData('%xt%zm%-1%' + seatID.to_s + '%' + potIndex.to_s + '%')
 								end
-							end
-							client.addCoins(10)
-							client.sendData('%xt%zo%-1%' + client.coins.to_s + '%')
-						elsif gameStatus == 2
-							@playersByTableID[tableID].each_with_index do |username, key|
-								if username.downcase != client.username.downcase
-									oclient = client.getClientByName(username)
+								if gameStatus == 1
+									winnerID = @gamesByTableID[tableID].winner - 1
+									oclient_name = @playersByTableID[tableID][winnerID]
+									oclient = client.getClientByName(oclient_name)
 									oclient.addCoins(10)
-									oclient.sendData('%xt%zo%-1%' + oclient.coins.to_s + '%')
+									oclient.sendData('%xt%zo%-1%' + oclient.coins.to_s + '%')				
+									looserSeatID = winnerID == 0 ? 1 : 0
+									client_name = @playersByTableID[tableID][looserSeatID]
+									iclient = client.getClientByName(client_name)
+									iclient.addCoins(5)
+									iclient.sendData('%xt%zo%-1%' + iclient.coins.to_s + '%')
+								elsif gameStatus == 2
+									@playersByTableID[tableID].each_with_index do |username, key|
+										if username.downcase != client.username.downcase
+											oclient = client.getClientByName(username)
+											oclient.addCoins(10)
+											oclient.sendData('%xt%zo%-1%' + oclient.coins.to_s + '%')
+										end
+									end
+									client.addCoins(10)
+									client.sendData('%xt%zo%-1%' + client.coins.to_s + '%')
 								end
 							end
-							client.addCoins(10)
-							client.sendData('%xt%zo%-1%' + client.coins.to_s + '%')
 						end
 					end
 				end
