@@ -18,7 +18,6 @@ class FindFour
 			[0, 0, 0, 0, 0, 0, 0]
 		]
 		@currPlayer = 1
-		@gameOver = false
 		self.reset
 	end
 	
@@ -169,8 +168,7 @@ class FindFour
 	end
 	
 	def placeChip(column, row)
-		if self.chipPlacement(column, row) != false
-		
+		if self.chipPlacement(column, row) != false		
 			gameStatus = self.processBoard
 			if gameStatus == CHIP_PLACED
 				self.changePlayer
