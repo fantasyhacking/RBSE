@@ -35,9 +35,6 @@ class TCP
 					end
 					client.handleBuddyOffline
 					client.removePlayerFromRoom
-					if client.logged_in.to_bool == true
-						@parent.mysql.updateLoggedIn(0, client.username)
-					end
 					self.handleRemoveClient(connection)
 					break
 				end
