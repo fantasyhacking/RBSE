@@ -362,7 +362,7 @@ class CPUser
 	end
 
 	def removePlayerFromRoom
-		self.sendData('%xt%rp%-1%' + @ID.to_s + '%')
+		self.sendRoom('%xt%rp%-1%' + @ID.to_s + '%')
 	end
 	
 	def handleBuddyOnline
