@@ -10,7 +10,7 @@ class CPUser
 	attr_accessor :igloo, :floor, :music, :furniture, :ownedFurns, :ownedIgloos
 	attr_accessor :stamps, :restamps, :stampbook_cover
 	attr_accessor :isagent, :status, :currentpoints, :totalpoints
-	attr_accessor :tableID, :waddleRoom
+	attr_accessor :tableID, :waddleRoom, :waddleID
 
 	def initialize(main_class, socket)
 		@parent = main_class
@@ -67,6 +67,7 @@ class CPUser
 		@spamFilter = Hash.new
 		@tableID = nil
 		@waddleRoom = nil
+		@waddleID = nil
 	end
 	
 	def sendData(data)
@@ -233,7 +234,7 @@ class CPUser
 	def joinRoom(roomID = 100, xpos = 0, ypos = 0)
 		self.removePlayerFromRoom
 		@frame = 0
-		if room == 999
+		if roomID == 999
 			@room = roomID
 			@xaxis = xpos
 			@yaxis = ypos
