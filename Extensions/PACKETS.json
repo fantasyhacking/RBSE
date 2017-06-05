@@ -715,6 +715,16 @@
 				"method": "handleLeaveTable",
 				"length": -1,
 				"hasException": false
+			}],
+			"w#jx": [{
+				"method": "handleSendWaddle",
+				"type": [
+					"Fixnum",
+					"Fixnum",
+					"Fixnum"
+				],
+				"length": 2,
+				"hasException": false
 			}]
 		}],
 		"z": [{
@@ -766,10 +776,7 @@
 			}],
 			"lw": [{
 				"method": "handleLeaveWaddle",
-				"length": 0,
-				"type": [
-					"Fixnum"
-				],
+				"length": -1,
 				"hasException": false
 			}]
 		}]
