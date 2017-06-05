@@ -1158,7 +1158,7 @@ class Game < XTParser
 	
 	def handleLeaveTable(gameHandlerArgs, client)
 		tableID = client.tableID
-		if tableID != nil
+		if tableID != nil && @playersByTableID[tableID].include?(client.username) != false
 			seatID = @playersByTableID[tableID].index(client.username)
 			if @playersByTableID[tableID].index(client.username) < 2
 				@playersByTableID[tableID].each_with_index do |username, key|
