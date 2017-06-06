@@ -1079,6 +1079,21 @@ class Game < XTParser
 		if score < 0
 			return @parent.logger.warn("#{client.username} is trying to add an invalid score")
 		end
+		if client.room == 999
+			winAmount = 0
+			case score
+				when 1
+					winAmount = 20
+				when 2
+					winAmount = 10
+				when 3
+					winAmount = 5
+				else
+					winAmount = 0
+			end
+			client.addCoins(winAmount)
+			return client.sendData('%xt%zo%-1%' + client.coins.to_s + '%%0%0%0%')
+		end
 		if client.room < 900
 			return client.sendData('%xt%zo%-1%' + client.coins.to_s + '%%0%0%0%')
 		end
