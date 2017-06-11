@@ -1173,7 +1173,7 @@ class Game < XTParser
 	
 	def handleLeaveTable(gameHandlerArgs, client)
 		tableID = client.tableID
-		if tableID != nil && @playersByTableID[tableID].include?(client.username) != false
+		if tableID != nil
 			seatID = @playersByTableID[tableID].index(client.username)
 			if @playersByTableID[tableID].index(client.username) < 2
 				@playersByTableID[tableID].each_with_index do |username, key|
@@ -1343,8 +1343,10 @@ class Game < XTParser
 	end
 	
 	def handleGetWaddlesPopulationById(gameHandlerArgs, client)
-		waddlePopulation = @waddlesByID[0].keys.map { |waddleID| waddleID.to_s + '|' + @waddlesByID[0][waddleID].join(',') }.join('%')
-		client.sendData('%xt%gw%-1%' + waddlePopulation + '%')
+		if client.room == 230
+			waddlePopulation = @waddlesByID[0].keys.map { |waddleID| waddleID.to_s + '|' + @waddlesByID[0][waddleID].join(',') }.join('%')
+			client.sendData('%xt%gw%-1%' + waddlePopulation + '%')
+		end
 	end
 	
 	def handleJoinWaddle(gameHandlerArgs, client)
@@ -1374,7 +1376,7 @@ class Game < XTParser
 	def leaveWaddle(client)
 		@waddleUsers.each do |waddleID, waddle|
 			waddle.each do |playerSeat, waddlePenguin|
-				if waddlePenguin == client
+				if waddlePenguin == client && waddlePenguin.room == client.room
 					 client.sendRoom('%xt%uw%-1%' + waddleID.to_s + '%' + playerSeat.to_s + '%')
 					 @waddlesByID[0][waddleID][playerSeat] = ''
 					 @waddleUsers[waddleID].delete(playerSeat)
