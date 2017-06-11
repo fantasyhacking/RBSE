@@ -4,7 +4,7 @@ require 'to_bool'
 
 class TCP
 
-	attr_accessor :clients
+	attr_accessor :clients, :server
 
 	def initialize(main_class)
 		@parent = main_class
@@ -27,38 +27,36 @@ class TCP
 			client = CPUser.new(@parent, connection)
 			@clients << client
 			begin
-				while true
-				data = connection.recv(65536)
-				if data.empty? == true
+				while (data = connection.gets("\0"))
+				if data != nil
+					data = data.chomp
+				end
+				self.handleIncomingData(data, client)	
+			end
+			rescue Exception => err
+				@parent.logger.error("#{err} (#{err.class}) - #{err.backtrace.join("\n\t")}")
+				raise
+				ensure 
 					if @parent.game_sys.iglooMap.has_key?(client.ID)
 						@parent.game_sys.iglooMap.delete(client.ID)
 					end
 					client.handleBuddyOffline
 					client.removePlayerFromRoom
 					self.handleRemoveClient(connection)
-					break
-				end
-				self.handleIncomingData(data, client)	
-			end
-			rescue Exception => e
-				@parent.logger.error("#{e} (#{e.class}) - #{e.backtrace.join("\n\t")}")
 			end
         end
 	end
 	
 	def handleIncomingData(data, client)
-		packets = data.split("\0")
-		packets.each do |packet|
-			@parent.logger.debug('Incoming data: ' + packet.to_s)
-			packet_type = packet[0,1]
-			case packet_type
-				when '<'
-					self.handleXMLData(packet, client)
-				when '%'
-					self.handleXTData(packet, client)
-				else
-					self.handleRemoveClient(client.sock)
-			end
+		@parent.logger.debug('Incoming data: ' + data.to_s)
+		packet_type = data[0,1]
+		case packet_type
+			when '<'
+				self.handleXMLData(data, client)
+			when '%'
+				self.handleXTData(data, client)
+			else
+				self.handleRemoveClient(client.sock)
 		end
 	end
 	
@@ -100,6 +98,14 @@ class TCP
 	
 	def handleXTData(data, client)
 		@parent.game_sys.handleData(data, client)
+	end
+	
+	def getClientBySock(socket)
+		@clients.each_with_index do |client, key|
+			if @clients[key].sock == socket
+				return @clients[key]
+			end
+		end
 	end
 	
 	def handleRemoveClient(socket)
