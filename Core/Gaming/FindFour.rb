@@ -1,6 +1,6 @@
 class FindFour
 
-	attr_accessor :currPlayer, :gameOver
+	attr_accessor :currPlayer
 
 	INVALID_CHIP_PLACEMENT = -1
 	CHIP_PLACED = 0
@@ -31,7 +31,6 @@ class FindFour
 			[0, 0, 0, 0, 0, 0, 0]
 		]
 		@currPlayer = 1
-		@gameOver = false
 	end
 	
 	def convertToString
