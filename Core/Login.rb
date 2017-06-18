@@ -26,7 +26,6 @@ class Login
 	def handleGameLogin(data, client)
 		username = data['msg']['body']['login']['nick']
 		password = data['msg']['body']['login']['pword']
-		isLoggedIn = @parent.mysql.getLoggedInStatus(username)
 		if (username !~ /^[A-Za-z0-9]+$/)
 			client.sendError(100)
 		end
@@ -37,6 +36,7 @@ class Login
 		if userExists == 0
 			return client.sendError(100)
 		end
+		isLoggedIn = @parent.mysql.getLoggedInStatus(username)
 		if isLoggedIn.to_bool == true
 			return client.sendError(150)
 		end
