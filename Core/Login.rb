@@ -26,6 +26,7 @@ class Login
 	def handleGameLogin(data, client)
 		username = data['msg']['body']['login']['nick']
 		password = data['msg']['body']['login']['pword']
+		isLoggedIn = @parent.mysql.getLoggedInStatus(username)
 		if (username !~ /^[A-Za-z0-9]+$/)
 			client.sendError(100)
 		end
@@ -35,6 +36,9 @@ class Login
 		userExists = @parent.mysql.checkUserExists(username);
 		if userExists == 0
 			return client.sendError(100)
+		end
+		if isLoggedIn.to_bool == true
+			return client.sendError(150)
 		end
 		invalidLogins = @parent.mysql.getInvalidLogins(username)
 		if invalidLogins >= 5
@@ -61,6 +65,7 @@ class Login
 		encryptedRandKey = Digest::SHA256.hexdigest(@parent.genRandString(12))
 		bcryptRandKey = BCrypt::Password.create(encryptedRandKey, cost: 12)
 		@parent.mysql.updateLoginKey(bcryptRandKey, username)
+		@parent.mysql.updateLoggedIn(1, username)
 		clientID = @parent.mysql.getClientIDByUsername(username)
 		client.sendData('%xt%l%-1%' + clientID.to_s + '%' + encryptedRandKey + '%')
 		client.ID = clientID
