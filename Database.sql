@@ -105,6 +105,7 @@ CREATE TABLE `users` (
   `ignored` longtext NOT NULL COMMENT 'Penguin Ignored Clients',
   `moderation` longtext NOT NULL COMMENT 'Muting and Banning',
   `invalid_logins` int(3) NOT NULL DEFAULT '0' COMMENT 'Account Hijacking Lock',
+  `logged_in` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`ID`),
   UNIQUE KEY `username` (`username`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
