@@ -59,6 +59,10 @@ class Game < XTParser
 		if self.respond_to?(gameHandler) != true
 			return @parent.logger.error('Unfortunately doesn\'t seem like the game method exists')
 		end
+		if client.username == '' || client.username.nil? != false
+			@parent.logger.error('Client is trying to send an undefined bot')
+			return @parent.sock.handleRemoveClient(client.sock)
+		end
 		self.send(gameHandler, gameHandlerArgs, client)
 		@parent.hooks.each do |hook, hookClass|
 			if @parent.hooks[hook].dependencies['hook_type'].downcase == 'game'
