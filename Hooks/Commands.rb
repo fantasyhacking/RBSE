@@ -124,8 +124,9 @@ class Commands
 		msgArgs = cmdArgs.split(' ')
 		room = msgArgs[0]
 		if @parent.is_num?(room) != false
+			room = room.to_i
 			if room > 0 && room < 1000
-				client.joinRoom(room.to_i)
+				client.joinRoom(room)
 			end
 		end
 	end
