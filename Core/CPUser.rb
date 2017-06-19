@@ -232,19 +232,21 @@ class CPUser
 	end
 	
 	def joinRoom(roomID = 100, xpos = 0, ypos = 0)
-		self.removePlayerFromRoom
 		@frame = 0
-		if roomID == 999
+		if roomID == 999 || roomID == 998
+			self.removePlayerFromRoom
 			@room = roomID
 			@xaxis = xpos
 			@yaxis = ypos
 			return self.sendData('%xt%jx%-1%' + roomID.to_s + '%')
 		end
 		if @parent.crumbs.game_room_crumbs.has_key?(roomID) == true
+			self.removePlayerFromRoom
 			@room = roomID
 			self.sendRoom('%xt%ap%-1%' + self.buildClientString + '%')
 			return self.sendData('%xt%jg%-1%' + roomID.to_s + '%')
 		elsif @parent.crumbs.room_crumbs.has_key?(roomID) == true || roomID > 1000
+			self.removePlayerFromRoom
 			@room = roomID
 			@xaxis = xpos
 			@yaxis = ypos
