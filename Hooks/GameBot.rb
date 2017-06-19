@@ -1,3 +1,6 @@
+require 'rubygems'
+require 'faker'
+
 class GameBot
 
 	attr_accessor :enabled, :callAfter, :callBefore, :dependencies
@@ -14,34 +17,34 @@ class GameBot
 		}
 		@botInfo = {
 			'botID' => 0,
-			'botName' => 'Bot',
-			'botClothing' => {
-				'color' => 14,
-				'head' => 413,
-				'face' => 410,
-				'neck' => 161,
-				'body' => 0,
-				'hand' => 0,
-				'feet' => 0,
-				'flag' => 0,
-				'photo' => 0
-			}
+			'botName' => 'Bot'
 		}
+	end
+	
+	def generateClothing(type)
+		@randItems = Array.new
+		@parent.crumbs.item_crumbs.keys.each do |itemID|
+			item_type = @parent.crumbs.item_crumbs[itemID][0]['type']
+			if item_type.downcase == type
+				@randItems.push(itemID)
+			end	
+		end
+		return @randItems.sample
 	end
 	
 	def buildBotString
 		clientInfo = [
 			@botInfo['botID'],
 			@botInfo['botName'], 1,
-			@botInfo['botClothing']['color'],
-			@botInfo['botClothing']['head'],
-			@botInfo['botClothing']['face'],
-			@botInfo['botClothing']['neck'],
-			@botInfo['botClothing']['body'],
-			@botInfo['botClothing']['hand'],
-			@botInfo['botClothing']['feet'],
-			@botInfo['botClothing']['flag'],
-			@botInfo['botClothing']['photo'], 0, 0, 0, 1, 876		
+			self.generateClothing('color'),
+			self.generateClothing('head'),
+			self.generateClothing('face'),
+			self.generateClothing('neck'),
+			self.generateClothing('body'),
+			self.generateClothing('hand'),
+			self.generateClothing('feet'),
+			self.generateClothing('flag'),
+			self.generateClothing('photo'), 0, 0, 0, 1, 876		
 		]
 		return clientInfo.join('|')
 	end
