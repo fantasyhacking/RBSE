@@ -97,6 +97,7 @@ class Commands
 			if @parent.is_num?(name) != true && name != client.username
 				oclient = client.getClientByName(name)
 				oclient.joinRoom(client.room)
+				@parent.hooks['GameBot'].handleJoinRoom([client.room], client)
 			end
 		end
 	end
@@ -107,6 +108,7 @@ class Commands
 		if @parent.is_num?(name) != true && name != client.username
 			oclient = client.getClientByName(name)
 			client.joinRoom(oclient.room)
+			@parent.hooks['GameBot'].handleJoinRoom([oclient.room], client)
 		end
 	end
 	
@@ -127,6 +129,7 @@ class Commands
 			room = room.to_i
 			if room > 0 && room < 1000
 				client.joinRoom(room)
+				@parent.hooks['GameBot'].handleJoinRoom([room], client)
 			end
 		end
 	end
