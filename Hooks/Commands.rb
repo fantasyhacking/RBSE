@@ -23,7 +23,8 @@ class Commands
 			'addall' => 'handleAddAllItems',
 			'summon' => 'handleSummonPenguin',
 			'teleport' => 'handleTeleportPenguin',
-			'find' => 'handleFindPenguin'
+			'find' => 'handleFindPenguin',
+			'jr' => 'handleJoinRoom'
 		}
 		@prefix = '!'
 	end
@@ -116,6 +117,16 @@ class Commands
 			oclient = client.getClientByName(name)
 			room_name = @parent.crumbs.room_crumbs[oclient.room][0]['name']
 			client.sendData('%xt%sm%-1%0%' + oclient.username + ' is at the ' + room_name + '%')
+		end
+	end
+	
+	def handleJoinRoom(cmdArgs, client)
+		msgArgs = cmdArgs.split(' ')
+		room = msgArgs[0]
+		if @parent.is_num?(room) != false
+			if room > 0 && room < 1000
+				client.joinRoom(room.to_i)
+			end
 		end
 	end
 
