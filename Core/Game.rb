@@ -345,6 +345,10 @@ class Game < XTParser
 			return
 		end
 		decodedMessage = HTMLEntities.new.decode(userMessage)
+		commandChar = decodedMessage[0,1]
+		if commandChar == '!'
+			return
+		end
 		if client.astatus['isMuted'].to_bool != true
 			client.sendRoom('%xt%sm%-1%' + userID.to_s + '%' + decodedMessage + '%') 
 		else
