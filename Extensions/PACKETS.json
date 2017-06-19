@@ -725,6 +725,31 @@
 				],
 				"length": 2,
 				"hasException": false
+			}],
+			"ni#gnr": [{
+				"method": "handleGetNinjaRank",
+				"length": -1,
+				"hasException": false
+			}],
+			"ni#gnl": [{
+				"method": "handleGetNinjaLevel",
+				"length": -1,
+				"hasException": false
+			}],
+			"ni#gfl": [{
+				"method": "handleGetFireLevel",
+				"length": -1,
+				"hasException": false
+			}],
+			"ni#gwl": [{
+				"method": "handleGetWaterLevel",
+				"length": -1,
+				"hasException": false
+			}],
+			"ni#gcd": [{
+				"method": "handleGetCardDeck",
+				"length": -1,
+				"hasException": false
 			}]
 		}],
 		"z": [{
@@ -776,6 +801,11 @@
 			}],
 			"lw": [{
 				"method": "handleLeaveWaddle",
+				"length": -1,
+				"hasException": false
+			}],
+			"jmm": [{
+				"method": "handleJoinMatchMaking",
 				"length": -1,
 				"hasException": false
 			}]
