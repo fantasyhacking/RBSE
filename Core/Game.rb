@@ -12,25 +12,37 @@ class Game < XTParser
 	def initialize(main_class)
 		@parent = main_class
 		@xtPackets = Hash.new
+		
 		@iglooMap = Hash.new
+		
 		@gamePuck = '0%0%0%0%'
+		
 		@findFourRooms = [220, 221]
 		@findFourTables = [200, 201, 202, 203, 204, 205, 206, 207]
 		@mancalaTables = [100, 101, 102, 103, 104]
+		@treasureTables = [300, 301, 302, 303, 304, 305, 306, 307]
+		
 		@mancalaRoom = 111
-		@tables = [@findFourTables, @mancalaTables].reduce([], :concat)
+		@treasureRoom = 422
+		
+		@tables = [@findFourTables, @mancalaTables, @treasureTables].reduce([], :concat)
 		@tablePopulationByID = Hash[@tables.map {|tableID| [tableID, Hash.new]}]
 		@playersByTableID = Hash[@tables.map {|tableID| [tableID, Array.new]}]
 		@gamesByTableID = Hash[@tables.map {|tableID| [tableID, nil]}]
+		
 		@waddlesByID = [
 			103 => ['', ''], 
 			102 => ['', ''], 
 			101 => ['', '', ''], 
 			100 => ['', '', '', '']
 		]
+		
 		@sledRacing = [100, 101, 102, 103]
+		
 		@waddleRoom = 0
-		@waddleUsers = Hash[@waddlesByID[0].keys.map {|waddleID| [waddleID, Hash.new]}]
+		
+		@waddleUsers = Hash[@waddlesByID[0].keys.map {|waddleID| [waddleID, Hash.new(0)]}]
+		
 		self.handleLoadPackets
 	end
 	
@@ -1139,10 +1151,10 @@ class Game < XTParser
 	end
 	
 	def handleGetTables(gameHandlerArgs, client)
-		if @findFourRooms.include?(client.room) != false || @mancalaRoom == client.room
+		if @findFourRooms.include?(client.room) != false || @mancalaRoom == client.room || @treasureRoom == client.room
 			tablesPopulation = ''
 			gameHandlerArgs.each do |gameTable|
-				if @parent.is_num?(gameTable) != false && @findFourTables.include?(gameTable) || @mancalaTables.include?(gameTable) && @tablePopulationByID.has_key?(gameTable)
+				if @parent.is_num?(gameTable) != false && @findFourTables.include?(gameTable) || @mancalaTables.include?(gameTable) || @treasureTables.include?(gameTable) && @tablePopulationByID.has_key?(gameTable)
 					tablesPopulation << gameTable.to_s + '|' + @tablePopulationByID[gameTable].count.to_s + '%'
 				end
 			end
@@ -1152,7 +1164,7 @@ class Game < XTParser
 	
 	def handleJoinTable(gameHandlerArgs, client)
 		tableID = gameHandlerArgs[0]
-		if @findFourRooms.include?(client.room) != false || @mancalaRoom == client.room
+		if @findFourRooms.include?(client.room) != false || @mancalaRoom == client.room || @treasureRoom == client.room
 			if @tablePopulationByID.has_key?(tableID)
 				if @tablePopulationByID[tableID].count < 3
 					seatID = @tablePopulationByID[tableID].count
@@ -1166,6 +1178,12 @@ class Game < XTParser
 						if @gamesByTableID[tableID] == nil
 							mancalaGame = Mancala.new
 							@gamesByTableID[tableID] = mancalaGame
+						end
+					end
+					if @treasureTables.include?(tableID) != false
+						if @gamesByTableID[tableID] == nil
+							treasureGame = TreasureHunt.new
+							@gamesByTableID[tableID] = treasureGame
 						end
 					end
 					seatID += 1
@@ -1208,14 +1226,18 @@ class Game < XTParser
 		if client.room == 802
 			return client.sendData('%xt%gz%-1%' + @gamePuck + '%')
 		end
-		if @findFourRooms.include?(client.room) != false || @mancalaRoom == client.room
+		if @findFourRooms.include?(client.room) != false || @mancalaRoom == client.room || @treasureRoom == client.room
 			tableID = client.tableID
 			if tableID != nil
 				players = @tablePopulationByID[tableID].keys
 				firstPlayer = players[0]
 				secondPlayer = players[1]
 				board = @gamesByTableID[tableID].convertToString
-				client.sendData('%xt%gz%-1%' + (firstPlayer ? firstPlayer : '') + '%' + (secondPlayer ? secondPlayer : '') + '%' + board + '%')
+				if @findFourRooms.include?(client.room) != false || @mancalaRoom == client.room
+					client.sendData('%xt%gz%-1%' + (firstPlayer ? firstPlayer : '') + '%' + (secondPlayer ? secondPlayer : '') + '%' + board + '%')
+				elsif @treasureRoom == client.room
+					client.sendRoom('%xt%gz%-1%' + (firstPlayer ? firstPlayer : '') + '%' + (secondPlayer ? secondPlayer : '') + '%10%10%' + @gamesByTableID[tableID].coinAmount.to_s + '%' + @gamesByTableID[tableID].gemAmount.to_s + '%12%25%1%' + @gamesByTableID[tableID].gemLocations[0..-1] + '%' + @gamesByTableID[tableID].convertToString + '%0%0%false%%%%')
+				end
 			end
 		end
 	end
@@ -1306,6 +1328,10 @@ class Game < XTParser
 							end
 						end
 					end
+					
+				elsif @treasureTables.include?(tableID) != false #treasure hunt moves handlers goes here
+					
+				
 				elsif @mancalaTables.include?(tableID) != false
 					potIndex = gameHandlerArgs[0]
 					if @parent.is_num?(potIndex) != false
@@ -1384,15 +1410,15 @@ class Game < XTParser
 	def leaveWaddle(client)
 		@waddleUsers.each do |waddleID, waddle|
 			waddle.each do |playerSeat, waddlePenguin|
-				if waddlePenguin == client && waddlePenguin.room == client.room
-					 client.sendRoom('%xt%uw%-1%' + waddleID.to_s + '%' + playerSeat.to_s + '%')
-					 @waddlesByID[0][waddleID][playerSeat] = ''
-					 @waddleUsers[waddleID].delete(playerSeat)
+				if @waddleUsers[waddleID][playerSeat] == client
+					 client.sendRoom('%xt%uw%-1%' + waddleID.to_s + '%' + playerSeat.to_s + '%%')
 					 if client.waddleRoom != nil
 						client.removePlayerFromRoom
 						client.waddleRoom = nil
 						client.waddleID = nil
 					 end
+					 @waddlesByID[0][waddleID][playerSeat] = ''
+					 @waddleUsers[waddleID].delete(playerSeat)
 				end
 			end
 		end
