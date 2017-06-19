@@ -1,5 +1,4 @@
 require 'rubygems'
-require 'faker'
 
 class GameBot
 
