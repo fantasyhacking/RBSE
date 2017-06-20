@@ -1,26 +1,6 @@
 class TreasureHunt
 
-	attr_accessor :coinAmount, :gemAmount, :gemLocations
-	
-	GAME_ID = -1
-    USER_ONE =  0
-    USER_TWO =  1
-    MAP_WIDTH = 2
-    MAP_HEIGHT =  3
-    COIN_AMOUNT = 4
-    GEM_AMOUNT = 5
-    TURN_AMOUNT = 6
-    GEM_VALUE = 7
-    COIN_VALUE = 8
-    GEM_LOCATIONS = 9
-    TREASURE_MAP = 10
-    GEMS_FOUND = 11
-    COINS_FOUND = 12
-    RARE_GEM_FOUND = 13
-    RECORD_NAMES = 14
-    RECORD_DIRECTIONS = 15
-    RECORD_NUMBERS = 16
-    TURN_OFFSET = 17
+    attr_accessor :boardMap, :currPlayer, :turnAmount, :gemValue, :rareGemValue, :coinValue, :mapWidth, :mapHeight, :coinAmount, :gemAmount, :gemLocations, :gemsFound, :coinsFound, :rareGemFound, :recordNumbers
     
     NONE = 0
     COIN = 1
@@ -28,8 +8,7 @@ class TreasureHunt
     GEM_PIECE = 3
     RARE_GEM = 4
     
-    def initialize
-		@currentTurnOffset = TURN_OFFSET
+    def initialize		
 		@boardMap = [
 				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -43,9 +22,21 @@ class TreasureHunt
 				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 		]
+		
+		@currPlayer = 1
+		@turnAmount = 12
+		@gemValue = 25
+		@rareGemValue = 100
+		@coinValue = 1
+		@mapWidth = 10
+		@mapHeight = 10
 		@coinAmount = 0
 		@gemAmount = 0
 		@gemLocations = ''
+		@gemsFound = 0
+		@coinsFound = 0
+		@rareGemFound = 'false'
+		@recordNumbers = ''		
 		self.generateTreasuresToMap
     end
     
@@ -72,6 +63,54 @@ class TreasureHunt
     
     def convertToString
 		return @boardMap.map {|tableIndex, tableValue| @boardMap[tableIndex].join(',')}.join(',')
+    end
+    
+	def changePlayer
+		if @currPlayer == 1
+			@currPlayer = 2
+		else
+			@currPlayer = 1
+		end
+	end
+    
+    def makeMove(buttonMC, digDirection, buttonNum)	
+		
+		@turnAmount -= 1
+	
+		if @recordNumbers != ''
+			@recordNumbers << ','
+		end
+		
+		rcnumbers = buttonNum.to_s	
+			
+		@recordNumbers << rcnumbers
+		
+		map = self.convertToString
+		xpos = @recordNumbers[-1].to_i
+		ypos = buttonNum.to_i
+		pos = xpos * 10 + ypos
+		some_pos = map[pos]
+		
+		if some_pos == GEM || some_pos == GEM_PIECE
+			 @gemsFound += 0.25
+		elsif some_pos == RARE_GEM
+			@rareGemFound = 'true'
+		elsif some_pos == COIN
+			@coinsFound += 1
+		end
+		
+		self.changePlayer
+		
+		if @turnAmount == 0
+			totalAmount = @coinsFound + (@gemsFound.round * @gemValue)
+			if @rareGemFound == 'true'
+				totalAmount += @rareGemValue
+			end
+			return ['we_done_bruh', totalAmount]
+		else
+			return ['not_done_bruh']
+		end
+		
     end
 
 end
