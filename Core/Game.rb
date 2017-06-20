@@ -1238,8 +1238,9 @@ class Game < XTParser
 				elsif @treasureRoom == client.room
 					client.sendRoom('%xt%gz%-1%' + (firstPlayer ? firstPlayer : '') + '%' + (secondPlayer ? secondPlayer : '') + '%10%10%' + @gamesByTableID[tableID].coinAmount.to_s + '%' + @gamesByTableID[tableID].gemAmount.to_s + '%12%25%1%' + @gamesByTableID[tableID].gemLocations[0..-1] + '%' + @gamesByTableID[tableID].convertToString + '%0%0%false%%%%')
 					if @tablePopulationByID[tableID].count == 2
-						@tablePopulationByID[tableID].each do |username, oclient|
-							@tablePopulationByID[tableID][username].sendData('%xt%jz%-1%0%')
+						@playersByTableID[tableID].each_with_index do |username, key|
+							oclient = client.getClientByName(username)
+							oclient.sendData('%xt%jz%-1%' + key.to_s + '%')
 						end
 					end
 				end
