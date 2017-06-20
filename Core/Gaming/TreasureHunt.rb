@@ -65,16 +65,15 @@ class TreasureHunt
 		return @boardMap.map {|tableIndex, tableValue| @boardMap[tableIndex].join(',')}.join(',')
     end
     
-	def changePlayer
+    def changePlayer
 		if @currPlayer == 1
 			@currPlayer = 2
 		else
 			@currPlayer = 1
 		end
-	end
+    end
     
-    def makeMove(buttonMC, digDirection, buttonNum)	
-		
+    def makeMove(buttonMC, digDirection, buttonNum)		
 		@turnAmount -= 1
 	
 		if @recordNumbers != ''
@@ -109,8 +108,7 @@ class TreasureHunt
 			return ['we_done_bruh', totalAmount]
 		else
 			return ['not_done_bruh']
-		end
-		
+		end		
     end
 
 end
