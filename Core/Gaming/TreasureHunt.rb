@@ -95,7 +95,7 @@ class TreasureHunt
 		elsif some_pos == RARE_GEM
 			@rareGemFound = 'true'
 		elsif some_pos == COIN
-			@coinsFound += 1
+			@coinsFound += @coinValue
 		end
 		
 		self.changePlayer
