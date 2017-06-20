@@ -1236,7 +1236,7 @@ class Game < XTParser
 				if @findFourRooms.include?(client.room) != false || @mancalaRoom == client.room
 					client.sendData('%xt%gz%-1%' + (firstPlayer ? firstPlayer : '') + '%' + (secondPlayer ? secondPlayer : '') + '%' + board + '%')
 				elsif @treasureRoom == client.room
-					client.sendRoom('%xt%gz%-1%' + (firstPlayer ? firstPlayer : '') + '%' + (secondPlayer ? secondPlayer : '') + '%10%10%' + @gamesByTableID[tableID].coinAmount.to_s + '%' + @gamesByTableID[tableID].gemAmount.to_s + '%12%25%1%' + @gamesByTableID[tableID].gemLocations[0..-1] + '%' + @gamesByTableID[tableID].convertToString + '%0%0%false%%%%')
+					client.sendRoom('%xt%gz%-1%' + (firstPlayer ? firstPlayer : '') + '%' + (secondPlayer ? secondPlayer : '') + '%' + @gamesByTableID[tableID].mapWidth.to_s + '%' + @gamesByTableID[tableID].mapHeight.to_s + '%' + @gamesByTableID[tableID].coinAmount.to_s + '%' + @gamesByTableID[tableID].gemAmount.to_s + '%' + @gamesByTableID[tableID].turnAmount.to_s + '%' + @gamesByTableID[tableID].gemValue.to_s + '%' + @gamesByTableID[tableID].coinValue.to_s + '%' + @gamesByTableID[tableID].gemLocations[0..-1] + '%' + @gamesByTableID[tableID].convertToString + '%' + @gamesByTableID[tableID].gemsFound.to_s + '%' + @gamesByTableID[tableID].coinsFound.to_s + '%' + @gamesByTableID[tableID].rareGemFound + '%%%%')
 					if @tablePopulationByID[tableID].count == 2
 						@playersByTableID[tableID].each_with_index do |username, key|
 							oclient = client.getClientByName(username)
@@ -1335,9 +1335,31 @@ class Game < XTParser
 						end
 					end
 					
-				elsif @treasureTables.include?(tableID) != false #treasure hunt moves handlers goes here
-					
-				
+				elsif @treasureTables.include?(tableID) != false 
+					buttonMC = gameHandlerArgs[0]
+					digDirection = gameHandlerArgs[1]
+					buttonNum = gameHandlerArgs[2]
+					seatID = @playersByTableID[tableID].index(client.username)
+					libID = seatID + 1
+					if @gamesByTableID[tableID].currPlayer == libID
+						gameData = @gamesByTableID[tableID].makeMove(buttonMC, digDirection, buttonNum.to_i)
+						@playersByTableID[tableID].each_with_index do |username, key|
+							oclient = client.getClientByName(username)
+							oclient.sendData('%xt%zm%-1%' + buttonMC + '%' + digDirection + '%' + buttonNum + '%')		
+						end
+						if gameData[0] == 'we_done_bruh'
+							amountEarned = gameData[1]
+							@playersByTableID[tableID].each_with_index do |username, key|
+								if username.downcase != client.username.downcase
+									oclient = client.getClientByName(username)
+									oclient.addCoins(amountEarned)
+									oclient.sendData('%xt%zo%-1%' + oclient.coins.to_s + '%')
+								end
+							end
+							client.addCoins(amountEarned)
+							client.sendData('%xt%zo%-1%' + client.coins.to_s + '%')
+						end
+					end
 				elsif @mancalaTables.include?(tableID) != false
 					potIndex = gameHandlerArgs[0]
 					if @parent.is_num?(potIndex) != false
