@@ -196,6 +196,12 @@ class Game < XTParser
 		client.sendRoom('%xt%sma%-1%' + client.ID.to_s + '%' + messageID.to_s + '%')
 	end
 	
+	def handleThrowSnowball(gameHandlerArgs, client)
+		snowballX = gameHandlerArgs[0]
+		snowballY = gameHandlerArgs[1]
+		client.sendRoom('%xt%sb%-1%' + client.ID.to_s + '%' + snowballX.to_s + '%' + snowballY.to_s + '%')
+	end
+	
 	def handleUpdatePlayerColor(gameHandlerArgs, client)
 		itemID = gameHandlerArgs[0]
 		client.sendRoom('%xt%upc%-1%' + client.ID.to_s + '%' + itemID.to_s + '%')
