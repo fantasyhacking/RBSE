@@ -50,7 +50,7 @@ class XTParser
 					handlingInfo = ['handler' => @xtPackets[packets[1]][0][packets[2]][0][gamePacket][0]['method'], 'arguments' => realArgs]
 					return handlingInfo
 				end
-				handlingInfo = ['handler' => @xtPackets[packets[1]][0][packets[2]][0][gamePacket][0]['method'], 'arguments' => []]
+				handlingInfo = ['handler' => @xtPackets[packets[1]][0][packets[2]][0][gamePacket][0]['method'], 'arguments' => realArgs]
 				return handlingInfo
 			elsif @xtPackets[packets[1]][0][packets[2]][0][gamePacket][0]['length'].to_i >= 0
 				packLength = @xtPackets[packets[1]][0][packets[2]][0][gamePacket][0]['length'].to_i
