@@ -1293,7 +1293,7 @@ class Game < XTParser
 		if client.room == 802
 			rinkPuck = gameHandlerArgs.reject(&:empty?).join('%')
 			@gamePuck = rinkPuck
-			client.sendRoom('%xt%zm%-1%' + client.ID.to_s + '%' + rinkPuck)
+			client.sendRoom('%xt%zm%-1%' + rinkPuck)
 		end
 	end
 	
