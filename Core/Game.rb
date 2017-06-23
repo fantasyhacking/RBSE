@@ -1230,7 +1230,7 @@ class Game < XTParser
 	
 	def handleGetGame(gameHandlerArgs, client)
 		if client.room == 802
-			return client.sendData('%xt%gz%-1%' + @gamePuck + '%')
+			return client.sendData('%xt%gz%-1%' + @gamePuck)
 		end
 		if @findFourRooms.include?(client.room) != false || @mancalaRoom == client.room || @treasureRoom == client.room
 			tableID = client.tableID
@@ -1291,16 +1291,19 @@ class Game < XTParser
 	
 	def handleMovePuck(gameHandlerArgs, client)
 		if client.room == 802
-			rinkPuck = gameHandlerArgs.join('%')
+			rinkPuck = gameHandlerArgs.reject(&:empty?).join('%')
 			@gamePuck = rinkPuck
-			client.sendRoom('%xt%zm%-1%' + client.ID.to_s + '%' + rinkPuck + '%')
+			client.sendRoom('%xt%zm%-1%' + client.ID.to_s + '%' + rinkPuck)
 		end
 	end
 	
 	def handleSendMove(gameHandlerArgs, client)
 		waddleID = client.waddleID
 		if @sledRacing.include?(waddleID) != false
-			return client.sendRoom('%xt%zm%' + gameHandlerArgs.join('%') + '%')
+			gameMove = gameHandlerArgs.reject(&:empty?).join('%')
+			if gameMove != ''
+				return client.sendRoom('%xt%zm%' + gameMove)
+			end
 		end
 		tableID = client.tableID
 		if tableID != nil
