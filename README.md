@@ -31,6 +31,7 @@ Club Penguin Server Emulator - AS2 Protocol
 
 <details> 
 <summary>Gems List</summary>
+<h1>Kindly note that most of these gems come installed by default</h1>
 <ul>
   <li>rails</li>
   <li>activesupport</li>
