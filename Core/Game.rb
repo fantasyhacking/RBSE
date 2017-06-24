@@ -1430,14 +1430,14 @@ class Game < XTParser
 	def handleJoinWaddle(gameHandlerArgs, client)
 		self.leaveWaddle(client)
 		waddleID = gameHandlerArgs[0]
-		playerSeat = @waddleUsers.has_key?(waddleID) == true ? @waddleUsers[waddleID].count : 0
+		playerSeat = @waddlesByID[0][waddleID].index('')
 		if @waddleUsers[waddleID].has_key?(playerSeat) != true
-			@waddleUsers[waddleID][playerSeat] = client
+			@waddleUsers[waddleID][playerSeat] = client 
 			@waddlesByID[0][waddleID][playerSeat] = client.username
 		end
 		client.sendData('%xt%jw%-1%' + playerSeat.to_s + '%')
-		waddleCount = @waddlesByID[0][waddleID].count - 1
-		if playerSeat == waddleCount
+		waddleCount = @waddlesByID[0][waddleID].count
+		if @waddleUsers[waddleID].count == waddleCount
 			self.startWaddle(waddleID)
 		end
 		client.sendRoom('%xt%uw%-1%' + waddleID.to_s + '%' + playerSeat.to_s + '%' + client.username + '%')
