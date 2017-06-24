@@ -1175,7 +1175,7 @@ class Game < XTParser
 		tableID = gameHandlerArgs[0]
 		if @findFourRooms.include?(client.room) != false || @mancalaRoom == client.room || @treasureRoom == client.room
 			if @tablePopulationByID.has_key?(tableID)
-				if @tablePopulationByID[tableID].count < 3
+				if @tablePopulationByID[tableID].count < 2
 					seatID = @tablePopulationByID[tableID].count
 					if @findFourTables.include?(tableID) != false
 						if @gamesByTableID[tableID] == nil
