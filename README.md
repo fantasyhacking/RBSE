@@ -19,6 +19,7 @@ Club Penguin Server Emulator - AS2 Protocol
 <details>
 <summary>Requirements</summary>
 <ul>
+  <li>Linux OS (Preferably ubuntu 14.04+)</li>
   <li>Apache2/Nginx</li>
   <li>Ruby 2.4</li>
   <li>PHP 5.5+</li>
