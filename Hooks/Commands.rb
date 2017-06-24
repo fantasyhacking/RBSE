@@ -24,7 +24,8 @@ class Commands
 			'summon' => 'handleSummonPenguin',
 			'teleport' => 'handleTeleportPenguin',
 			'find' => 'handleFindPenguin',
-			'jr' => 'handleJoinRoom'
+			'jr' => 'handleJoinRoom',
+			'nick' => 'handleChangeNickname'
 		}
 		@prefix = '!'
 	end
@@ -119,6 +120,24 @@ class Commands
 			oclient = client.getClientByName(name)
 			room_name = @parent.crumbs.room_crumbs[oclient.room][0]['name']
 			client.sendData('%xt%sm%-1%0%' + oclient.username + ' is at the ' + room_name + '%')
+		end
+	end
+	
+	def handleChangeNickname(cmdArgs, client)
+		msgArgs = cmdArgs.split(' ')
+		name = msgArgs[0]
+		if @parent.is_num?(name) != true
+			if (name !~ /^[A-Za-z0-9]+$/) 
+				return client.sendData('%xt%sm%-1%0%Nickname should be alpha numeric!%')
+			end
+			isExistsNick = @parent.mysql.checkNicknameExists(name)
+			if isExistsNick >= 1
+				return client.sendData('%xt%sm%-1%0%Nickname already exists!%')
+			end
+			@parent.mysql.updatePlayerNickname(name, client.username)
+			client.nickname = name
+			client.joinRoom(client.room)
+			@parent.hooks['GameBot'].handleJoinRoom([client.room], client)
 		end
 	end
 	
