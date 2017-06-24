@@ -48,6 +48,7 @@ Club Penguin Server Emulator - AS2 Protocol
   <li>typhoeus</li>
   <li>time_difference</li>
   <li>connection_pool</li>
+  <li>htmlentities</li>
 </ul> 
 </details>
 
