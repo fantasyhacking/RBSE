@@ -842,11 +842,9 @@ class Game < XTParser
 	
 	def handleMailDeletePlayer(gameHandlerArgs, client)
 		userID = gameHandlerArgs[0]
-		if userID != 0
 			@parent.mysql.deletePostcardsByMailer(client.ID, userID)
 			receivedPostcards = @parent.mysql.getReceivedPostcardCount(client.ID)
 			client.sendData('%xt%mdp%-1%' + receivedPostcards.to_s + '%')
-		end
 	end
 	
 	def handleMailChecked(gameHandlerArgs, client)
