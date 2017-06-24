@@ -42,6 +42,7 @@ class TCP
 					end
 					client.handleBuddyOffline
 					client.removePlayerFromRoom
+					@parent.game_sys.handleLeaveTable([], client)
 					self.handleRemoveClient(connection)
 			end
         end
