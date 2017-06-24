@@ -1259,14 +1259,16 @@ class Game < XTParser
 	
 	def handleStartGame(gameHandlerArgs, client) 
 		waddleID = client.waddleID
-		if client.waddleRoom != nil && @sledRacing.include?(waddleID) != false
-			waddleUsers = Array.new
+		if client.waddleRoom != nil && @sledRacing.include?(waddleID) != false && @waddleUsers[waddleID].empty? != false
+			waddleUsers = ''
+			waddleCount = 0
 			@parent.sock.clients.each_with_index do |oclient, key|
 				if @parent.sock.clients[key].room == client.room
-					waddleUsers.push(sprintf("%s|%d|%d|%s", @parent.sock.clients[key].username, @parent.sock.clients[key].clothes['color'], @parent.sock.clients[key].clothes['hands'], @parent.sock.clients[key].username))
+					waddleUsers << @parent.sock.clients[key].username + '|' + @parent.sock.clients[key].clothes['color'].to_s + '|' + @parent.sock.clients[key].clothes['hands'].to_s + '|' + @parent.sock.clients[key].username.downcase + '%'
+					waddleCount += 1
 				end
 			end
-			return client.sendData('%xt%uz%-1%' + waddleUsers.count.to_s + '%' + waddleUsers.join('%') + '%')
+			return client.sendRoom('%xt%uz%-1%' + waddleCount.to_s + '%' + waddleUsers)
 		end
 		tableID = client.tableID
 		if tableID != nil 
@@ -1295,8 +1297,10 @@ class Game < XTParser
 	def handleMovePuck(gameHandlerArgs, client)
 		if client.room == 802
 			rinkPuck = gameHandlerArgs.reject(&:empty?).join('%')
-			@gamePuck = rinkPuck
-			client.sendRoom('%xt%zm%-1%' + rinkPuck)
+			if rinkPuck != ''
+				@gamePuck = rinkPuck
+				client.sendRoom('%xt%zm%-1%' + rinkPuck)
+			end
 		end
 	end
 	
@@ -1427,7 +1431,10 @@ class Game < XTParser
 		self.leaveWaddle(client)
 		waddleID = gameHandlerArgs[0]
 		playerSeat = @waddleUsers.has_key?(waddleID) == true ? @waddleUsers[waddleID].count : 0
-		@waddleUsers[waddleID][playerSeat] = client
+		if @waddleUsers[waddleID].has_key?(playerSeat) != true
+			@waddleUsers[waddleID][playerSeat] = client
+			@waddlesByID[0][waddleID][playerSeat] = client.username
+		end
 		client.sendData('%xt%jw%-1%' + playerSeat.to_s + '%')
 		waddleCount = @waddlesByID[0][waddleID].count - 1
 		if playerSeat == waddleCount
@@ -1437,14 +1444,17 @@ class Game < XTParser
 	end
 	
 	def startWaddle(waddleID)
-	      waddleRoomID = (@waddleRoom + 1) % 16384
-		  userCount = @waddleUsers.count
-		  @waddleUsers[waddleID].each do |playerSeat, waddlePenguin|
-				waddlePenguin.waddleRoom = waddleRoomID
-				waddlePenguin.waddleID = waddleID
-				waddlePenguin.sendData('%xt%sw%-1%999%' + waddleRoomID.to_s + '%' + userCount.to_s + '%')
-		  end
-		  @waddleUsers[waddleID].clear
+		@waddlesByID[0][waddleID].each_with_index do |waddleUser, seatID|
+			@waddlesByID[0][waddleID][seatID] = ''
+		end
+		waddleRoomID = (@waddleRoom + 1) % 16384
+		userCount = @waddleUsers.count
+		@waddleUsers[waddleID].each do |playerSeat, waddlePenguin|
+			waddlePenguin.waddleRoom = waddleRoomID
+			waddlePenguin.waddleID = waddleID
+			waddlePenguin.sendData('%xt%sw%-1%999%' + waddleRoomID.to_s + '%' + userCount.to_s + '%')
+		end
+		@waddleUsers[waddleID].clear
 	end
 	
 	def leaveWaddle(client)
