@@ -128,6 +128,12 @@ class Game < XTParser
 		room = gameHandlerArgs[0]
 		room_x = gameHandlerArgs[1]
 		room_y = gameHandlerArgs[2]
+		if  room == 230 && defined? client.waddleRoom
+			client.tableID = nil
+			client.waddleRoom = nil
+			client.waddleID = nil
+			return client.joinRoom(room, room_x, room_y)
+		end
 		client.joinRoom(room, room_x, room_y)
 	end
 	
