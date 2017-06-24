@@ -1306,7 +1306,7 @@ class Game < XTParser
 		if @sledRacing.include?(waddleID) != false
 			gameMove = gameHandlerArgs.reject(&:empty?).join('%')
 			if gameMove != ''
-				return client.sendRoom('%xt%zm%' + gameMove)
+				return client.sendRoom('%xt%zm%-1%' + gameMove)
 			end
 		end
 		tableID = client.tableID
