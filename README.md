@@ -12,6 +12,7 @@ Club Penguin Server Emulator - AS2 Protocol
 ![Stampbook](https://s27.postimg.org/7nev46o5v/Screenshot_from_2017-05-15_15_21_07.png)
 ![ConnectFour](https://s14.postimg.org/62gjrhmxd/Screenshot_from_2017-06-04_17_57_00.png)
 ![Mancala](https://s17.postimg.org/ij1qx3ljz/Screenshot_from_2017-06-05_00_02_52.png)
+![TreasureHunt](https://s4.postimg.org/gbkughcvh/Screenshot_from_2017-06-20_12_55_45.png)
 
 </details>
 
