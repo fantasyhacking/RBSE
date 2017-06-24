@@ -128,7 +128,7 @@ class Game < XTParser
 		room = gameHandlerArgs[0]
 		room_x = gameHandlerArgs[1]
 		room_y = gameHandlerArgs[2]
-		if room == 230 && client.waddleRoom.nil? != false
+		if room == 230 && client.waddleRoom != nil
 			client.tableID = nil
 			client.waddleRoom = nil
 			client.waddleID = nil
