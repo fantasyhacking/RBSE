@@ -21,6 +21,13 @@ class Database
 		end
 	end
 	
+	def checkNicknameExists(username)
+		@connections.with do |connection|
+			results = connection.xquery("SELECT * FROM users WHERE nickname = ?", username)
+			return results.count
+		end
+	end
+	
 	def checkUserExists(username)
 		@connections.with do |connection|
 			results = connection.xquery("SELECT * FROM users WHERE username = ?", username)
@@ -54,6 +61,12 @@ class Database
 			results.each do |result|
 				return result['invalid_logins']
 			end
+		end
+	end
+	
+	def updatePlayerNickname(nick, username)
+		@connections.with do |connection|
+			connection.xquery("UPDATE users SET nickname = ? WHERE username = ?", nick, username)
 		end
 	end
 	
@@ -237,12 +250,11 @@ class Database
 	def getPlayerString(userID)
 		userDetails = self.getUserDetails(userID)
 		userDetails.each do |detail|
-			username = detail['username']
 			clothing = JSON.parse(detail['clothing'])
 			ranking = JSON.parse(detail['ranking'])
 			requiredDetails = [
 				userID,
-				username, 1,
+				detail['nickname'], 1,
 				clothing['color'],
 				clothing['head'],
 				clothing['face'],
