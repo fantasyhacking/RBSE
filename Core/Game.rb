@@ -1210,15 +1210,13 @@ class Game < XTParser
 		tableID = client.tableID
 		if tableID != nil
 			seatID = @playersByTableID[tableID].index(client.username)
-			if @playersByTableID[tableID].index(client.username) < 2
-				@playersByTableID[tableID].each_with_index do |username, key|
-					oclient = client.getClientByName(username)
-					oclient.sendData('%xt%cz%-1%' + client.username + '%')
-				end
-			end
 			@playersByTableID[tableID].delete(client.username)
 			@tablePopulationByID[tableID].delete(client.username)
-			client.sendRoom('%xt%ut%-1%' + tableID.to_s + '%' + seatID.to_s + '%')
+			@playersByTableID[tableID].each_with_index do |username, key|
+				oclient = client.getClientByName(username)
+				oclient.sendData('%xt%cz%-1%' + client.username + '%')
+				oclient.sendData('%xt%ut%-1%' + tableID.to_s + '%' + seatID.to_s + '%')
+			end
 			client.tableID = nil
 			if @playersByTableID[tableID].count == 0
 				@playersByTableID[tableID].clear
