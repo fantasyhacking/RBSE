@@ -6,7 +6,7 @@ require 'time_difference'
 
 class CPUser
 
-	attr_accessor :sock, :ID, :username, :lkey, :coins, :joindate, :clothes, :ranking, :astatus, :clothes, :ranking, :inventory, :buddies, :ignored, :room, :xaxis, :yaxis, :frame, :logged_in, :lastPacket, :spamFilter
+	attr_accessor :sock, :ID, :username, :nickname, :lkey, :coins, :joindate, :clothes, :ranking, :astatus, :clothes, :ranking, :inventory, :buddies, :ignored, :room, :xaxis, :yaxis, :frame, :logged_in, :lastPacket, :spamFilter
 	attr_accessor :igloo, :floor, :music, :furniture, :ownedFurns, :ownedIgloos
 	attr_accessor :stamps, :restamps, :stampbook_cover
 	attr_accessor :isagent, :status, :currentpoints, :totalpoints
@@ -17,6 +17,7 @@ class CPUser
 		@sock = socket
 		@ID = 0
 		@username = ''
+		@nickname = ''
 		@lkey = ''
 		@coins = 0
 		@joindate = 0
@@ -203,7 +204,7 @@ class CPUser
 	def buildClientString
 		clientInfo = [
 			@ID,
-			@username, 1,
+			@nickname, 1,
 			@clothes['color'],
 			@clothes['head'],
 			@clothes['face'],
