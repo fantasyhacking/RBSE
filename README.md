@@ -1,4 +1,4 @@
-# RBSE - CPSE IN THE WORKS
+# RBSE - DISCONTINUED
 Club Penguin Server Emulator - AS2 Protocol
 
 <details> 
